@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-window.onload = init
+window.onload = init;
 
 function init() {
     connect('btnLoad','onclick',getXML);
@@ -38,11 +38,11 @@ var test = function(e) {
     var test =  TABLE({'border':'1px solid black'},
             [TR(null,map(partial(TD,null),[1,2,3,4])),TR(null,TD({'colSpan':'3'},'fun'))]);
     swapDOM('schedule',test);
-}
+};
 var getXML = function(e) {
     var d = doSimpleXMLHttpRequest('schedTest.xml');
     d.addCallbacks(gotSchedule,fetchFailed);
-}
+};
 
 var gotSchedule = function (req) {
     var rows = Object();
@@ -57,14 +57,14 @@ var gotSchedule = function (req) {
         var start = isoTimestamp(munge_date(pr.getAttribute('start')));
         var stop = isoTimestamp((pr.getAttribute('stop')));
         if( start >= isoTimestamp(munge_date('20061023000000 -0800')) && start < isoTimestamp(munge_date('20061023030000 -0800')))
-            return true;
+            {return true;}
         else
-            return false;
-    }
+            {return false;}
+    };
 
     row_display = function(row) {
         return TR(null, TD(null, row));
-    }
+    };
 
     programme_row_display = function(row) {
         var channelID = row[0].getAttribute('id');
@@ -93,7 +93,7 @@ var gotSchedule = function (req) {
         }
         formed_row.push(TD({'colSpan':'6'}, programme_divs)); // colSpan *not* colspan -- I HATE IE!!!
         return TR(null, formed_row);
-    }
+    };
     
     // 0.  Filter programmes to the correct time (Don't need in furture versions)
     var xml_programmes = filter(form_programmes,all_xml_programmes); // grabs shows for correct time
@@ -112,7 +112,7 @@ var gotSchedule = function (req) {
         TBODY(null,
             [TR({'class':'listHead'}, map(partial(TD,null), head_strings))].concat(map(programme_row_display, obj2arr(rows)))));
     swapDOM('schedule',new_table);
-}
+};
 
 function obj2arr(obj) {
     var arr = [];
@@ -136,4 +136,4 @@ function munge_date(str_date) {
 var fetchFailed = function (err) {
     log("Data is not available");
     log(err);
-}
+};
