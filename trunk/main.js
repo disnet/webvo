@@ -1,6 +1,6 @@
 /*
 WebVo: Web-based PVR
-Copyright (C) 2006 Tim Disney, Daryl Siu, Molly Jo Bault
+Copyright (C) 2006 Molly Jo Bault, Tim Disney, Daryl Siu
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,45 +18,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 window.onload = init;
 
-function init() {
+// Once the page loads, connect up the events
+function init() { 
     connect('btnLoad','onclick',getXML);
     connect('btnTest','onclick',test);
 }
-var test = function(e) {
-/*    s = "20061023060000 -0800";
-    b = "20061023070000 -0800";
 
-    small = isoTimestamp(s);
-    big = isoTimestamp(b);
-    if(small < big)
-        log("you win");
-    else if(small >= big)
-        log("you suck");
-    else
-        log("what!!");
-        */
+// TODO: REMOVE, testing for javascript table creation
+var test = function(e) { 
     var test =  TABLE({'border':'1px solid black'},
             [TR(null,map(partial(TD,null),[1,2,3,4])),TR(null,TD({'colSpan':'3'},'fun'))]);
     swapDOM('schedule',test);
 };
-var getXML = function(e) {
+
+// Sets up the async request for the schedule
+// Currently a btnLoad click event -- will eventually 
+// be an `onload` event along with a form for changing
+// the begin and end times.
+var getXML = function(e) {  
     var d = doSimpleXMLHttpRequest('schedTest.xml');
     d.addCallbacks(gotSchedule,fetchFailed);
 };
 
+
+// Gets back the schedule in xml. 
+// Parses the xml and form the Schedule table
 var gotSchedule = function (req) {
     var rows = Object();
     var xmldoc = req.responseXML;
 
     var root_node = xmldoc.getElementsByTagName('tv').item(0);
+	// grab all the channels
     var xml_channels = root_node.getElementsByTagName('channel');
+	// grab all the programmes
     var all_xml_programmes = root_node.getElementsByTagName('programme');
 
     // Filters xml_programmes for the correct time
     var form_programmes = function(pr) {
         var start = isoTimestamp(munge_date(pr.getAttribute('start')));
         var stop = isoTimestamp((pr.getAttribute('stop')));
-        if( start >= isoTimestamp(munge_date('20061023000000 -0800')) && start < isoTimestamp(munge_date('20061023030000 -0800')))
+        if( start >= isoTimestamp(munge_date('20061023000000 -0800'))
+			&& start < isoTimestamp(munge_date('20061023030000 -0800')))
             {return true;}
         else
             {return false;}
@@ -66,14 +68,20 @@ var gotSchedule = function (req) {
         return TR(null, TD(null, row));
     };
 
+	// Returns DOM TRs for the schedule
+	// formed by individual <rows> property arrays which hold 
+	// xml elements for each channel and associated programmes
+	// INPUT: <row> array of xml elements -- first element is channel, rest are associated programmes
+	// RETURNS: DOM TR with channel and associated programmes
     programme_row_display = function(row) {
         var channelID = row[0].getAttribute('id');
         var channel_name = row[0].getElementsByTagName('display-name')[0].firstChild.nodeValue;
 
-
+		// first TD has the channel name and it's ID property is the associated channelID
         var formed_row = [TD({'id':'channelID'}, channel_name)];
-        var programme_divs = [];
-        for(var i = 1; i < row.length; i++) {
+        
+		var programme_divs = []; 	//initialize the array of programme DIVs
+        for(var i = 1; i < row.length; i++) { // for every programme in <row>
             var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
             var prog_start = row[i].getAttribute('start');
             var progID = prog_title + prog_start + channelID; // First attempt at progID -- should be unique?
@@ -87,10 +95,12 @@ var gotSchedule = function (req) {
             width = width.toString() + '%';
 
             //var style = 'width: ' + width + '; ';
-            var style = 'width:10%;'; //testing...
+            var style = 'width:10%;'; //TODO: set correctly, for now just test with all programmes at 10% width
             style = style + 'background-color: gray; float: left; border:1px solid black; margin-left: -1px;';
+			// insert the formed programme DIV into the div array
             programme_divs.push(DIV({'id':progID, 'style':style}, prog_title));
         }
+		// second TD hold programme DIVs
         formed_row.push(TD({'colSpan':'6'}, programme_divs)); // colSpan *not* colspan -- I HATE IE!!!
         return TR(null, formed_row);
     };
@@ -101,19 +111,23 @@ var gotSchedule = function (req) {
     // 1.  Initialize <rows> Object(). Each channel is added as the first element of it's own property
     forEach(xml_channels, function(ch) { rows[ch.getAttribute('id')] = [ch]; });
 
-    // 2.  Fill  <rows> Object() with correct program xml element for the correct channelID slot
+    // 2.  Fill  <rows> Object() by pushing programmes into their associated channel slot
     forEach(xml_programmes, function(el) { rows[el.getAttribute('channel')].push(el); });
 
 
     var head_strings = ['Ch.','12:00','12:30','1:00','1:30','2:00','2:30'];
+	// create the DOM table from <head_strings> and <rows> using the programm_row_display function
     var new_table = TABLE({'class':'schedule'},
-        //THEAD(null,null),//TR(null,TD(null,""))),
-//            TR({'class':'listHead'}, map(partial(TD,null), head_strings)),
         TBODY(null,
-            [TR({'class':'listHead'}, map(partial(TD,null), head_strings))].concat(map(programme_row_display, obj2arr(rows)))));
-    swapDOM('schedule',new_table);
+            [TR({'class':'listHead'}, map(partial(TD,null), head_strings))].concat(
+				map(programme_row_display, obj2arr(rows)))));
+    
+	swapDOM('schedule',new_table);
 };
 
+// Converts an object to an 2D array (sort of)
+// for every property in obj (assume each property is an array)
+// arr[i] = obj.property
 function obj2arr(obj) {
     var arr = [];
     var i = 0;
@@ -123,7 +137,7 @@ function obj2arr(obj) {
     return arr;
 }
 
-// form the date into something more acceptable
+// Forms the zap2it date into an isoTimestamp
 function munge_date(str_date) {
     parsed_date = str_date.slice(0,4) + '-';
     parsed_date += str_date.slice(4,6) + '-';
@@ -133,6 +147,8 @@ function munge_date(str_date) {
     parsed_date += str_date.slice(12);
     return parsed_date;
 }
+
+// Error handling for listing request
 var fetchFailed = function (err) {
     log("Data is not available");
     log(err);
