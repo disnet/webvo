@@ -21,7 +21,7 @@ xmltv_ran = false
 
 if xmltv_pres == true then 
   before_run_time = Time.new
-  xmltv_ran = system( "xmltv.exe tv_grab_na_dd --output info.xml")
+  xmltv_ran = system( "tv_grab_na_dd --output info.xml")
 end
 after_run_time = Time.new
 if xmltv_ran == true then
