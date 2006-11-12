@@ -3,10 +3,11 @@
 
 require "mysql"
 
-SERVERNAME = "testDBserver"
-USERNAME = "testuser"
-USERPASS = "testpass"
-DBNAME = "testDB"
+SERVERNAME = "tvbox.homelinux.com/localhost"
+USERNAME = "root@localhost"
+USERPASS = ""
+DBNAME = "WebVo"
+TABLENAME = "Recording"
 
 #change from xml form of the date to the dateTime form
 def format_to_date (xmlform_data)
@@ -45,7 +46,7 @@ rescue MysqlError => e
 
 ensure
   #return the last PID (if there is one)
-  pidres = dbh.query("SELECT pid FROM tablename WHERE pid!=NULL")
+  pidres = dbh.query("SELECT PID FROM #{TABLENAME} WHERE PID!=NULL")
 
   #if there is no pid continue normally
   if pidres.nil? then
@@ -64,9 +65,9 @@ dbh.close
 end
 
 #parse info from database of last entry
-lastshowchannel = dbh.query("SELECT channel FROM tablename ORDERBY timestamp LIMIT 1")
-lastshowstart = dbh.query("SELECT starttime FROM tablename ORDERBY timestamp LIMIT 1")
-lastshowstop = dbh.query("SELECT stoptime FROM tablename ORDERBY timestamp LIMIT 1")
+lastshowchannel = dbh.query("SELECT channel FROM #{TABLENAME} ORDERBY timestamp LIMIT 1")
+lastshowstart = dbh.query("SELECT startTime FROM #{TABLENAME} ORDERBY timestamp LIMIT 1")
+lastshowstop = dbh.query("SELECT stopTime FROM #{TABLENAME} ORDERBY timestamp LIMIT 1")
 
 #begin show recording
 
