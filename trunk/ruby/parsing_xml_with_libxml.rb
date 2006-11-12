@@ -53,56 +53,104 @@ end
   #with the date set has the hash value
   
 def sort_xml(xml, xml_hash, today)
-
-  #get all of the channel and program information
   first_time = true
-  e = xml.root.child
-  puts "got here"
-  begin 
-    if( e.name == "channel"):
-      puts "after if " + e.name
+  xml.find("channel").each do |e|  
       if( first_time == true):
         xml_hash["channel"] = XML::Document.new()
-	xml_hash["channel"].root = XML::Node.new("tv")
-        xml_hash["channel"].root << e
-
-        puts "first " + e.name
+	xml_hash["channel"].root = e
+	first_time = false
       else
-	puts "more " + e.name
         xml_hash["channel"].root << e
       end
-      first_time = false
-    elsif( e.name == "programme"):
-      STDOUT << "*"
+  end
+
+  xml.find("programme").each do |e|
       #sort out all the date information
-      puts start_date = e['start'][0..7]
-      puts end_date = e['stop'][0..7]
+      start_date = e['start'][0..7]
+      end_date = e['stop'][0..7]
       if xml_hash.has_key?(start_date) :
-	puts "start date filed: " + start_date
         xml_hash[start_date].root << e
       else
-	puts "start date " + start_date
         xml_hash[start_date] = XML::Document.new()
-	xml_hash[start_date].root = XML::Node.new("tv")
-        xml_hash[start_date].root <<  e
+	xml_hash[start_date].root = e 
       end
       
       if start_date != end_date:
-	#puts "edge condition " + xml_hash.keys.to_s + " " + end_date
         if xml_hash.has_key?(end_date) :
-	  puts "end date filed: " + end_date
           xml_hash[end_date].root << e
         else
-	  puts "end date " + end_date
           xml_hash[end_date] = XML::Document.new()
-	  xml_hash[end_date].root = XML::Node.new("tv")
-          xml_hash[end_date].root << e
+	  xml_hash[end_date].root = e 
         end
       end
+    end     
 
-    end
-    e = e.next
-  end while e.next?
+
+
+  #get all of the channel and program information
+  #first_time = true
+  #e = xml.root.child
+  #puts "got here"
+  #begin 
+  #  if( e.name == "channel"):
+#      puts "after if " + e.name
+#      if( first_time == true):
+#        xml_hash["channel"] = XML::Document.new()
+#	xml_hash["channel"].root = e
+#        #xml_hash["channel"].root << e
+
+#        puts "first " + e.name
+#      else
+#	puts "more " + e.name
+#        xml_hash["channel"].root << e
+#      end
+#      first_time = false
+#    elsif( e.name == "programme"):
+#      STDOUT << "*"
+      #sort out all the date information
+#      puts start_date = e['start'][0..7]
+#      puts end_date = e['stop'][0..7]
+#      if xml_hash.has_key?(start_date) :
+#	puts "start date filed: " + start_date
+#        xml_hash[start_date].root << e
+#      else
+#	puts "start date " + start_date
+#        xml_hash[start_date] = XML::Document.new()
+#	xml_hash[start_date].root = e #XML::Node.new("tv", nil)
+        #xml_hash[start_date].root <<  e
+#      end
+      
+#      if start_date != end_date:
+	#puts "edge condition " + xml_hash.keys.to_s + " " + end_date
+#        if xml_hash.has_key?(end_date) :
+#	  puts "end date filed: " + end_date
+#          xml_hash[  #  if( e.name == "channel"):
+#      puts "after if " + e.name
+#      if( first_time == true):
+#        xml_hash["channel"] = XML::Document.new()
+#	xml_hash["channel"].root = e
+#        #xml_hash["channel"].root << e
+
+#        puts "first " + e.name
+#      else
+#	puts "more " + e.name
+#        xml_hash["channel"].root << e
+#      end end_date].root << e
+#        else
+#	  puts "end date " + end_date
+#          xml_hash[end_date] = XML::Document.new()
+#	  xml_hash[end_date].root = e # XML::Node.new("tv", nil)
+          #xml_hash[end_date].root << e
+#        end
+#      end
+
+#    end
+#    if (e.next?)
+#    	e = e.next
+#    else
+#	break
+#    end
+#  end while true
   return xml_hash
 
 end
@@ -118,7 +166,7 @@ def write_xml(xml_hash)
     #adding header information
     #putting in correct day information
     #output << header
-    xml_hash[k].save(file_name, true)
+    xml_hash[k].save(file_name, false)
     #output.close()
   end
   return true
