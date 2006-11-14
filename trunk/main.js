@@ -18,6 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 window.onload = init;
 
+// Testing globals, at present they are the static begin and end times for the schedule
+schedStart = isoTimestamp(munge_date('20061023000000 -0800'));
+schedStop = isoTimestamp(munge_date('20061023030000 -0800'));
+
 // Once the page loads, connect up the events
 function init() { 
     connect('btnLoad','onclick',getXML);
@@ -57,11 +61,23 @@ var gotSchedule = function (req) {
     var form_programmes = function(pr) {
         var start = isoTimestamp(munge_date(pr.getAttribute('start')));
         var stop = isoTimestamp((pr.getAttribute('stop')));
-        if( start >= isoTimestamp(munge_date('20061023000000 -0800'))
-			&& start < isoTimestamp(munge_date('20061023030000 -0800')))
-            {return true;}
-        else
-            {return false;}
+		var testStart = isoTimestamp(munge_date('20061023000000 -0800'));
+		var testStop = isoTimestamp(munge_date('20061023030000 -0800'));
+        
+		if(start <= testStart) { // if the programme started before the schedule start
+			if (stop > testStart) {	// and ends after the schedule start
+				return true;
+			}
+			else {
+				return false;
+			} 
+		}
+        else if (start > testStart && start < testStop) {	// if programme starts before the schedule end 
+            return true;
+		}
+		else {
+			return false;
+		}
     };
 
     row_display = function(row) {
@@ -83,26 +99,54 @@ var gotSchedule = function (req) {
 		var programme_divs = []; 	//initialize the array of programme DIVs
         for(var i = 1; i < row.length; i++) { // for every programme in <row>
             var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
-            var prog_start = row[i].getAttribute('start');
-            var progID = prog_title + prog_start + channelID; // First attempt at progID -- should be unique?
+            var prog_start = munge_date(row[i].getAttribute('start'));
+			var prog_stop = munge_date(row[i].getAttribute('stop'));
+            var progID =  "[" + channelID + "]" + prog_start + " " + prog_stop; 
 
             var isoStart = isoTimestamp(munge_date(row[i].getAttribute('start')));
             var isoStop = isoTimestamp(munge_date(row[i].getAttribute('stop')));
-
-            var show_length = isoStop.getHours() - isoStart.getHours();
-            show_length +=  (isoStop.getMinutes() + isoStart.getMinutes()) / 60;
+			
+			var show_length;
+			// If the show starts before the current time schedule
+			if (isoStart < schedStart) {
+				// If the end is after the current time schedule 
+				if( isoStop > schedStop) {
+					show_length = 3; // set time full
+				}
+				// if the end is before the schedule end
+				else {
+					show_length = isoStop.getHours() - schedStart.getHours();
+					show_length +=  (isoStop.getMinutes() - schedStart.getMinutes()) / 60;
+				}
+			}
+			// if the show starts after the begining of the schedule
+			else {
+				// If the show end is after the schedule end
+				if (isoStop > schedStop) {
+					show_length = schedStop.getHours() - isoStart.getHours();
+					show_length +=  (schedStop.getMinutes() - isoStart.getMinutes()) / 60;
+				}
+				// If the show end is before the schedule end
+				else {
+					show_length = isoStop.getHours() - isoStart.getHours();
+					show_length +=  (isoStop.getMinutes() - isoStart.getMinutes()) / 60;
+				}
+			}
+            //show_length = isoStop.getHours() - isoStart.getHours();
+            //show_length +=  (isoStop.getMinutes() + isoStart.getMinutes()) / 60;
             var width = (show_length / 3) * 100;
+			//width = Math.floor(width);
+			width -= .1;
             width = width.toString() + '%';
 
-            //var style = 'width: ' + width + '; ';
-            var style = 'width:10%;'; //TODO: set correctly, for now just test with all programmes at 10% width
-            style = style + 'background-color: gray; float: left; border:1px solid black; margin-left: -1px;';
+            var style = 'width: ' + width + '; ';
+            //var style = 'width:10%;'; //TODO: set correctly, for now just test with all programmes at 10% width
 			// insert the formed programme DIV into the div array
-            programme_divs.push(DIV({'id':progID, 'style':style}, prog_title));
+            programme_divs.push(DIV({'id':progID,'class':'prog', 'style':style}, prog_title));
         }
 		// second TD hold programme DIVs
-        formed_row.push(TD({'colSpan':'6'}, programme_divs)); // colSpan *not* colspan -- I HATE IE!!!
-        return TR(null, formed_row);
+        formed_row.push(TD({'class':'progContainer','colSpan':'6'}, programme_divs)); // colSpan *not* colspan -- I HATE IE!!!
+        return TR({'style':'height:100%; width:100%;'}, formed_row);
     };
     
     // 0.  Filter programmes to the correct time (Don't need in furture versions)
