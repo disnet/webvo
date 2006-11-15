@@ -78,76 +78,7 @@ var gotSchedule = function (req) {
 		else {
 			return false;
 		}
-    };
-
-    row_display = function(row) {
-        return TR(null, TD(null, row));
-    };
-
-	// Returns DOM TRs for the schedule
-	// formed by individual <rows> property arrays which hold 
-	// xml elements for each channel and associated programmes
-	// INPUT: <row> array of xml elements -- first element is channel, rest are associated programmes
-	// RETURNS: DOM TR with channel and associated programmes
-    programme_row_display = function(row) {
-        var channelID = row[0].getAttribute('id');
-        var channel_name = row[0].getElementsByTagName('display-name')[0].firstChild.nodeValue;
-
-		// first TD has the channel name and it's ID property is the associated channelID
-        var formed_row = [TD({'id':'channelID'}, channel_name)];
-        
-		var programme_divs = []; 	//initialize the array of programme DIVs
-        for(var i = 1; i < row.length; i++) { // for every programme in <row>
-            var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
-            var prog_start = munge_date(row[i].getAttribute('start'));
-			var prog_stop = munge_date(row[i].getAttribute('stop'));
-            var progID =  "[" + channelID + "]" + prog_start + " " + prog_stop; 
-
-            var isoStart = isoTimestamp(munge_date(row[i].getAttribute('start')));
-            var isoStop = isoTimestamp(munge_date(row[i].getAttribute('stop')));
-			
-			var show_length;
-			// If the show starts before the current time schedule
-			if (isoStart < schedStart) {
-				// If the end is after the current time schedule 
-				if( isoStop > schedStop) {
-					show_length = 3; // set time full
-				}
-				// if the end is before the schedule end
-				else {
-					show_length = isoStop.getHours() - schedStart.getHours();
-					show_length +=  (isoStop.getMinutes() - schedStart.getMinutes()) / 60;
-				}
-			}
-			// if the show starts after the begining of the schedule
-			else {
-				// If the show end is after the schedule end
-				if (isoStop > schedStop) {
-					show_length = schedStop.getHours() - isoStart.getHours();
-					show_length +=  (schedStop.getMinutes() - isoStart.getMinutes()) / 60;
-				}
-				// If the show end is before the schedule end
-				else {
-					show_length = isoStop.getHours() - isoStart.getHours();
-					show_length +=  (isoStop.getMinutes() - isoStart.getMinutes()) / 60;
-				}
-			}
-            //show_length = isoStop.getHours() - isoStart.getHours();
-            //show_length +=  (isoStop.getMinutes() + isoStart.getMinutes()) / 60;
-            var width = (show_length / 3) * 100;
-			//width = Math.floor(width);
-			width -= .1;
-            width = width.toString() + '%';
-
-            var style = 'width: ' + width + '; ';
-            //var style = 'width:10%;'; //TODO: set correctly, for now just test with all programmes at 10% width
-			// insert the formed programme DIV into the div array
-            programme_divs.push(DIV({'id':progID,'class':'prog', 'style':style}, prog_title));
-        }
-		// second TD hold programme DIVs
-        formed_row.push(TD({'class':'progContainer','colSpan':'6'}, programme_divs)); // colSpan *not* colspan -- I HATE IE!!!
-        return TR({'style':'height:100%; width:100%;'}, formed_row);
-    };
+    };	
     
     // 0.  Filter programmes to the correct time (Don't need in furture versions)
     var xml_programmes = filter(form_programmes,all_xml_programmes); // grabs shows for correct time
@@ -158,15 +89,115 @@ var gotSchedule = function (req) {
     // 2.  Fill  <rows> Object() by pushing programmes into their associated channel slot
     forEach(xml_programmes, function(el) { rows[el.getAttribute('channel')].push(el); });
 
-
-    var head_strings = ['Ch.','12:00','12:30','1:00','1:30','2:00','2:30'];
+    var head_strings = ['12:00','12:30','1:00','1:30','2:00','2:30'];
+	
 	// create the DOM table from <head_strings> and <rows> using the programm_row_display function
     var new_table = TABLE({'class':'schedule'},
-        TBODY(null,
-            [TR({'class':'listHead'}, map(partial(TD,null), head_strings))].concat(
-				map(programme_row_display, obj2arr(rows)))));
-    
+		THEAD(null, 
+			form_table_head(head_strings)),
+        TBODY({'style':'width:100%'},
+			form_table_body(rows)));
+            /*[TR(null,empty_cols)].concat(
+				[TR({'class':'listHead'}, map(partial(TD,{'colSpan':'3'}), head_strings))].concat(
+				map(programme_row_display, obj2arr(rows))))));*/
 	swapDOM('schedule',new_table);
+};
+
+function form_table_head(head) {
+	var numHours = 3;
+	var empty_slots = numHours * 30; // gets the number of 2 minutes in the schedule
+	var colSpan = empty_slots / 6;
+	 
+	var empty_data = [];
+	for (var i = 0; i < empty_slots; i++) {
+		empty_data.push('');
+	}
+	
+	var empty_row = [TR(null,
+		map(partial(TD,{'class':'empty','style':'width:.01%;'}),empty_data))];
+	
+	var head_row = [TR(null,
+		[TD(null,'Ch.')].concat(map(partial(TD,{'colSpan':colSpan}),head)))];
+	
+	return empty_row.concat(head_row);
+}
+function form_table_body(rows) {
+	return map(programme_row_display,obj2arr(rows));
+}
+
+// Returns DOM TRs for the schedule
+// formed by individual <rows> property arrays which hold 
+// xml elements for each channel and associated programmes
+// INPUT: <row> array of xml elements -- first element is channel, rest are associated programmes
+// RETURNS: DOM TR with channel and associated programmes
+programme_row_display = function(row) {
+    var channelID = row[0].getAttribute('id');
+    var channel_name = row[0].getElementsByTagName('display-name')[0].firstChild.nodeValue;
+
+	// first TD has the channel name and it's ID property is the associated channelID
+    var formed_row = [TD({'id':'channelID'}, channel_name)];
+    
+	var programme_tds = []; 	//initialize the array of programme DIVs
+    for(var i = 1; i < row.length; i++) { // for every programme in <row>
+        var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
+        var prog_start = munge_date(row[i].getAttribute('start'));
+		var prog_stop = munge_date(row[i].getAttribute('stop'));
+        var progID =  "[" + channelID + "]" + prog_start + " " + prog_stop; 
+
+        var isoStart = isoTimestamp(munge_date(row[i].getAttribute('start')));
+        var isoStop = isoTimestamp(munge_date(row[i].getAttribute('stop')));
+		
+		var show_length;
+		// If the show starts before the current time schedule
+		if (isoStart < schedStart) {
+			// If the end is after the current time schedule 
+			if( isoStop > schedStop) {
+				show_length = 3; // set time full
+			}
+			// if the end is before the schedule end
+			else {
+				show_length = isoStop.getHours() - schedStart.getHours();
+				show_length +=  (isoStop.getMinutes() - schedStart.getMinutes()) / 60;
+			}
+		}
+		// if the show starts after the begining of the schedule
+		else {
+			// If the show end is after the schedule end
+			if (isoStop > schedStop) {
+				show_length = schedStop.getHours() - isoStart.getHours();
+				show_length +=  (schedStop.getMinutes() - isoStart.getMinutes()) / 60;
+			}
+			// If the show end is before the schedule end
+			else {
+				show_length = isoStop.getHours() - isoStart.getHours();
+				show_length +=  (isoStop.getMinutes() - isoStart.getMinutes()) / 60;
+			}
+		}
+        //show_length = isoStop.getHours() - isoStart.getHours();
+        //show_length +=  (isoStop.getMinutes() + isoStart.getMinutes()) / 60;
+        var width = (show_length / 3) * 100;
+		//width = Math.floor(width);
+		//width -= .1;
+        width = width.toString() + '%';
+
+		var numHours = 3;
+		var empty_slots = numHours * 30; // gets the number of minutes in the schedule
+		var colSpan = show_length * 30;
+	
+        var style = 'width: ' + width + '; ';
+        /*var colSpan = show_length * 6;
+		if(colSpan < 1) {
+			colSpan = 1;
+		}*/
+		//var style = 'width:10%;'; //TODO: set correctly, for now just test with all programmes at 10% width
+		//style = "width:16.66666%";
+		// insert the formed programme DIV into the div array
+        programme_tds.push(TD({'id':progID, 'colSpan':colSpan}, prog_title));
+    }
+	// second TD hold programme DIVs
+    formed_row.push(/*TD({'class':'progContainer','colSpan':'6','style':'width:100%'},
+		/*TABLE({'style':'width:100%'},TR({'style':'width:100%'},*/ programme_tds); // colSpan *not* colspan -- I HATE IE!!!
+    return TR({'style':'height:100%; width:100%;'},formed_row);
 };
 
 // Converts an object to an 2D array (sort of)
