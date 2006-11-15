@@ -97,16 +97,15 @@ var gotSchedule = function (req) {
 			form_table_head(head_strings)),
         TBODY({'style':'width:100%'},
 			form_table_body(rows)));
-            /*[TR(null,empty_cols)].concat(
-				[TR({'class':'listHead'}, map(partial(TD,{'colSpan':'3'}), head_strings))].concat(
-				map(programme_row_display, obj2arr(rows))))));*/
 	swapDOM('schedule',new_table);
 };
 
+// Forms the listing table head. It includes a row with empty TD used for spacing and 
+// a row with the time
 function form_table_head(head) {
-	var numHours = 3;
-	var empty_slots = numHours * 30; // gets the number of 2 minutes in the schedule
-	var colSpan = empty_slots / 6;
+	var numHours = head.length * 2;
+	var empty_slots = numHours * 60; // gets the number of minutes in the schedule
+	var colSpan = empty_slots / head.length;
 	 
 	var empty_data = [];
 	for (var i = 0; i < empty_slots; i++) {
@@ -181,8 +180,8 @@ programme_row_display = function(row) {
         width = width.toString() + '%';
 
 		var numHours = 3;
-		var empty_slots = numHours * 30; // gets the number of minutes in the schedule
-		var colSpan = show_length * 30;
+		var empty_slots = numHours * 60; // gets the number of minutes in the schedule
+		var colSpan = show_length * 60;
 	
         var style = 'width: ' + width + '; ';
         /*var colSpan = show_length * 6;
@@ -194,7 +193,7 @@ programme_row_display = function(row) {
 		// insert the formed programme DIV into the div array
         programme_tds.push(TD({'id':progID, 'colSpan':colSpan}, prog_title));
     }
-	// second TD hold programme DIVs
+	// second TD hold programme DIV66s
     formed_row.push(/*TD({'class':'progContainer','colSpan':'6','style':'width:100%'},
 		/*TABLE({'style':'width:100%'},TR({'style':'width:100%'},*/ programme_tds); // colSpan *not* colspan -- I HATE IE!!!
     return TR({'style':'height:100%; width:100%;'},formed_row);
