@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/ruby1.8
 require 'cgi'
 cgi = CGI.new
 
