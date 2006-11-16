@@ -17,16 +17,45 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 window.onload = init;
+var schedule = Object();
+
+schedule.numHours = 3;
+schedule.slotsPerHour = 60;
 
 // Testing globals, at present they are the static begin and end times for the schedule
-schedStart = isoTimestamp(munge_date('20061023000000 -0800'));
-schedStop = isoTimestamp(munge_date('20061023030000 -0800'));
+schedule.start = isoTimestamp(munge_date('20061023000000 -0800'));
+schedule.stop = isoTimestamp(munge_date('20061023030000 -0800'));
 
 // Once the page loads, connect up the events
 function init() { 
-    connect('btnLoad','onclick',getXML);
+    connect('btnLoad','onclick',getSchedule);
     connect('btnTest','onclick',test);
+	//connect('boxTest','onmouseover',boxTest);
 }
+
+var boxTest = function(e) {
+	var mousePos = e.mouse().page;
+	var btnClose = INPUT({'id':'btnClose','type':'button','value':'x'},null);
+	var btnRecord = INPUT({'id':'btnRecord','type':'submit','value':'record'}, null);
+	
+	connect(btnClose,'onclick',btnClose_click);
+	connect(btnRecord,'onclick',btnRecord_click);
+	
+	var box = DIV({'id':'mnuRecord'},
+		[btnClose, e.src().firstChild.nodeValue, btnRecord]);
+		
+	setElementPosition(box,mousePos);
+	swapDOM('mnuRecord',box);
+	
+};
+
+var btnClose_click = function(e) {
+	makeInvisible($('mnuRecord'));
+};
+
+var btnRecord_click = function(e) {
+	log('record');
+};
 
 // TODO: REMOVE, testing for javascript table creation
 var test = function(e) { 
@@ -39,7 +68,7 @@ var test = function(e) {
 // Currently a btnLoad click event -- will eventually 
 // be an `onload` event along with a form for changing
 // the begin and end times.
-var getXML = function(e) {  
+var getSchedule = function(e) {  
     var d = doSimpleXMLHttpRequest('schedTest.xml');
     d.addCallbacks(gotSchedule,fetchFailed);
 };
@@ -57,7 +86,7 @@ var gotSchedule = function (req) {
 	// grab all the programmes
     var all_xml_programmes = root_node.getElementsByTagName('programme');
 
-    // Filters xml_programmes for the correct time
+    // Filters xml_programmes for the correct time -- unneeded in final version
     var form_programmes = function(pr) {
         var start = isoTimestamp(munge_date(pr.getAttribute('start')));
         var stop = isoTimestamp((pr.getAttribute('stop')));
@@ -93,7 +122,7 @@ var gotSchedule = function (req) {
 	
 	// create the DOM table from <head_strings> and <rows> using the programm_row_display function
     var new_table = TABLE({'class':'schedule'},
-		THEAD(null, 
+		THEAD({'style':'width:100%'}, 
 			form_table_head(head_strings)),
         TBODY({'style':'width:100%'},
 			form_table_body(rows)));
@@ -103,9 +132,8 @@ var gotSchedule = function (req) {
 // Forms the listing table head. It includes a row with empty TD used for spacing and 
 // a row with the time
 function form_table_head(head) {
-	var numHours = head.length * 2;
-	var empty_slots = numHours * 60; // gets the number of minutes in the schedule
-	var colSpan = empty_slots / head.length;
+	var empty_slots = schedule.numHours * schedule.slotsPerHour; // gets the number of minutes in the schedule
+	var colSpan = empty_slots / (schedule.numHours * 2);	// number of slots that a 1/2 hour needs to span
 	 
 	var empty_data = [];
 	for (var i = 0; i < empty_slots; i++) {
@@ -113,13 +141,14 @@ function form_table_head(head) {
 	}
 	
 	var empty_row = [TR(null,
-		map(partial(TD,{'class':'empty','style':'width:.01%;'}),empty_data))];
+		map(partial(TD,{'class':'empty'}),empty_data))];
 	
 	var head_row = [TR(null,
 		[TD(null,'Ch.')].concat(map(partial(TD,{'colSpan':colSpan}),head)))];
 	
 	return empty_row.concat(head_row);
 }
+
 function form_table_body(rows) {
 	return map(programme_row_display,obj2arr(rows));
 }
@@ -129,6 +158,7 @@ function form_table_body(rows) {
 // xml elements for each channel and associated programmes
 // INPUT: <row> array of xml elements -- first element is channel, rest are associated programmes
 // RETURNS: DOM TR with channel and associated programmes
+// KNOWN BUG: This will not work correctly if there is nothing being aired for a given time slot
 programme_row_display = function(row) {
     var channelID = row[0].getAttribute('id');
     var channel_name = row[0].getElementsByTagName('display-name')[0].firstChild.nodeValue;
@@ -136,35 +166,35 @@ programme_row_display = function(row) {
 	// first TD has the channel name and it's ID property is the associated channelID
     var formed_row = [TD({'id':'channelID'}, channel_name)];
     
-	var programme_tds = []; 	//initialize the array of programme DIVs
+	var programme_tds = []; 	//initialize the array of programme TDs
     for(var i = 1; i < row.length; i++) { // for every programme in <row>
         var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
         var prog_start = munge_date(row[i].getAttribute('start'));
 		var prog_stop = munge_date(row[i].getAttribute('stop'));
-        var progID =  "[" + channelID + "]" + prog_start + " " + prog_stop; 
+        var progID =  "[" + channelID + "]" + prog_start + "==" + prog_stop; 
 
         var isoStart = isoTimestamp(munge_date(row[i].getAttribute('start')));
         var isoStop = isoTimestamp(munge_date(row[i].getAttribute('stop')));
 		
 		var show_length;
 		// If the show starts before the current time schedule
-		if (isoStart < schedStart) {
+		if (isoStart < schedule.start) {
 			// If the end is after the current time schedule 
-			if( isoStop > schedStop) {
-				show_length = 3; // set time full
+			if( isoStop > schedule.stop) {
+				show_length = schedule.numHours; // set time full
 			}
 			// if the end is before the schedule end
 			else {
-				show_length = isoStop.getHours() - schedStart.getHours();
-				show_length +=  (isoStop.getMinutes() - schedStart.getMinutes()) / 60;
+				show_length = isoStop.getHours() - schedule.start.getHours();
+				show_length +=  (isoStop.getMinutes() - schedule.start.getMinutes()) / 60;
 			}
 		}
 		// if the show starts after the begining of the schedule
 		else {
 			// If the show end is after the schedule end
-			if (isoStop > schedStop) {
-				show_length = schedStop.getHours() - isoStart.getHours();
-				show_length +=  (schedStop.getMinutes() - isoStart.getMinutes()) / 60;
+			if (isoStop > schedule.stop) {
+				show_length = schedule.stop.getHours() - isoStart.getHours();
+				show_length +=  (schedule.stop.getMinutes() - isoStart.getMinutes()) / 60;
 			}
 			// If the show end is before the schedule end
 			else {
@@ -172,30 +202,17 @@ programme_row_display = function(row) {
 				show_length +=  (isoStop.getMinutes() - isoStart.getMinutes()) / 60;
 			}
 		}
-        //show_length = isoStop.getHours() - isoStart.getHours();
-        //show_length +=  (isoStop.getMinutes() + isoStart.getMinutes()) / 60;
-        var width = (show_length / 3) * 100;
-		//width = Math.floor(width);
-		//width -= .1;
-        width = width.toString() + '%';
 
-		var numHours = 3;
-		var empty_slots = numHours * 60; // gets the number of minutes in the schedule
-		var colSpan = show_length * 60;
-	
-        var style = 'width: ' + width + '; ';
-        /*var colSpan = show_length * 6;
-		if(colSpan < 1) {
-			colSpan = 1;
-		}*/
-		//var style = 'width:10%;'; //TODO: set correctly, for now just test with all programmes at 10% width
-		//style = "width:16.66666%";
-		// insert the formed programme DIV into the div array
-        programme_tds.push(TD({'id':progID, 'colSpan':colSpan}, prog_title));
+		var colSpan = show_length * schedule.slotsPerHour;  
+		var prog_td = TD({'id':progID, 'colSpan':colSpan}, prog_title); // colSpan *not* colspan -- I HATE IE!!!
+		connect(prog_td,'onclick',boxTest);
+		
+		// insert the formed programme TDs into the TD array
+        programme_tds.push(prog_td); 
+        
     }
-	// second TD hold programme DIV66s
-    formed_row.push(/*TD({'class':'progContainer','colSpan':'6','style':'width:100%'},
-		/*TABLE({'style':'width:100%'},TR({'style':'width:100%'},*/ programme_tds); // colSpan *not* colspan -- I HATE IE!!!
+	
+    formed_row.push(programme_tds); 
     return TR({'style':'height:100%; width:100%;'},formed_row);
 };
 
@@ -227,3 +244,11 @@ var fetchFailed = function (err) {
     log("Data is not available");
     log(err);
 };
+
+function makeInvisible(el) {
+	addElementClass(el,'invisible');
+}
+
+function makeVisible(el) {
+	removeElementClass(el,'invisible');
+}
