@@ -27,6 +27,7 @@ LENGTH_OF_TIME = 6
 LENGTH_OF_DATE_TIME = 14
 START = "start_date_time"
 STOP = "end_date_time"
+XML_FILE_NAME = 'info.xml'
 
 #Functions-------------------------------------------------------------------------------
 #make sure file available in current directory
@@ -93,7 +94,7 @@ end
   error_if_not_equal(end_date[6..7].to_i <= 31, true, "Ending day must be less than 31")
   
   #Get output the information into output
-  xml = XML::Document.file("info.xml")
+  xml = XML::Document.file(XML_FILE_NAME)
 
   start = start_date_time.to_i
   stop = end_date_time.to_i
