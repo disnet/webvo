@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 window.onload = init;
+var xmlChannels;
 var schedule = Object();
 
 schedule.numHours = 3;
@@ -29,18 +30,24 @@ schedule.stop = isoTimestamp(munge_date('20061023030000 -0800'));
 // Once the page loads, connect up the events
 function init() { 
 	makeInvisible($('mnuRecord'));
+    var d = doSimpleXMLHttpRequest('ruby/form_channels.rb');
+    d.addCallbacks(gotChannels,fetchFailed);
+
     connect('btnLoad','onclick',getSchedule);
     connect('btnTest','onclick',test);
 	//connect('boxTest','onmouseover',boxTest);
 }
-
+var gotChannels = function(req) {
+   xmlChannels = req.responseXML; 
+   alert(xmlChannels);
+};
 var boxTest = function(e) {
 	var mousePos = e.mouse().page;
 	var btnClose = INPUT({'id':'btnClose','type':'button','value':'x'},null);
 	var btnRecord = INPUT({'id':'btnRecord','type':'submit','value':'record'}, null);
 	var elProgramme = e.src();
 	var elExtended = elProgramme.lastChild.firstChild.nodeValue;
-	var elSubtitled = elProgramme.getElement('sub-title');
+	//var elSubtitled = elProgramme.getElement('sub-title');
 	//log($('sub-title'));
 	
 	connect(btnClose,'onclick',btnClose_click);
