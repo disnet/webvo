@@ -17,9 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 window.onload = init;
-var xmlChannels;
 var schedule = Object();
 
+schedule.xmlChannels = null;
+schedule.xmlProgrammes = null;
 schedule.numHours = 3;
 schedule.slotsPerHour = 60;
 
@@ -30,16 +31,32 @@ schedule.stop = isoTimestamp(munge_date('20061023030000 -0800'));
 // Once the page loads, connect up the events
 function init() { 
 	makeInvisible($('mnuRecord'));
-    var d = doSimpleXMLHttpRequest('ruby/form_channels.rb');
-    d.addCallbacks(gotChannels,fetchFailed);
+ //   alert(schedule.start);
+    var startTime = new Date();
+    startTime.setMinutes(0);
+    startTime.setSeconds(0);
+    alert(startTime);
+    var stopTime = startTime;
+    stopTime.setHours(startTime.getHours() + 2);
+
+    alert((startTime));
+    alert((stopTime));
+    var ch = doSimpleXMLHttpRequest('ruby/form_channels.rb');
+    ch.addCallbacks(gotChannels,fetchFailed);
+
+    var pr = doSimpleXMLHttpRequest('ruby/form_listing.rb');
+    pr.addCallbacks(gotProgrammes,fetchFailed);
 
     connect('btnLoad','onclick',getSchedule);
     connect('btnTest','onclick',test);
 	//connect('boxTest','onmouseover',boxTest);
 }
 var gotChannels = function(req) {
-   xmlChannels = req.responseXML; 
-   alert(xmlChannels);
+   schedule.xmlChannels = req.responseXML; 
+};
+
+var gotProgrammes = function(req) {
+   schedule.xmlProgrammes = req.responseXML;
 };
 var boxTest = function(e) {
 	var mousePos = e.mouse().page;
@@ -283,4 +300,15 @@ function makeInvisible(el) {
 
 function makeVisible(el) {
 	removeElementClass(el,'invisible');
+}
+function toZapTimestamp(datetime) {
+    isoTime = toISOTimestamp(datetime);
+    zapTime = isoTime.slice(0,4);
+    zapTime += isoTime.slice(5,7);
+    zapTime += isoTime.slice(8,10);
+
+    zapTime += isoTime.slice(11,13);
+    zapTime += isoTime.slice(14,16);
+    zapTime += isoTime.slice(17,19);
+    return zapTime;
 }
