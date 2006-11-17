@@ -58,14 +58,14 @@ end
 
 
 
-parsing_xml_ran = system("ruby parsing_xml.rb")
+#parsing_xml_ran = system("ruby parsing_xml.rb")
 
-if parsing_xml_ran == true:
-  logfile << "Parsing_xml ran successfully at " + DateTime.now + "\n"
+#if parsing_xml_ran == true:
+#  logfile << "Parsing_xml ran successfully at " + DateTime.now + "\n"
   
-else
-  logfile << "Parsing_xml ran unsuccessfully.\n"
-end
+#else
+#  logfile << "Parsing_xml ran unsuccessfully.\n"
+#end
 
 
 logfile << "\n\n"

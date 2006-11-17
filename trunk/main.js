@@ -28,6 +28,7 @@ schedule.stop = isoTimestamp(munge_date('20061023030000 -0800'));
 
 // Once the page loads, connect up the events
 function init() { 
+	makeInvisible($('mnuRecord'));
     connect('btnLoad','onclick',getSchedule);
     connect('btnTest','onclick',test);
 	//connect('boxTest','onmouseover',boxTest);
@@ -37,15 +38,23 @@ var boxTest = function(e) {
 	var mousePos = e.mouse().page;
 	var btnClose = INPUT({'id':'btnClose','type':'button','value':'x'},null);
 	var btnRecord = INPUT({'id':'btnRecord','type':'submit','value':'record'}, null);
+	var elProgramme = e.src();
+	var elExtended = elProgramme.lastChild.firstChild.nodeValue;
+	var elSubtitled = elProgramme.getElement('sub-title');
+	//log($('sub-title'));
 	
 	connect(btnClose,'onclick',btnClose_click);
 	connect(btnRecord,'onclick',btnRecord_click);
+	var boxTitle = "Show name: " + elProgramme.firstChild.nodeValue;
+	var boxMessage = "Details: " + elExtended;
+	var boxSubtitle = "Sub-title: ";
 	
 	var box = DIV({'id':'mnuRecord'},
-		[btnClose, e.src().firstChild.nodeValue, btnRecord]);
+		[btnClose, [boxTitle,BR(null,null),BR(null,null),boxMessage], btnRecord]);
 		
 	setElementPosition(box,mousePos);
 	swapDOM('mnuRecord',box);
+	makeVisible($('mnuRecord'));
 	
 };
 
@@ -172,7 +181,21 @@ programme_row_display = function(row) {
         var prog_start = munge_date(row[i].getAttribute('start'));
 		var prog_stop = munge_date(row[i].getAttribute('stop'));
         var progID =  "[" + channelID + "]" + prog_start + "==" + prog_stop; 
-
+		
+		var desc_els = row[i].getElementsByTagName('desc');//[0].firstChild.nodeValue
+		if (desc_els.length != 0) {
+			var prog_desc = desc_els[0].firstChild.nodeValue;
+		}
+		else {
+			var prog_desc = "";
+		}
+		var subtitle_els = row[i].getElementsByTagName('sub-title');
+		if(subtitle_els.length != 0) {
+			var prog_subtitle = subtitle_els[0].firstChild.nodeValue;
+		}
+		else{
+			var prog_subtitle = "";
+		}
         var isoStart = isoTimestamp(munge_date(row[i].getAttribute('start')));
         var isoStop = isoTimestamp(munge_date(row[i].getAttribute('stop')));
 		
@@ -204,7 +227,9 @@ programme_row_display = function(row) {
 		}
 
 		var colSpan = show_length * schedule.slotsPerHour;  
-		var prog_td = TD({'id':progID, 'colSpan':colSpan}, prog_title); // colSpan *not* colspan -- I HATE IE!!!
+		var prog_td = TD({'id':progID, 'colSpan':colSpan}, // colSpan *not* colspan -- I HATE IE!!!
+			[prog_title, SPAN({'id':'sub-title','class':'invisible'},prog_subtitle),
+			SPAN({'id':'desc','class':'invisible'},prog_desc)]); 
 		connect(prog_td,'onclick',boxTest);
 		
 		// insert the formed programme TDs into the TD array
