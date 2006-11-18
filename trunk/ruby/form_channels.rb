@@ -1,3 +1,4 @@
+#!/usr/local/bin/ruby
 ################################################################################
 #WebVo: Web-based PVR
 #Copyright (C) 2006 Molly Jo Bault, Tim Disney, Daryl Siu
@@ -17,7 +18,7 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ################################################################################
 
-#!/usr/local/bin/ruby
+
 require 'cgi'
 require 'xml/libxml'
 require 'date'

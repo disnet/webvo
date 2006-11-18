@@ -27,29 +27,41 @@ schedule.slotsPerHour = 60;
 // Testing globals, at present they are the static begin and end times for the schedule
 schedule.start = isoTimestamp(munge_date('20061023000000 -0800'));
 schedule.stop = isoTimestamp(munge_date('20061023030000 -0800'));
+var dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 // Once the page loads, connect up the events
 function init() { 
-	makeInvisible($('mnuRecord'));
- //   alert(schedule.start);
-    var startTime = new Date();
-    startTime.setMinutes(0);
-    startTime.setSeconds(0);
-    alert(startTime);
-    var stopTime = startTime;
-    stopTime.setHours(startTime.getHours() + 2);
-
-    alert((startTime));
-    alert((stopTime));
+	
+ // log(schedule.start);
+ 	initFormTime();
+    
+	/*
     var ch = doSimpleXMLHttpRequest('ruby/form_channels.rb');
     ch.addCallbacks(gotChannels,fetchFailed);
 
     var pr = doSimpleXMLHttpRequest('ruby/form_listing.rb');
     pr.addCallbacks(gotProgrammes,fetchFailed);
+	*/
+    connect('btnLoad','onclick',btnLoad_click);
+}
 
-    connect('btnLoad','onclick',getSchedule);
-    connect('btnTest','onclick',test);
-	//connect('boxTest','onmouseover',boxTest);
+function initFormTime() {
+	var day = new Date();
+	var time = new Date();
+	
+	// ASSUME: date will never repeate. Using date as identifier
+	for(var i = 0; i < 12; i++) {
+		var opDate = OPTION({'value':day.getDate()}, 
+			[dayOfWeek[day.getDay()] + " " + day.getDate()]);
+		$('selDate').appendChild(opDate);
+		day.setDate(day.getDate() + 1);
+	}
+	for(var i = 0; i < 24; i++) {
+		var opTime = OPTION({'value':time.getHours()},
+			time.getHours() + ":00");
+		$('selTime').appendChild(opTime);
+		time.setHours(time.getHours() + 1);
+	}
 }
 var gotChannels = function(req) {
    schedule.xmlChannels = req.responseXML; 
@@ -90,20 +102,25 @@ var btnRecord_click = function(e) {
 	log('record');
 };
 
-// TODO: REMOVE, testing for javascript table creation
-var test = function(e) { 
-    var test =  TABLE({'border':'1px solid black'},
-            [TR(null,map(partial(TD,null),[1,2,3,4])),TR(null,TD({'colSpan':'3'},'fun'))]);
-    swapDOM('schedule',test);
-};
-
 // Sets up the async request for the schedule
 // Currently a btnLoad click event -- will eventually 
 // be an `onload` event along with a form for changing
 // the begin and end times.
-var getSchedule = function(e) {  
-    var d = doSimpleXMLHttpRequest('schedTest.xml');
+var btnLoad_click = function(e) {  
+// 2006 10 23 03 00 00
+	var objDate = new Date();
+	var year = objDate.getFullYear();
+	var month = objDate.getMonth() + 1;
+	var date = $('selDate').value;
+	var hour = $('selTime').value;
+
+	var sendStart = toZapTimestamp(year,month,date,hour);
+	var sendStop = toZapTimestamp(year,month,date, parseInt(hour) + 3);
+	log("Start: " + sendStart);
+	log("Stop: " + sendStop);
+    var d = doSimpleXMLHttpRequest('load_listing.rb',{'start_date_time':sendStart,'end_date_time':sendStop});
     d.addCallbacks(gotSchedule,fetchFailed);
+	
 };
 
 
@@ -311,4 +328,7 @@ function toZapTimestamp(datetime) {
     zapTime += isoTime.slice(14,16);
     zapTime += isoTime.slice(17,19);
     return zapTime;
+}
+function toZapTimestamp(year,month,date,hour) {
+	return year.toString() + month.toString() + date.toString() + hour.toString() + "0000"
 }
