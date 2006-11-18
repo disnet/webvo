@@ -35,10 +35,11 @@ function init() {
  // log(schedule.start);
  	initFormTime();
     
-	/*
+	
     var ch = doSimpleXMLHttpRequest('ruby/form_channels.rb');
     ch.addCallbacks(gotChannels,fetchFailed);
-
+	
+	/*
     var pr = doSimpleXMLHttpRequest('ruby/form_listing.rb');
     pr.addCallbacks(gotProgrammes,fetchFailed);
 	*/
@@ -63,13 +64,7 @@ function initFormTime() {
 		time.setHours(time.getHours() + 1);
 	}
 }
-var gotChannels = function(req) {
-   schedule.xmlChannels = req.responseXML; 
-};
 
-var gotProgrammes = function(req) {
-   schedule.xmlProgrammes = req.responseXML;
-};
 var boxTest = function(e) {
 	var mousePos = e.mouse().page;
 	var btnClose = INPUT({'id':'btnClose','type':'button','value':'x'},null);
@@ -119,48 +114,22 @@ var btnLoad_click = function(e) {
 	log("Start: " + sendStart);
 	log("Stop: " + sendStop);
     var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':sendStart,'end_date_time':sendStop});
-    d.addCallbacks(gotSchedule,fetchFailed);
+    d.addCallbacks(gotProgrammes,fetchFailed);
 	
 };
 
 
-// Gets back the schedule in xml. 
+
 // Parses the xml and form the Schedule table
-var gotSchedule = function (req) {
+var formListingTable = function () {
     var rows = Object();
-    var xmldoc = req.responseXML;
+    var xmldoc = schedule.xmlProgrammes;
 
     var root_node = xmldoc.getElementsByTagName('tv').item(0);
 	// grab all the channels
-    var xml_channels = root_node.getElementsByTagName('channel');
+    var xml_channels = schedule.xmlChannels;
 	// grab all the programmes
     var all_xml_programmes = root_node.getElementsByTagName('programme');
-
-    // Filters xml_programmes for the correct time -- unneeded in final version
-    var form_programmes = function(pr) {
-        var start = isoTimestamp(munge_date(pr.getAttribute('start')));
-        var stop = isoTimestamp((pr.getAttribute('stop')));
-		var testStart = isoTimestamp(munge_date('20061023000000 -0800'));
-		var testStop = isoTimestamp(munge_date('20061023030000 -0800'));
-        
-		if(start <= testStart) { // if the programme started before the schedule start
-			if (stop > testStart) {	// and ends after the schedule start
-				return true;
-			}
-			else {
-				return false;
-			} 
-		}
-        else if (start > testStart && start < testStop) {	// if programme starts before the schedule end 
-            return true;
-		}
-		else {
-			return false;
-		}
-    };	
-    
-    // 0.  Filter programmes to the correct time (Don't need in furture versions)
-    var xml_programmes = filter(form_programmes,all_xml_programmes); // grabs shows for correct time
 
     // 1.  Initialize <rows> Object(). Each channel is added as the first element of it's own property
     forEach(xml_channels, function(ch) { rows[ch.getAttribute('id')] = [ch]; });
@@ -332,3 +301,11 @@ function toZapTimestamp(datetime) {
 function toZapTimestamp(year,month,date,hour) {
 	return year.toString() + month.toString() + date.toString() + hour.toString() + "0000"
 }
+
+var gotChannels = function(req) {
+   schedule.xmlChannels = req.responseXML; 
+};
+
+var gotProgrammes = function(req) {
+   schedule.xmlProgrammes = req.responseXML;
+};
