@@ -1,5 +1,5 @@
 /*
-WebVo: Web-based PVR
+ WebVo: Web-based PVR
 Copyright (C) 2006 Molly Jo Bault, Tim Disney, Daryl Siu
 
 This program is free software; you can redistribute it and/or
