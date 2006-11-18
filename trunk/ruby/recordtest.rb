@@ -4,8 +4,8 @@
 require "mysql"
 
 SERVERNAME = "localhost"
-USERNAME = "root@localhost"
-USERPASS = ""
+USERNAME = "root"
+USERPASS = "csc4150"
 DBNAME = "WebVo"
 TABLENAME = "Recording"
 
@@ -40,9 +40,11 @@ if __FILE__ == $0
 
 #connect to the mysql server
 begin
-  dbh = Mysql.real_connect("#{SERVERNAME},#{USERNAME},#{USERPASS},#{DBNAME}")
+  dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
 #if get an error (can't connect)
-rescue
+rescue MysqlError => e
+       print "Error code: ", e.errno, "\n"
+       print "Error message: ", e.error, "\n"
   puts "Unable to connect to database\n"
   if dbh.nil? == false
     dbh.close() 
@@ -51,7 +53,7 @@ rescue
 #if there are no errors
 else
   #return the last PID (if there is one)
-  pidres = dbh.query("SELECT PID FROM #{TABLENAME} WHERE PID!=NULL")
+  pidres = dbh.query("SELECT PID FROM Recording WHERE PID!=0")
 
   #if there is no pid continue normally
   if pidres.nil?
@@ -67,9 +69,11 @@ else
   end
 
 #parse info from database of last entry
-  lastshowchannel = dbh.query("SELECT channel FROM #{TABLENAME} ORDERBY timestamp LIMIT 1")
-  lastshowstart = dbh.query("SELECT startTime FROM #{TABLENAME} ORDERBY timestamp LIMIT 1")
-  lastshowstop = dbh.query("SELECT stopTime FROM #{TABLENAME} ORDERBY timestamp LIMIT 1")
+  lastshowstart = dbh.query("SELECT Start FROM Recording ORDER BY Start LIMIT 1")
+  lastshowchannel = dbh.query("SELECT Number FROM Channel WHERE ChannelID = (SELECT ChannelID FROM Recording ORDER BY Start LIMIT 1)")
+  lastshowstop = dbh.query("SELECT Stop FROM Recording ORDER BY Start LIMIT 1")
+
+  puts "The show to be recorded is on channel #{lastshowchannel}, starts at #{lastshowstart} and ends at #{lastshowstop}."
 
 #close the database
   dbh.close()
