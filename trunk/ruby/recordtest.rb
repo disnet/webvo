@@ -1,3 +1,5 @@
+#!/usr/local/bin/ruby
+
 #Daryl Siu
 #Second attempt at writing out commands to Ruby
 
@@ -53,7 +55,9 @@ rescue MysqlError => e
 #if there are no errors
 else
   #return the last PID (if there is one)
-  pidres = dbh.query("SELECT PID FROM Recording WHERE PID!=0")
+  res = dbh.query("SELECT PID FROM Recording WHERE PID!=0")
+  row = res.fetch_row
+  pidres = row[0]
 
   #if there is no pid continue normally
   if pidres.nil?
@@ -63,20 +67,30 @@ else
   else
      CAT_PID = pidres #need PID number
      puts "PID found: #{CAT_PID}"
-     if CAT_PID.alive? == true
-       kill CAT_PID #need to change the pidvalue to zero
+     readme = IO.popen("ps #{CAT_PID}")
+     sleep(1)
+     temp = readme.gets
+     pid = readme.gets
+     if pid != "NULL"
+       commandSent = system("kill #{CAT_PID}")
      end
-  end
+  end   
+ end
 
 #parse info from database of last entry
-  lastshowstart = dbh.query("SELECT Start FROM Recording ORDER BY Start LIMIT 1")
-  lastshowchannel = dbh.query("SELECT Number FROM Channel WHERE ChannelID = (SELECT ChannelID FROM Recording ORDER BY Start LIMIT 1)")
-  lastshowstop = dbh.query("SELECT Stop FROM Recording ORDER BY Start LIMIT 1")
+#initialize queries
+  channelIDquery = "SELECT ChannelID FROM Recording ORDER BY Start LIMIT 1"
+  startIDquery = "SELECT Start FROM Recording ORDER BY Start LIMIT 1"
+  lastshowstart = dbh.query("#{startIDquery}")
+  lastshowchannel = dbh.query("SELECT number FROM Channel WHERE ChannelID = (#{channelIDquery})")
+  lastshowstop = dbh.query("SELECT STOP FROM Programme WHERE(ChannelID=(#{channelIDquery})AND Start =(#{startIDquery}))")
 
-  puts "The show to be recorded is on channel #{lastshowchannel}, starts at #{lastshowstart} and ends at #{lastshowstop}."
+#change vals to numbers
+  startrow = lastshowstart.fetch_row
+  channelrow = lastshowchannel.fetch_row
+  stoprow = lastshowstop.fetch_row
+  puts "The show to be recorded is on channel #{channelrow[0]}, starts at #{startrow[0]} and ends at #{stoprow[0]}."
 
 #close the database
   dbh.close()
-end
-
 end
