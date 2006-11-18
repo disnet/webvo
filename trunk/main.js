@@ -118,7 +118,7 @@ var btnLoad_click = function(e) {
 	var sendStop = toZapTimestamp(year,month,date, parseInt(hour) + 3);
 	log("Start: " + sendStart);
 	log("Stop: " + sendStop);
-    var d = doSimpleXMLHttpRequest('load_listing.rb',{'start_date_time':sendStart,'end_date_time':sendStop});
+    var d = doSimpleXMLHttpRequest('ruby/load_listing.rb',{'start_date_time':sendStart,'end_date_time':sendStop});
     d.addCallbacks(gotSchedule,fetchFailed);
 	
 };
