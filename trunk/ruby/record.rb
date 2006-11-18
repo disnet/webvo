@@ -30,13 +30,15 @@ end
 
 #change from xml form of the date to the dateTime form
 def format_to_Ruby (xmlform_data)
-   year = xmlform_data[0..3].to_i
-   month = xmlform_data[4..5].to_i
-   day = xmlform_data[6..7].to_i
-   hour = xmlform_data[8..9].to_i
-   minute = xmlform_data[10..11].to_i
-   second = xmlform_data[12..13].to_i
-   return DateTime.new(year,month,day,hour,minute,second)
+   year = xmlform_data[0..3]
+   month = xmlform_data[4..5]
+   day = xmlform_data[6..7]
+   hour = xmlform_data[8..9]
+   minute = xmlform_data[10..11]
+   second = xmlform_data[12..13]
+   puts year + " " + month  + " " + day + " " + hour + " " + minute + " " + second
+   result = DateTime.commercial(year,month,day,hour,minute,second,0,2361222)
+   return result
 end
 
 #begin recording script
@@ -72,8 +74,9 @@ else
      sleep (1)
      temp = readme.gets
      pid = readme.gets
-     if pid != 0
+     if pid != "NULL"
        commandSent = system("kill #{CAT_PID}")
+       dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{CAT_PID}")
      end
   end   
  end
@@ -91,7 +94,7 @@ else
   puts "The show to be recorded is on channel #{channelrow[0]}, starts at #{startrow[0]} and ends at #{stoprow[0]}."
 
 #initialize values of show
-  showStartDate = format_to_Ruby("#startrow[0]")
+  showStartDate = format_to_Ruby("#{startrow[0]}")
   showStopDate = format_to_Ruby("#{stoprow[0]}")
   currDate = DateTime.now
   show = RecordedShow.new(20061115100,lastshowchannel,lastshowstart,lastshowstop)
