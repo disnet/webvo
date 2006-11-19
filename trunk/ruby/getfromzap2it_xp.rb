@@ -93,7 +93,7 @@ logfile.close()
     chan_array = Array.new(0)
     db_channelIDs = dbh.query("SELECT channelID FROM Channel")
     if db_channelIDs != nil:
-      channelIDs.each do |ci|
+      db_channelIDs.each do |ci|
         chan_array << ci[0]
       end
     end
