@@ -144,6 +144,7 @@ end
     presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
     rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='chan_id}' AND start = '#{start}')")
     
+    puts presults.fetch_row.to_s
     error_if_not_equal(presults == nil, true, "programme already added to database")
     
     xmlNode = xmlNode.gsub(/["'"]/, "_*_")
