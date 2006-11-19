@@ -114,6 +114,7 @@ end
           keep_looping = false
         end
       end
+      puts title
       error_if_not_equal(need_title, false, "programme doesn't have a title")
       got_programme = false
     end
