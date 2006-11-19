@@ -66,10 +66,10 @@ end
   
   puts start_date = date_time[0..7]
   puts start_time = date_time[8..13]
-  puts "more life"
-  exit
+
 #error checking
   #Check if times are valid
+  puts "stuff"
   error_if_not_equal(start_date.to_i.to_s == start_date, true, "the date time needs to have only numbers in it")
   error_if_not_equal(start_time.to_i < 240000, true, "Time must be millitary time")
   error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than 60")
@@ -77,7 +77,7 @@ end
   #Check if dates are valid
   error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
   error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
-
+  exit
 #get programme from info.xml
   puts "about to parse"
   error_if_not_equal(file_available(XML_FILE_NAME), true, "Source xml file not in directory")
