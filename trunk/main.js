@@ -50,13 +50,14 @@ function initFormTime() {
 	var day = new Date();
 	var time = new Date();
 	
-	// ASSUME: date will never repeate. Using date as identifier
-	for(var i = 0; i < 12; i++) {
-		var opDate = OPTION({'value':day.getDate()}, 
+	
+	for(var i = 0; i < 20; i++) {
+		var opDate = OPTION({'value':day}, 
 			[dayOfWeek[day.getDay()] + " " + day.getDate()]);
 		$('selDate').appendChild(opDate);
 		day.setDate(day.getDate() + 1);
 	}
+	time.setHours(0);
 	for(var i = 0; i < 24; i++) {
 		var opTime = OPTION({'value':time.getHours()},
 			time.getHours() + ":00");
@@ -103,29 +104,21 @@ var btnRecord_click = function(e) {
 // the begin and end times.
 var btnLoad_click = function(e) {  
 // 2006 10 23 03 00 00
-	var objDate = new Date();
-	var year = objDate.getFullYear();
-	var month = objDate.getMonth() + 1;
-	var date = $('selDate').value;
-	var startHour = $('selTime').value;
-    var stopHour = parseInt(startHour) + 3; 
 
-    if(parseInt(stopHour) > 23) {
-        stopHour = parseInt(stopHour) - 24;
-    }
-
-    log(stopHour);
-	schedule.start = toZapTimestamp(year,month,date,startHour);
-	schedule.stop = toZapTimestamp(year,month,date, stopHour);
+	var date = new Date($('selDate').value);
+	date.setHours($('selTime').value);
+	date.setMinutes(0);
+	date.setSeconds(0);
 	
-    log(schedule.start);
-    log(schedule.stop);
+	
+	schedule.start = dateToZapTime(date);
+	date.setHours(date.getHours() + 3);
+	schedule.stop = dateToZapTime(date);
+	
     var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':schedule.start,'end_date_time':schedule.stop});
     d.addCallbacks(gotProgrammes,fetchFailed);
 	
 };
-
-
 
 // Parses the xml and form the Schedule table
 var formListingTable = function () {
@@ -294,23 +287,33 @@ function makeInvisible(el) {
 function makeVisible(el) {
 	removeElementClass(el,'invisible');
 }
-function toZapTimestamp(datetime) {
-    isoTime = toISOTimestamp(datetime);
-    zapTime = isoTime.slice(0,4);
-    zapTime += isoTime.slice(5,7);
-    zapTime += isoTime.slice(8,10);
+function dateToZapTime(date) {
+    isoTime = toISOTimestamp(date);
+	
+    zapTime = isoTime.slice(0,4);	//year
+    zapTime += isoTime.slice(5,7);	//month
+    zapTime += isoTime.slice(8,10);	//day
 
-    zapTime += isoTime.slice(11,13);
-    zapTime += isoTime.slice(14,16);
-    zapTime += isoTime.slice(17,19);
+	if(date.getHours() < 10) {	// need to pad an extra zero for the hour
+		zapTime += "0" + isoTime.slice(11,12);
+		zapTime += isoTime.slice(13,15);
+		zapTime += isoTime.slice(16,18);
+	}
+	else {
+		zapTime += isoTime.slice(11,13);	//hour
+		zapTime += isoTime.slice(14,16);	//miniute
+    	zapTime += isoTime.slice(17,19);	//second
+	}
+    
+    
     return zapTime;
 }
-function toZapTimestamp(year,month,date,hour) {
+/*function toZapTimestamp(year,month,date,hour) {
     if(hour < 10) {
         hour = "0" + hour.toString();
     }
 	return year.toString() + month.toString() + date.toString() + hour.toString() + "0000"
-}
+}*/
 
 var gotChannels = function(req) {
    schedule.xmlChannels = req.responseXML; 
