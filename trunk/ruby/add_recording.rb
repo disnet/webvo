@@ -124,10 +124,10 @@ end
   #connect to database
 #  begin
 #  dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
-  #if get an error (can't connect)
+#  if get an error (can't connect)
 #  rescue MysqlError => e
-#      error_if_not_equal(false,true, "Error code: " + e.errno + "\n")
-#      error_if_not_equal(false,true, "Error message: "+ e.error + "\n")
+      error_if_not_equal(false,true, "Error code: " + e.errno + "\n")
+      error_if_not_equal(false,true, "Error message: "+ e.error + "\n")
 #    puts "Unable to connect to database\n"
 #    if dbh.nil? == false
       #close the database
