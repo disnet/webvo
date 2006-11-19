@@ -56,6 +56,7 @@ end
   puts "life"
   error_if_not_equal(cgi.keys.length, 1, "Needs one argument")
   error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
+  puts "between life"
 #get argument
   prog_id =  cgi[PROG_ID][0]
 
