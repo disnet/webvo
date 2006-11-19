@@ -40,9 +40,6 @@ def get_header(xml)
   return output_string
 end
 #Main ------------------------------------------------------------------------
-                  # It is always needed to help the browser decide what to do with the document
-                  # It is a header and never seen in the output
-
 #parse xmldoc
 if file_available(XML_FILE_NAME) == false
   puts "<error> Error " + XML_FILE_NAME + "not in directory</error>"
@@ -54,8 +51,7 @@ xmldoc = XML::Document.file(XML_FILE_NAME)
 #manually return header and parent beginning
   puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
 
-#get channel and set it up to go to client
-  first_time = true
+#get channel and send it up to go to client
   xmldoc.find('channel').each do |e|	  
     puts e.to_s # print out the channel
   end
