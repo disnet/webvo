@@ -107,7 +107,12 @@ var btnLoad_click = function(e) {
 	var year = objDate.getFullYear();
 	var month = objDate.getMonth() + 1;
 	var date = $('selDate').value;
-	var hour = $('selTime').value;
+	var startHour = $('selTime').value;
+    var stopHour = startHour; 
+
+    if(parseInt(startHour) > 23) {
+        stopHour = (parseInt(startHour) - 24).toString();
+    }
 
 	schedule.start = toZapTimestamp(year,month,date,hour);
 	schedule.stop = toZapTimestamp(year,month,date, parseInt(hour) + 3);
