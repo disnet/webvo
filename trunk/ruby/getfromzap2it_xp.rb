@@ -115,11 +115,11 @@ logfile.close()
     #go through removed channels and see if in use by programme, if so leave it 
     #otherwise delete
     chan_array.each do |ci|
-      db_prog_using_chan = dbh.query("SELECT channelID FROM Programme WHERE channelID=(#{ci})")
+      db_prog_using_chan = dbh.query("SELECT channelID FROM Programme WHERE channelID=('#{ci}')")
       if db_prog_using_chan == nil:
         #if no programmes using that channel then delete it from channel
         puts "deleting channel with ID " + ci
-        #dbh.query("DELETE FROM Channel WHERE channelID=(#{ci})")
+        #dbh.query("DELETE FROM Channel WHERE channelID=('#{ci}')")
       else
         puts ci + " still in use!"
       end
