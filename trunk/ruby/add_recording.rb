@@ -64,8 +64,8 @@ end
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   
-  puts start_date = date_time[0][0..7]
-  puts start_time = date_time[0][8..13]
+  puts start_date = date_time[0..7]
+  puts start_time = date_time[8..13]
   puts "more life"
 #error checking
   #Check if times are valid
