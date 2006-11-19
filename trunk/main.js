@@ -111,7 +111,7 @@ var btnLoad_click = function(e) {
     var stopHour = parseInt(startHour) + 3; 
 
     if(parseInt(stopHour) > 23) {
-        stopHour = (parseInt(startHour) - 24).toString();
+        stopHour = parseInt(startHour) - 24;
     }
 
 	schedule.start = toZapTimestamp(year,month,date,startHour);
@@ -305,6 +305,9 @@ function toZapTimestamp(datetime) {
     return zapTime;
 }
 function toZapTimestamp(year,month,date,hour) {
+    if(hour < 10) {
+        hour = "0" + hour.toString();
+    }
 	return year.toString() + month.toString() + date.toString() + hour.toString() + "0000"
 }
 
