@@ -108,6 +108,7 @@ logfile.close()
         chan_id.delete(chan_id)
       else
       #if it doesn't exist add it to the database
+        STDOUT << "*"
         dbh.query("INSERT INTO Channel (channelID, number) VALUES ('#{chan_id}', '#{chan_number}')")
       end
     end
@@ -121,7 +122,7 @@ logfile.close()
         puts "deleting channel with ID " + ci
         #dbh.query("DELETE FROM Channel WHERE channelID=('#{ci}')")
       else
-        #puts ci + " still in use!"
+        puts ci + " still in use!"
       end
     end
     
