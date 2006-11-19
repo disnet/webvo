@@ -109,13 +109,7 @@ var btnLoad_click = function(e) {
 	date.setHours($('selTime').value);
 	date.setMinutes(0);
 	date.setSeconds(0);
-	
-	
-    // find what date/time we want
-	schedule.start = dateToZapTime(date);
-	date.setHours(date.getHours() + schedule.numHours);
-	schedule.stop = dateToZapTime(date);
-	
+
     // initialize the time header
     for (var i = 0; i < schedule.numHours * 2; i++) {
         if( i % 2 == 0) { // if even we're on the hour, else the half
@@ -125,7 +119,12 @@ var btnLoad_click = function(e) {
             schedule.timesHeader.push( (date.getHours() + i).toString() + ":30");
         }
     }
-
+	
+    // find what date/time we want
+	schedule.start = dateToZapTime(date);
+	date.setHours(date.getHours() + schedule.numHours);
+	schedule.stop = dateToZapTime(date);
+	
     // init the request
     var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':schedule.start,'end_date_time':schedule.stop});
     d.addCallbacks(gotProgrammes,fetchFailed);
