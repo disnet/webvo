@@ -59,6 +59,7 @@ end
 #get argument
   puts prog_id = "I12500.labs.zap2it.com2006111908000" #cgi[PROG_ID][0]
 
+  error_if_not_equal(prog_id.to_i.to_s == prog_id, true, "the date time needs to have only numbers in it")
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   
   puts date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
