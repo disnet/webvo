@@ -143,7 +143,7 @@ end
   else
     #add the programme to the database
     #check and make sure that the programme isn't already there
-    presults = dbh.query("SELECT * FROM Programme WHERE (channelID = #{chan_id} AND start = #{start})")
+    presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
     #rresults = dbh.query("SELECT * FROM Recording WHERE (channelID = #{chan_id} AND start = #{start})")
     
     error_if_not_equal(presults != nil, true, "programme already added to database")
