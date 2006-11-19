@@ -111,6 +111,7 @@ var btnLoad_click = function(e) {
 	date.setSeconds(0);
 
     // initialize the time header
+    schedule.timesHeader = [];
     for (var i = 0; i < schedule.numHours * 2; i++) {
         if( i % 2 == 0) { // if even we're on the hour, else the half
             schedule.timesHeader.push( (date.getHours() + i).toString() + ":00");
