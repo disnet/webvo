@@ -112,13 +112,9 @@ var btnLoad_click = function(e) {
 
     // initialize the time header
     schedule.timesHeader = [];
-    for (var i = 0; i < schedule.numHours * 2; i++) {
-        if( i % 2 == 0) { // if even we're on the hour, else the half
-            schedule.timesHeader.push( (date.getHours() + i).toString() + ":00");
-        }
-        else {
-            schedule.timesHeader.push( (date.getHours() + i).toString() + ":30");
-        }
+    for (var i = 0; i < schedule.numHours; i++) {
+        schedule.timesHeader.push( (date.getHours() + i).toString() + ":00");
+        schedule.timesHeader.push( (date.getHours() + i).toString() + ":30");
     }
 	
     // find what date/time we want
