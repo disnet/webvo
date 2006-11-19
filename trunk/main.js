@@ -127,7 +127,7 @@ var formListingTable = function () {
 
     var root_node = xmldoc.getElementsByTagName('tv').item(0);
 	// grab all the channels
-    var xml_channels = schedule.xmlChannels;
+    var xml_channels = schedule.xmlChannels.getElementsByTagName('channel');
 	// grab all the programmes
     var all_xml_programmes = root_node.getElementsByTagName('programme');
 
