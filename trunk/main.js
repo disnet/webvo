@@ -25,8 +25,8 @@ schedule.numHours = 3;
 schedule.slotsPerHour = 60;
 
 // Testing globals, at present they are the static begin and end times for the schedule
-schedule.start = isoTimestamp(munge_date('20061023000000 -0800'));
-schedule.stop = isoTimestamp(munge_date('20061023030000 -0800'));
+//schedule.start = isoTimestamp(munge_date('20061023000000 -0800'));
+//schedule.stop = isoTimestamp(munge_date('20061023030000 -0800'));
 var dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 // Once the page loads, connect up the events
@@ -109,11 +109,11 @@ var btnLoad_click = function(e) {
 	var date = $('selDate').value;
 	var hour = $('selTime').value;
 
-	var sendStart = toZapTimestamp(year,month,date,hour);
-	var sendStop = toZapTimestamp(year,month,date, parseInt(hour) + 3);
+	schedule.start = toZapTimestamp(year,month,date,hour);
+	schedule.stop = toZapTimestamp(year,month,date, parseInt(hour) + 3);
 	log("Start: " + sendStart);
 	log("Stop: " + sendStop);
-    var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':sendStart,'end_date_time':sendStop});
+    var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':schedule.start,'end_date_time':schedule.stop});
     d.addCallbacks(gotProgrammes,fetchFailed);
 	
 };
