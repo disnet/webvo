@@ -210,23 +210,23 @@ programme_row_display = function(row) {
 		
 		var show_length;
 		// If the show starts before the current time schedule
-		if (isoStart < schedule.start) {
+		if (isoStart < isoTimestamp(munge_date(schedule.start))) {
 			// If the end is after the current time schedule 
-			if( isoStop > schedule.stop) {
+			if( isoStop > isoTimestamp(munge_date(schedule.stop))) {
 				show_length = schedule.numHours; // set time full
 			}
 			// if the end is before the schedule end
 			else {
-				show_length = isoStop.getHours() - schedule.start.getHours();
-				show_length +=  (isoStop.getMinutes() - schedule.start.getMinutes()) / 60;
+				show_length = isoStop.getHours() - isoTimestamp(munge_date(schedule.start.getHours()));
+				show_length +=  (isoStop.getMinutes() - isoTimestamp(munge_date(schedule.start.getMinutes()))) / 60;
 			}
 		}
 		// if the show starts after the begining of the schedule
 		else {
 			// If the show end is after the schedule end
-			if (isoStop > schedule.stop) {
-				show_length = schedule.stop.getHours() - isoStart.getHours();
-				show_length +=  (schedule.stop.getMinutes() - isoStart.getMinutes()) / 60;
+			if (isoStop > isoTimestamp(munge_date(schedule.stop))) {
+				show_length = isoTimestamp(munge_date(schedule.stop.getHours())) - isoStart.getHours();
+				show_length +=  (isoTimestamp(munge_date(schedule.stop.getMinutes())) - isoStart.getMinutes()) / 60;
 			}
 			// If the show end is before the schedule end
 			else {
