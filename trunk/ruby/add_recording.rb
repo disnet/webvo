@@ -126,8 +126,6 @@ end
     end
   end
   
-  puts "got through things"
-  exit
   error_if_not_equal(got_programme, false, "requested programme not in source XML file")
   #connect to database
   begin
