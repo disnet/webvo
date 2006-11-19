@@ -114,6 +114,7 @@ var btnLoad_click = function(e) {
         stopHour = parseInt(startHour) - 24;
     }
 
+    log(stopHour);
 	schedule.start = toZapTimestamp(year,month,date,startHour);
 	schedule.stop = toZapTimestamp(year,month,date, stopHour);
 	
