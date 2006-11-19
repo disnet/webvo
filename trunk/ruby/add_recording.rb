@@ -119,7 +119,7 @@ end
       got_programme = false
     end
   end
-  
+  error_if_not_equal(got_programme, true, "request not in XML")
   #connect to database
 #  begin
 #  dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
