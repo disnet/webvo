@@ -91,7 +91,7 @@ logfile.close()
   #   if it is in use and if not it will delete it
   #set up an array of all of the channel IDs to see if a channel has been taken off the air
     chan_array = Array.new(0)
-    db_channelIDs = dbh.query("SELECT ChannelID FROM channel")
+    db_channelIDs = dbh.query("SELECT channelID FROM Channel")
     if db_channelIDs != nil:
       channelIDs.each do |ci|
         chan_array << ci[0]
@@ -107,18 +107,18 @@ logfile.close()
         chan_id.delete(chan_id)
       else
       #if it doesn't exist add it to the database
-        dbh.query("INSERT INTO channel (ChannelID, number) VALUES (#{chan_id}, #{chan_number})")
+        dbh.query("INSERT INTO Channel (channelID, number) VALUES (#{chan_id}, #{chan_number})")
       end
     end
     
     #go through removed channels and see if in use by programme, if so leave it 
     #otherwise delete
     chan_array.each do |ci|
-      db_prog_using_chan = dbh.query("SELECT ChannelID FROM programme WHERE ChannelID=(#{ci})")
+      db_prog_using_chan = dbh.query("SELECT channelID FROM Programme WHERE channelID=(#{ci})")
       if db_prog_using_chan == nil:
         #if no programmes using that channel then delete it from channel
         puts "deleting channel with ID " + ci
-        dbh.query("DELETE FROM channel WHERE ChannelID=(#{ci})")
+        dbh.query("DELETE FROM Channel WHERE channelID=(#{ci})")
       else
         puts ci + " still in use!"
       end
