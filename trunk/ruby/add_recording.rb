@@ -84,7 +84,7 @@ end
   
   xml.find("programme").each do |e|
     puts e["channel"] + e["start"]
-    if e["channel"] == chan_id && e["start"][0..LENGTH_OF_DATE_TIME-1] == date_time):
+    if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
       #get channel id, start time, stop time, title, and all xml information
       #channel id -> chan_id
       #start time -> start
@@ -104,19 +104,19 @@ end
       keep_looping = true
       
       #gets the title
-      while need_title == true && keep_looping == true
-        if c.name == "title":
-          title = (c.content).gsub(/[' ']/, '_')
-          need_title = false
-        end  
-        if c.next?:
-            c = c.next
-        else
-          keep_looping = false
-        end
-      end
-      error_if_not_equal(need_title, false, "programme doesn't have a title")
-      got_programme = false
+#      while need_title == true && keep_looping == true
+#        if c.name == "title":
+#          title = (c.content).gsub(/[' ']/, '_')
+#          need_title = false
+#        end  
+#        if c.next?:
+#            c = c.next
+#        else
+#          keep_looping = false
+#        end
+#      end
+#      error_if_not_equal(need_title, false, "programme doesn't have a title")
+#      got_programme = false
     end
   end
   puts "finished the loop"
