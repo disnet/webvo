@@ -158,4 +158,4 @@ end
     dbh.close()
   end
   #call record.rb
-  exec("ruby record.rb")
+  #exec("ruby record.rb")
