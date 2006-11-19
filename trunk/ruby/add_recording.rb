@@ -77,6 +77,7 @@ end
   error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
 
 #get programme from info.xml
+  puts "about to parse"
   error_if_not_equal(file_available(XML_FILE_NAME), true, "Source xml file not in directory")
   xml = XML::Document.file(XML_FILE_NAME)
 
@@ -86,7 +87,8 @@ end
   stop = '00000'
   xmlNode = '00000'
   title = '0000'
-
+  
+  puts "about to find stuff"
   xml.find("programme").each do |e|
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
       #get channel id, start time, stop time, title, and all xml information
@@ -123,6 +125,7 @@ end
       got_programme = false
     end
   end
+  puts "got through things"
   error_if_not_equal(got_programme, false, "requested programme not in source XML file")
   #connect to database
   begin
