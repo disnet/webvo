@@ -56,12 +56,12 @@ end
   puts "life"
   error_if_not_equal(cgi.keys.length, 1, "Needs one argument")
   error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
-  puts "between life"
+
 #get argument
   prog_id =  cgi[PROG_ID][0]
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
-  
+  puts "between life"  
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   
