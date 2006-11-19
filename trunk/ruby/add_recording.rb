@@ -85,11 +85,9 @@ end
   
   start = '00000'
   stop = '00000'
-  chan_id = '00000'
   xmlNode = '00000'
   title = '0000'
   
-  puts chan_id
   puts date_time
   
   xml.find("programme").each do |e|
