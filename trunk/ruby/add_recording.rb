@@ -57,9 +57,8 @@ end
 
   #error_if_not_equal(cgi.has_key?(PROG_ID), true, "Need Programme ID")
 #get argument
-  puts prog_id = "I12500.labs.zap2it.com2006111908000" #cgi[PROG_ID][0]
+  puts prog_id =  ARGV[0] #cgi[PROG_ID][0]
 
-  error_if_not_equal(prog_id.to_i.to_s == prog_id, true, "the date time needs to have only numbers in it")
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   
   puts date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
@@ -70,6 +69,7 @@ end
 
 #error checking
   #Check if times are valid
+  error_if_not_equal(start_date.to_i.to_s == start_date, true, "the date time needs to have only numbers in it")
   error_if_not_equal(start_time.to_i < 240000, true, "Time must be millitary time")
   error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than 60")
   
