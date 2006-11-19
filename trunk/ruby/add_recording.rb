@@ -60,16 +60,15 @@ end
   prog_id =  cgi[PROG_ID][0]
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
-  puts "before between life"
+
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   
-  puts start_date = date_time[0..7]
-  puts start_time = date_time[8..13]
+  start_date = date_time[0..7]
+  start_time = date_time[8..13]
 
 #error checking
   #Check if times are valid
-  puts "stuff"
   error_if_not_equal(start_date.to_i.to_s == start_date, true, "the date time needs to have only numbers in it")
   error_if_not_equal(start_time.to_i < 240000, true, "Time must be millitary time")
   error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than 60")
@@ -77,7 +76,7 @@ end
   #Check if dates are valid
   error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
   error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
-  exit
+
 #get programme from info.xml
   puts "about to parse"
   error_if_not_equal(file_available(XML_FILE_NAME), true, "Source xml file not in directory")
@@ -89,7 +88,8 @@ end
   stop = '00000'
   xmlNode = '00000'
   title = '0000'
-  
+  puts "ending"
+  exit
   puts "about to find stuff"
   xml.find("programme").each do |e|
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
