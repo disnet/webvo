@@ -47,25 +47,25 @@ before_run_time = Time.new
 after_run_time = Time.new
 xmltv_ran = false
 
-if xmltv_pres == true then 
-  before_run_time = Time.new
-  xmltv_ran = system( "tv_grab_na_dd --output info.xml")
-end
-after_run_time = Time.new
-if xmltv_ran == true then
-  logfile << "Download Started " << before_run_time << "\n"
-  logfile <<"Download Finished" << after_run_time<< "\n"
+#if xmltv_pres == true then 
+#  before_run_time = Time.new
+#  xmltv_ran = system( "tv_grab_na_dd --output info.xml")
+#end
+#after_run_time = Time.new
+#if xmltv_ran == true then
+#  logfile << "Download Started " << before_run_time << "\n"
+#  logfile <<"Download Finished" << after_run_time<< "\n"
 
-else
-  logfile << "xmltv.exe failed to run at " << after_run_time << "\n" 
+#else
+#  logfile << "xmltv.exe failed to run at " << after_run_time << "\n" 
   
-  if xmltv_pres == false then
-    logfile << "xmltv.exe not current directory\n"
-  end
+#  if xmltv_pres == false then
+#    logfile << "xmltv.exe not current directory\n"
+#  end
   
-end
+#end
 
-logfile << "\n\n"
+#logfile << "\n\n"
 logfile.close()
 
 #populating channels in database
@@ -99,7 +99,7 @@ logfile.close()
     end
     xmldoc.find('channel').each do |e|	  
       chan_id = e["id"].to_s
-      chan_number = e.child.content.to_i.to_s
+      puts chan_number = e.child.content.to_i.to_s
       #send to database
       #check if exists already
       if  chan_array.include?(chan_id) :
