@@ -88,8 +88,6 @@ end
   stop = '00000'
   xmlNode = '00000'
   title = '0000'
-  puts "ending"
-  exit
   puts "about to find stuff"
   xml.find("programme").each do |e|
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
@@ -127,7 +125,9 @@ end
       got_programme = false
     end
   end
+  
   puts "got through things"
+  exit
   error_if_not_equal(got_programme, false, "requested programme not in source XML file")
   #connect to database
   begin
