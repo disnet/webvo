@@ -53,6 +53,7 @@ end
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
 #checks for 1 argument
+  puts "life"
   error_if_not_equal(cgi.keys.length, 1, "Needs one argument")
   error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
 #get argument
@@ -65,7 +66,7 @@ end
   
   start_date = date_time[0][0..7]
   start_time = date_time[0][8..13]
-
+  puts "more life"
 #error checking
   #Check if times are valid
   error_if_not_equal(start_date.to_i.to_s == start_date, true, "the date time needs to have only numbers in it")
