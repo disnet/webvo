@@ -82,8 +82,8 @@ end
   xml = XML::Document.file(XML_FILE_NAME)
   got_programme = true
   
-#  xml.find("programme").each do |e|
-#    if e["channel"] == chan_id && e["start"][0..LENGTH_OF_DATE_TIME-1] == date_time)
+  xml.find("programme").each do |e|
+    if e["channel"] == chan_id && e["start"][0..LENGTH_OF_DATE_TIME-1] == date_time)
       #get channel id, start time, stop time, title, and all xml information
       #channel id -> chan_id
       #start time -> start
@@ -91,34 +91,34 @@ end
       #title -> title (note: all ' ' spaces converted to '_' underscores
       #xml information -> xmlNode
       
-#      error_if_not_equal(got_programme, true, "two or more programmes match that program ID")
+      error_if_not_equal(got_programme, true, "two or more programmes match that program ID")
       
-#      xmlNode = e.copy(true).to_s
-#      start = e["start"][0..LENGTH_OF_DATE_TIME-1]
-#      stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
+      puts xmlNode = e.copy(true).to_s
+      puts start = e["start"][0..LENGTH_OF_DATE_TIME-1]
+      puts stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
       
-#      error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
-#      c = e.child
-#      need_title = true
-#      keep_looping = true
+      error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
+      c = e.child
+      need_title = true
+      keep_looping = true
       
       #gets the title
-#      while need_title == true && keep_looping == true
-#        if c.name == "title":
-#          title = (c.content).gsub(/[' ']/, '_')
-#          need_title = false
-#        end  
-#        if c.next?:
-#            c = c.next
-#        else
-#          keep_looping = false
-#        end
-#      end
-#      error_if_not_equal(need_title, false, "programme doesn't have a title")
-#      got_programme = false
-#    end
-#  end
-  
+      while need_title == true && keep_looping == true
+        if c.name == "title":
+          title = (c.content).gsub(/[' ']/, '_')
+          need_title = false
+        end  
+        if c.next?:
+            c = c.next
+        else
+          keep_looping = false
+        end
+      end
+      error_if_not_equal(need_title, false, "programme doesn't have a title")
+      got_programme = false
+    end
+  end
+  puts "finished the loop"
   #connect to database
 #  begin
 #  dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
