@@ -159,4 +159,4 @@ end
   end
   puts "calling record"
   #call record.rb
-  system("ruby record.rb")
+  exec("ruby record.rb")
