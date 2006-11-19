@@ -67,6 +67,7 @@ end
   puts start_date = date_time[0..7]
   puts start_time = date_time[8..13]
   puts "more life"
+  exit
 #error checking
   #Check if times are valid
   error_if_not_equal(start_date.to_i.to_s == start_date, true, "the date time needs to have only numbers in it")
