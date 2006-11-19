@@ -107,14 +107,14 @@ logfile.close()
         chan_id.delete(chan_id)
       else
       #if it doesn't exist add it to the database
-        dbh.query("INSERT INTO Channel (channelID, number) VALUES (#{chan_id}, #{chan_number})")
+        chan_id_mod = chan_id.gsub(/['.']/, '_')
+        dbh.query("INSERT INTO Channel (channelID, number) VALUES (#{chan_id_mod}, #{chan_number})")
       end
     end
     
     #go through removed channels and see if in use by programme, if so leave it 
     #otherwise delete
     chan_array.each do |ci|
-      ci = ci.gsub(/['.']/, '_')
       db_prog_using_chan = dbh.query("SELECT channelID FROM Programme WHERE channelID=(#{ci})")
       if db_prog_using_chan == nil:
         #if no programmes using that channel then delete it from channel
