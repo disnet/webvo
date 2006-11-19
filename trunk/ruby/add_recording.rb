@@ -158,6 +158,6 @@ end
     dbh.close()
   end
   
-  header("connection" = "close")
+  cgi.shutdown()
   #call record.rb
   exec("ruby record.rb")
