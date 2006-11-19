@@ -57,9 +57,9 @@ end
 
   #error_if_not_equal(cgi.has_key?(PROG_ID), true, "Need Programme ID")
 #get argument
-#  prog_id = "I12500.labs.zap2it.com20061119080000" #cgi[PROG_ID][0]
+  puts prog_id = "I12500.labs.zap2it.com20061119080000" #cgi[PROG_ID][0]
 
-#  error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
+  error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   
 #  puts date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME)..(prog_id.length-1)]
 #  puts chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME)]
