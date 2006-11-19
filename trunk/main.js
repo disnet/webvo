@@ -309,7 +309,7 @@ var gotProgrammes = function(req) {
    schedule.xmlProgrammes = req.responseXML;
    var error = schedule.xmlProgrammes.getElementsByTagName('error');
    if(error != 0) {
-       log(error);
+       log(error[0].firstChild.nodeValue);
        return;
     }
    formListingTable();
