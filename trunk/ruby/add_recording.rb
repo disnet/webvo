@@ -83,6 +83,12 @@ end
   xml = XML::Document.file(XML_FILE_NAME)
   got_programme = true
   
+  start = nil
+  stop = nil
+  chan_id = nil
+  xmlNode = nil
+  title = nil
+  
   xml.find("programme").each do |e|
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
       #get channel id, start time, stop time, title, and all xml information
