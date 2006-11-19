@@ -83,11 +83,14 @@ end
   xml = XML::Document.file(XML_FILE_NAME)
   got_programme = true
   
-  start = nil
-  stop = nil
-  chan_id = nil
-  xmlNode = nil
-  title = nil
+  start = '00000'
+  stop = '00000'
+  chan_id = '00000'
+  xmlNode = '00000'
+  title = '0000'
+  
+  puts chan_id
+  puts date_time
   
   xml.find("programme").each do |e|
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
@@ -112,7 +115,7 @@ end
       #gets the title
       while need_title == true && keep_looping == true
         if c.name == "title":
-          title = (c.content).gsub(/[' ']/, '_')
+          puts title = (c.content).gsub(/[' ']/, '_')
           need_title = false
         end  
         if c.next?:
