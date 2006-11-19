@@ -217,16 +217,16 @@ programme_row_display = function(row) {
 			}
 			// if the end is before the schedule end
 			else {
-				show_length = isoStop.getHours() - isoTimestamp(munge_date(schedule.start.getHours()));
-				show_length +=  (isoStop.getMinutes() - isoTimestamp(munge_date(schedule.start.getMinutes()))) / 60;
+				show_length = isoStop.getHours() - isoTimestamp(munge_date(schedule.start)).getHours();
+				show_length +=  (isoStop.getMinutes() - isoTimestamp(munge_date(schedule.start)).getMinutes()) / 60;
 			}
 		}
 		// if the show starts after the begining of the schedule
 		else {
 			// If the show end is after the schedule end
 			if (isoStop > isoTimestamp(munge_date(schedule.stop))) {
-				show_length = isoTimestamp(munge_date(schedule.stop.getHours())) - isoStart.getHours();
-				show_length +=  (isoTimestamp(munge_date(schedule.stop.getMinutes())) - isoStart.getMinutes()) / 60;
+				show_length = isoTimestamp(munge_date(schedule.stop)).getHours() - isoStart.getHours();
+				show_length +=  (isoTimestamp(munge_date(schedule.stop)).getMinutes() - isoStart.getMinutes()) / 60;
 			}
 			// If the show end is before the schedule end
 			else {
