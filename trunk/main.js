@@ -112,6 +112,8 @@ var btnLoad_click = function(e) {
 	schedule.start = toZapTimestamp(year,month,date,hour);
 	schedule.stop = toZapTimestamp(year,month,date, parseInt(hour) + 3);
 	
+    log(schedule.start);
+    log(schedule.stop);
     var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':schedule.start,'end_date_time':schedule.stop});
     d.addCallbacks(gotProgrammes,fetchFailed);
 	
