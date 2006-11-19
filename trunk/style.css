@@ -43,7 +43,9 @@ table.schedule {
 table.schedule td{
     border:1px solid black;
 }
-
+.empty {
+    border: 0px;
+}
 #mnuRecord {
 	position: absolute;
 	background-color: gray;
