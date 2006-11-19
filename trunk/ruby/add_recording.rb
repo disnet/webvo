@@ -81,8 +81,8 @@ end
   xml = XML::Document.file(XML_FILE_NAME)
   got_programme = true
   
-  xml.find("programme").each do |e|
-    if e["channel"] == chan_id && e["start"][0..LENGTH_OF_DATE_TIME-1] == date_time)
+#  xml.find("programme").each do |e|
+#    if e["channel"] == chan_id && e["start"][0..LENGTH_OF_DATE_TIME-1] == date_time)
       #get channel id, start time, stop time, title, and all xml information
       #channel id -> chan_id
       #start time -> start
@@ -90,50 +90,50 @@ end
       #title -> title (note: all ' ' spaces converted to '_' underscores
       #xml information -> xmlNode
       
-      error_if_not_equal(got_programme, true, "two or more programmes match that program ID")
+#      error_if_not_equal(got_programme, true, "two or more programmes match that program ID")
       
-      xmlNode = e.copy(true).to_s
-      start = e["start"][0..LENGTH_OF_DATE_TIME-1]
-      stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
+#      xmlNode = e.copy(true).to_s
+#      start = e["start"][0..LENGTH_OF_DATE_TIME-1]
+#      stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
       
-      error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
-      c = e.child
-      need_title = true
-      keep_looping = true
+#      error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
+#      c = e.child
+#      need_title = true
+#      keep_looping = true
       
       #gets the title
-      while need_title == true && keep_looping == true
-        if c.name == "title":
-          title = (c.content).gsub(/[' ']/, '_')
-          need_title = false
-        end  
-        if c.next?:
-            c = c.next
-        else
-          keep_looping = false
-        end
-      end
-      error_if_not_equal(need_title, false, "programme doesn't have a title")
-      got_programme = false
-    end
-  end
+#      while need_title == true && keep_looping == true
+#        if c.name == "title":
+#          title = (c.content).gsub(/[' ']/, '_')
+#          need_title = false
+#        end  
+#        if c.next?:
+#            c = c.next
+#        else
+#          keep_looping = false
+#        end
+#      end
+#      error_if_not_equal(need_title, false, "programme doesn't have a title")
+#      got_programme = false
+#    end
+#  end
   
   #connect to database
-  begin
-  dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
+#  begin
+#  dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
   #if get an error (can't connect)
-  rescue MysqlError => e
-      error_if_not_equal(false,true, "Error code: " + e.errno + "\n")
-      error_if_not_equal(false,true, "Error message: "+ e.error + "\n")
-    puts "Unable to connect to database\n"
-    if dbh.nil? == false
+#  rescue MysqlError => e
+#      error_if_not_equal(false,true, "Error code: " + e.errno + "\n")
+#      error_if_not_equal(false,true, "Error message: "+ e.error + "\n")
+#    puts "Unable to connect to database\n"
+#    if dbh.nil? == false
       #close the database
-      dbh.close() 
-    end
-  else
+#      dbh.close() 
+#    end
+#  else
     #add the programme to the database
     #check and make sure that the programme isn't already there
-    results = dbh.query("SELECT * FROM Recording WHERE (channelID = #{chan_id} AND start = #{start})")
+#    results = dbh.query("SELECT * FROM Recording WHERE (channelID = #{chan_id} AND start = #{start})")
     
     #send information to programme's table
       #send channel ID
@@ -149,9 +149,9 @@ end
       #database = start
       
     #close the database
-    dbh.close()
-  end
+#    dbh.close()
+#  end
 
     
   #call record.rb
-  system("ruby record.rb")
+#  system("ruby record.rb")
