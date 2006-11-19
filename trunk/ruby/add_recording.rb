@@ -88,8 +88,6 @@ end
   xmlNode = '00000'
   title = '0000'
 
-  got_programme = true
-
   xml.find("programme").each do |e|
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
       #get channel id, start time, stop time, title, and all xml information
