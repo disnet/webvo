@@ -99,8 +99,9 @@ logfile.close()
     end
     xmldoc.find('channel').each do |e|	  
       chan_id = e["id"].to_s
-      chan_desc = e.child
-      puts chan_number = chan_desc.find_first('display-name').content.to_i
+      #chan_desc = e.child
+      puts e.find_first('display-name').to_s
+      puts chan_number = e.find_first('display-name').content.to_i
       #send to database
       #check if exists already
       if  chan_array.include?(chan_id) :
