@@ -308,7 +308,7 @@ var gotChannels = function(req) {
 var gotProgrammes = function(req) {
    schedule.xmlProgrammes = req.responseXML;
    var error = schedule.xmlProgrammes.getElementsByTagName('error');
-   if(error != 0) {
+   if(error.length != 0) {
        log(error[0].firstChild.nodeValue);
        return;
     }
