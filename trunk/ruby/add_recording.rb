@@ -122,39 +122,34 @@ end
   end
   error_if_not_equal(got_programme, false, "requested programme not in source XML file")
   #connect to database
-#  begin
-#  dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
-#  if get an error (can't connect)
-#  rescue MysqlError => e
+  begin
+  dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
+#  if gets an error (can't connect)
+  rescue MysqlError => e
       error_if_not_equal(false,true, "Error code: " + e.errno + "\n")
       error_if_not_equal(false,true, "Error message: "+ e.error + "\n")
-#    puts "Unable to connect to database\n"
-#    if dbh.nil? == false
+    puts "Unable to connect to database\n"
+    if dbh.nil? == false
       #close the database
-#      dbh.close() 
-#    end
-#  else
+      dbh.close() 
+    end
+  else
     #add the programme to the database
     #check and make sure that the programme isn't already there
-#    results = dbh.query("SELECT * FROM Recording WHERE (channelID = #{chan_id} AND start = #{start})")
+    presults = dbh.query("SELECT * FROM Programme WHERE (channelID = #{chan_id} AND start = #{start})")
+    #rresults = dbh.query("SELECT * FROM Recording WHERE (channelID = #{chan_id} AND start = #{start})")
+    
+    error_if_not_equal(presults != nil, true, "programme already added to database")
     
     #send information to programme's table
-      #send channel ID
-      #database = chan_id
-      #database = start
-      #database = stop
-      #database = title
-      #database = xmlNode
-      
-    #check and make sure that programme isn't in recording table already
-      #send information to recording table
-      #database = channel ID
-      #database = start
-      
+    dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
+    
+    #send information to recording table
+    dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
+    
     #close the database
-#    dbh.close()
-#  end
-
+    dbh.close()
+  end
     
   #call record.rb
 #  system("ruby record.rb")
