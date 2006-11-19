@@ -99,7 +99,8 @@ logfile.close()
     end
     xmldoc.find('channel').each do |e|	  
       chan_id = e["id"].to_s
-      puts chan_number = e.child.content
+      chan_desc = e.child
+      puts chan_number = chan_desc
       #send to database
       #check if exists already
       if  chan_array.include?(chan_id) :
@@ -120,7 +121,7 @@ logfile.close()
         puts "deleting channel with ID " + ci
         #dbh.query("DELETE FROM Channel WHERE channelID=('#{ci}')")
       else
-        puts ci + " still in use!"
+        #puts ci + " still in use!"
       end
     end
     
