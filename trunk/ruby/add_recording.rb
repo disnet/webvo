@@ -73,14 +73,14 @@ end
   error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than 60")
   
   #Check if dates are valid
-  error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
-  error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
+#  error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
+#  error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
 
 #get programme from info.xml
-  error_if_not_equal(file_available(XML_FILE_NAME), true, XML_FILE_NAME +"not in directory")
-  puts "parsing!"
-  xml = XML::Document.file(XML_FILE_NAME)
-  got_programme = true
+#  error_if_not_equal(file_available(XML_FILE_NAME), true, XML_FILE_NAME +"not in directory")
+#  puts "parsing!"
+#  xml = XML::Document.file(XML_FILE_NAME)
+#  got_programme = true
   
 #  xml.find("programme").each do |e|
 #    if e["channel"] == chan_id && e["start"][0..LENGTH_OF_DATE_TIME-1] == date_time)
