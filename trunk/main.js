@@ -111,7 +111,7 @@ var btnLoad_click = function(e) {
     var stopHour = parseInt(startHour) + 3; 
 
     if(parseInt(stopHour) > 23) {
-        stopHour = parseInt(startHour) - 24;
+        stopHour = parseInt(stopHour) - 24;
     }
 
     log(stopHour);
