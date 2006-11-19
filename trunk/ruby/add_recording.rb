@@ -148,7 +148,7 @@ end
     
     error_if_not_equal(presults != nil, true, "programme already added to database")
     
-    xmlNode = xmlNode(/["'"]/, "_*_")
+    xmlNode = xmlNode.gsub(/["'"]/, "_*_")
     #send information to programme's table
     dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
     
