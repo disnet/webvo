@@ -105,7 +105,7 @@ logfile.close()
       #check if exists already
       if  chan_array.include?(chan_id) :
         #delete from array
-        chan_id.delete(chan_id)
+        chan_array.delete(chan_id)
       else
       #if it doesn't exist add it to the database
         STDOUT << "*"
