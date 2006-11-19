@@ -307,6 +307,10 @@ var gotChannels = function(req) {
 
 var gotProgrammes = function(req) {
    schedule.xmlProgrammes = req.responseXML;
-   log(schedule.xmlProgrammes.firstChild.nodeValue);
+   var error = schedule.xmlProgrammes.getElementsByTagName('error');
+   if(error != 0) {
+       log(error);
+       return;
+    }
    formListingTable();
 };
