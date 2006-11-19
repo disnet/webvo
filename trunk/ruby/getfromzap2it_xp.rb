@@ -107,8 +107,7 @@ logfile.close()
         chan_id.delete(chan_id)
       else
       #if it doesn't exist add it to the database
-        chan_id_mod = chan_id.gsub(/['.']/, '_')
-        dbh.query("INSERT INTO Channel (channelID, number) VALUES ('#{chan_id_mod}', '#{chan_number}')")
+        dbh.query("INSERT INTO Channel (channelID, number) VALUES ('#{chan_id}', '#{chan_number}')")
       end
     end
     
