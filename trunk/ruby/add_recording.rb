@@ -78,9 +78,9 @@ end
 
 #get programme from info.xml
   error_if_not_equal(file_available(XML_FILE_NAME), true, "Source xml file not in directory")
-#  puts "parsing!"
-#  xml = XML::Document.file(XML_FILE_NAME)
-#  got_programme = true
+  puts "parsing!"
+  xml = XML::Document.file(XML_FILE_NAME)
+  got_programme = true
   
 #  xml.find("programme").each do |e|
 #    if e["channel"] == chan_id && e["start"][0..LENGTH_OF_DATE_TIME-1] == date_time)
