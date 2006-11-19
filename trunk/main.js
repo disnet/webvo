@@ -21,6 +21,7 @@ var schedule = Object();
 
 schedule.xmlChannels = null;
 schedule.xmlProgrammes = null;
+schedule.timesHeader = [];  // used to fill the time slots on the top of the schedule table
 schedule.numHours = 3;
 schedule.slotsPerHour = 60;
 
@@ -103,21 +104,31 @@ var btnRecord_click = function(e) {
 // be an `onload` event along with a form for changing
 // the begin and end times.
 var btnLoad_click = function(e) {  
-// 2006 10 23 03 00 00
-
+    // Fill a Date object with the date stored in the select box
 	var date = new Date($('selDate').value);
 	date.setHours($('selTime').value);
 	date.setMinutes(0);
 	date.setSeconds(0);
 	
 	
+    // find what date/time we want
 	schedule.start = dateToZapTime(date);
-	date.setHours(date.getHours() + 3);
+	date.setHours(date.getHours() + schedule.numHours);
 	schedule.stop = dateToZapTime(date);
 	
+    // initialize the time header
+    for (var i = 0; i < schedule.numHours * 2; i++) {
+        if( i % 2 == 0) { // if even we're on the hour, else the half
+            schedule.timesHeader.push( (date.getHours() + i).toString() + ":00");
+        }
+        else {
+            schedule.timesHeader.push( (date.getHours() + i).toString() + ":30");
+        }
+    }
+
+    // init the request
     var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':schedule.start,'end_date_time':schedule.stop});
     d.addCallbacks(gotProgrammes,fetchFailed);
-	
 };
 
 // Parses the xml and form the Schedule table
@@ -137,12 +148,11 @@ var formListingTable = function () {
     // 2.  Fill  <rows> Object() by pushing programmes into their associated channel slot
     forEach(xml_programmes, function(el) { rows[el.getAttribute('channel')].push(el); });
 
-    var head_strings = ['12:00','12:30','1:00','1:30','2:00','2:30'];
 	
 	// create the DOM table from <head_strings> and <rows> using the programm_row_display function
     var new_table = TABLE({'class':'schedule'},
 		THEAD({'style':'width:100%'}, 
-			form_table_head(head_strings)),
+			form_table_head(schedule.timesHeader)),
         TBODY({'style':'width:100%'},
 			form_table_body(rows)));
 	swapDOM('schedule',new_table);
