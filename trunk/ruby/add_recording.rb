@@ -48,7 +48,7 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/plain\n\n" 
+  puts "Content-Type: text/xml\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
