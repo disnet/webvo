@@ -47,25 +47,25 @@ before_run_time = Time.new
 after_run_time = Time.new
 xmltv_ran = false
 
-#if xmltv_pres == true then 
-#  before_run_time = Time.new
-#  xmltv_ran = system( "tv_grab_na_dd --output info.xml")
-#end
-#after_run_time = Time.new
-#if xmltv_ran == true then
-#  logfile << "Download Started " << before_run_time << "\n"
-#  logfile <<"Download Finished" << after_run_time<< "\n"
+if xmltv_pres == true then 
+  before_run_time = Time.new
+  xmltv_ran = system( "tv_grab_na_dd --output info.xml")
+end
+after_run_time = Time.new
+if xmltv_ran == true then
+  logfile << "Download Started " << before_run_time << "\n"
+  logfile <<"Download Finished" << after_run_time<< "\n"
 
-#else
-#  logfile << "xmltv.exe failed to run at " << after_run_time << "\n" 
+else
+  logfile << "xmltv.exe failed to run at " << after_run_time << "\n" 
   
-#  if xmltv_pres == false then
-#    logfile << "xmltv.exe not current directory\n"
-#  end
+  if xmltv_pres == false then
+    logfile << "xmltv.exe not current directory\n"
+  end
   
-#end
+end
 
-#logfile << "\n\n"
+logfile << "\n\n"
 logfile.close()
 
 #populating channels in database
@@ -120,7 +120,7 @@ logfile.close()
       if db_prog_using_chan == nil:
         #if no programmes using that channel then delete it from channel
         puts "deleting channel with ID " + ci
-        #dbh.query("DELETE FROM Channel WHERE channelID=('#{ci}')")
+        dbh.query("DELETE FROM Channel WHERE channelID=('#{ci}')")
       else
         puts ci + " still in use!"
       end
