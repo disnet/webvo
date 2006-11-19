@@ -157,5 +157,7 @@ end
     #close the database
     dbh.close()
   end
+  
+  header("connection" = "close")
   #call record.rb
   exec("ruby record.rb")
