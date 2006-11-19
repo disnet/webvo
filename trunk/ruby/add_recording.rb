@@ -64,22 +64,23 @@ end
   puts date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
   puts chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   
-  puts start_date = date_time[0][0..7]
-  puts start_time = date_time[0][8..13]
+  puts start_date = date_time[0..7]#[0][0..7]
+  puts start_time = date_time[8..13]#[0][8..13]
 
 #error checking
   #Check if times are valid
-#  error_if_not_equal(start_time.to_i < 240000, true, "Time must be millitary time")
-#  error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than 60")
+  error_if_not_equal(start_time.to_i < 240000, true, "Time must be millitary time")
+  error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than 60")
   
   #Check if dates are valid
-#  error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
-#  error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
+  error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
+  error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
 
 #get programme from info.xml
-#  error_if_not_equal(file_available(XML_FILE_NAME), true, XML_FILE_NAME +"not in directory")
-#  xml = XML::Document.file(XML_FILE_NAME)
-#  got_programme = true
+  error_if_not_equal(file_available(XML_FILE_NAME), true, XML_FILE_NAME +"not in directory")
+  puts "parsing!"
+  xml = XML::Document.file(XML_FILE_NAME)
+  got_programme = true
   
 #  xml.find("programme").each do |e|
 #    if e["channel"] == chan_id && e["start"][0..LENGTH_OF_DATE_TIME-1] == date_time)
