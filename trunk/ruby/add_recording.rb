@@ -57,15 +57,15 @@ end
 
   #error_if_not_equal(cgi.has_key?(PROG_ID), true, "Need Programme ID")
 #get argument
-  puts prog_id =  ARGV[0] #cgi[PROG_ID][0]
+  prog_id =  ARGV[0] #cgi[PROG_ID][0]
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   
-  puts date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
-  puts chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
+  date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
+  chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   
-  puts start_date = date_time[0..7]#[0][0..7]
-  puts start_time = date_time[8..13]#[0][8..13]
+  start_date = date_time[0..7]#[0][0..7]
+  start_time = date_time[8..13]#[0][8..13]
 
 #error checking
   #Check if times are valid
@@ -79,7 +79,6 @@ end
 
 #get programme from info.xml
   error_if_not_equal(file_available(XML_FILE_NAME), true, "Source xml file not in directory")
-  puts "parsing!"
   xml = XML::Document.file(XML_FILE_NAME)
   got_programme = true
   
@@ -101,9 +100,9 @@ end
       
       error_if_not_equal(got_programme, true, "two or more programmes match that program ID")
       
-      puts xmlNode = e.copy(true).to_s
-      puts start = e["start"][0..LENGTH_OF_DATE_TIME-1]
-      puts stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
+      xmlNode = e.copy(true).to_s
+      start = e["start"][0..LENGTH_OF_DATE_TIME-1]
+      stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
       
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
       c = e.child
@@ -113,7 +112,7 @@ end
       #gets the title
       while need_title == true && keep_looping == true
         if c.name == "title":
-          puts title = (c.content).gsub(/[' ']/, '_')
+          title = (c.content).gsub(/[' ']/, '_')
           need_title = false
         end  
         if c.next?:
@@ -122,7 +121,6 @@ end
           keep_looping = false
         end
       end
-      puts title
       error_if_not_equal(need_title, false, "programme doesn't have a title")
       got_programme = false
     end
@@ -155,12 +153,10 @@ end
     if rresults == nil:
       #send information to recording table
       dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
-    else
-      puts "In recording"
     end
     #close the database
     dbh.close()
   end
-    
+  puts "calling record"
   #call record.rb
-#  system("ruby record.rb")
+  system("ruby record.rb")
