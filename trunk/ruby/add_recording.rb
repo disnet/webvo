@@ -61,10 +61,10 @@ end
   prog_id =  cgi[PROG_ID][0]
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
-  puts "between life"  
+  puts "before between life"
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
-  
+  puts "between life"   
   start_date = date_time[0][0..7]
   start_time = date_time[0][8..13]
   puts "more life"
