@@ -20,7 +20,7 @@
 #add_recording.rb
 #takes a programmeid from the front end and adds it to the database
 
-#require 'cgi'
+require 'cgi'
 require 'xml/libxml'
 require 'date'
 require "mysql"
@@ -50,7 +50,7 @@ end
 #main--------------------------------------------------------------------------
   puts "Content-Type: text/xml\n\n" 
   
-  #cgi = CGI.new     # The CGI object is how we get the arguments 
+  cgi = CGI.new     # The CGI object is how we get the arguments 
   
 #checks for 1 argument
   #error_if_not_equal(cgi.keys.length, 1, "Need one arguments")
