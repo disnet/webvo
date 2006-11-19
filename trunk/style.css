@@ -35,7 +35,10 @@ td.listHead{
     background-color:#c2c2c2;
     color:black;
 }
-
+table.empty td{
+    border: 0px;
+}
+#
 table.schedule {
     width: 100%;
     border: 1px solid black;
@@ -43,10 +46,7 @@ table.schedule {
 table.schedule td{
     border:1px solid black;
 }
-.empty {
-    border: 0px;
-}
-#mnuRecord {
+mnuRecord {
 	position: absolute;
 	background-color: gray;
 	width: 500px;
