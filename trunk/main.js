@@ -129,7 +129,7 @@ var formListingTable = function () {
 	// grab all the channels
     var xml_channels = schedule.xmlChannels.getElementsByTagName('channel');
 	// grab all the programmes
-    var all_xml_programmes = root_node.getElementsByTagName('programme');
+    var xml_programmes = root_node.getElementsByTagName('programme');
 
     // 1.  Initialize <rows> Object(). Each channel is added as the first element of it's own property
     forEach(xml_channels, function(ch) { rows[ch.getAttribute('id')] = [ch]; });
