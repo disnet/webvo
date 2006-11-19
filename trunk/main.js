@@ -149,7 +149,7 @@ var formListingTable = function () {
 
 	
 	// create the DOM table from <head_strings> and <rows> using the programm_row_display function
-    var new_table = TABLE({'class':'schedule'},
+    var new_table = TABLE({'id':'schedule','class':'schedule'},
 		THEAD({'style':'width:100%'}, 
 			form_table_head(schedule.timesHeader)),
         TBODY({'style':'width:100%'},
