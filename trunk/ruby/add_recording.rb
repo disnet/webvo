@@ -48,16 +48,16 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/xml\n\n" 
+  puts "Content-Type: text/plain\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
 #checks for 1 argument
-  #error_if_not_equal(cgi.keys.length, 1, "Need one arguments")
+  error_if_not_equal(cgi.keys.length, 1, "Needs one argument")
 
-  #error_if_not_equal(cgi.has_key?(PROG_ID), true, "Need Programme ID")
+  error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
 #get argument
-  prog_id =  ARGV[0] #cgi[PROG_ID][0]
+  prog_id =  cgi[PROG_ID][0]
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   
@@ -80,7 +80,16 @@ end
 #get programme from info.xml
   error_if_not_equal(file_available(XML_FILE_NAME), true, "Source xml file not in directory")
   xml = XML::Document.file(XML_FILE_NAME)
+<<<<<<< .mine
   got_programme = true
+  
+  start = '00000'
+  stop = '00000'
+  xmlNode = '00000'
+  title = '0000'
+=======
+  got_programme = true
+>>>>>>> .r131
   
   start = '00000'
   stop = '00000'
@@ -137,6 +146,29 @@ end
     if dbh.nil? == false
       #close the database
       dbh.close() 
+<<<<<<< .mine
+    end
+  else
+    #add the programme to the database
+    #check and make sure that the programme isn't already there
+    presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
+    rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='chan_id}' AND start = '#{start}')")
+    
+    error_if_not_equal(presults.fetch_row == nil, true, "programme already added to database")
+    
+    xmlNode = xmlNode.gsub(/["'"]/, "_*_")
+    #send information to programme's table
+    dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
+    
+    if rresults.fetch_row == nil:
+      #send information to recording table
+      dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
+    end
+    #close the database
+    dbh.close()
+  end
+  #call record.rb
+=======
     end
   else
     #add the programme to the database
@@ -159,4 +191,5 @@ end
   end
   puts "calling record"
   #call record.rb
+>>>>>>> .r131
   exec("ruby record.rb")
