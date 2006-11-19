@@ -57,7 +57,7 @@ end
 
   #error_if_not_equal(cgi.has_key?(PROG_ID), true, "Need Programme ID")
 #get argument
-  puts prog_id = "I12500.labs.zap2it.com20061119080000" #cgi[PROG_ID][0]
+  puts prog_id = "I12500.lbs.zap2it.com20061119080000" #cgi[PROG_ID][0]
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   
@@ -119,7 +119,6 @@ end
       got_programme = false
     end
   end
-  puts "finished the loop"
   
   #connect to database
 #  begin
