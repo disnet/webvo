@@ -61,8 +61,8 @@ end
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   
-  puts date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME)..(prog_id.length-1)]
-  puts chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME)]
+  puts date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
+  puts chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME).to_i]
   
   puts start_date = date_time[0][0..7]
   puts start_time = date_time[0][8..13]
