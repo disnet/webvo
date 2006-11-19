@@ -308,4 +308,5 @@ var gotChannels = function(req) {
 
 var gotProgrammes = function(req) {
    schedule.xmlProgrammes = req.responseXML;
+   formListingTable();
 };
