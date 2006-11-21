@@ -16,34 +16,29 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 window.onload = init;
+
+// Global var which will hold the xml formatted channels and programmes
+// along with misc values relating to the schedule
 var schedule = Object();
 
-schedule.xmlChannels = null;
-schedule.xmlProgrammes = null;
-schedule.timesHeader = [];  // used to fill the time slots on the top of the schedule table
-schedule.numHours = 3;
+schedule.xmlChannels = null;        // holds the channels -- packed when the user first navigates to the site
+schedule.xmlProgrammes = null;      // holds the progrmames -- packed when the user selectes a time  
+schedule.timesHeader = [];          // used to fill the time slots on the top of the schedule table
+schedule.numHours = 3;              // number of hours the schedule will display
 schedule.slotsPerHour = 60;
 
-// Testing globals, at present they are the static begin and end times for the schedule
-//schedule.start = isoTimestamp(munge_date('20061023000000 -0800'));
-//schedule.stop = isoTimestamp(munge_date('20061023030000 -0800'));
 var dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 // Once the page loads, connect up the events
 function init() { 
-	
- // log(schedule.start);
- 	initFormTime();
+ 	initFormTime(); // init the time selection boxes
     
-	
+    // get the channels
     var ch = doSimpleXMLHttpRequest('ruby/form_channels.rb');
-    ch.addCallbacks(gotChannels,fetchFailed);
+    ch.addCallbacks(gotChannels_init,fetchFailed);
 	
-	/*
-    var pr = doSimpleXMLHttpRequest('ruby/form_listing.rb');
-    pr.addCallbacks(gotProgrammes,fetchFailed);
-	*/
     connect('btnLoad','onclick',btnLoad_click);
 }
 
@@ -51,14 +46,16 @@ function initFormTime() {
 	var day = new Date();
 	var time = new Date();
 	
-	
+    // Fill next n days
 	for(var i = 0; i < 20; i++) {
 		var opDate = OPTION({'value':day}, 
 			[dayOfWeek[day.getDay()] + " " + day.getDate()]);
 		$('selDate').appendChild(opDate);
 		day.setDate(day.getDate() + 1);
 	}
-	time.setHours(0);
+
+    // Fill 24 hours
+	time.setHours(0); // start at 00:00
 	for(var i = 0; i < 24; i++) {
 		var opTime = OPTION({'value':time.getHours()},
 			time.getHours() + ":00");
@@ -67,7 +64,8 @@ function initFormTime() {
 	}
 }
 
-var boxTest = function(e) {
+// Event handler for clicking a programme in the table
+var prog_click = function(e) {
 	var mousePos = e.mouse().page;
 	var btnClose = INPUT({'id':'btnClose','type':'button','value':'x'},null);
 	var btnRecord = INPUT({'id':'btnRecord','type':'submit','value':'record'}, null);
@@ -78,6 +76,7 @@ var boxTest = function(e) {
 	
 	connect(btnClose,'onclick',btnClose_click);
 	connect(btnRecord,'onclick',btnRecord_click);
+
 	var boxTitle = "Show name: " + elProgramme.firstChild.nodeValue;
 	var boxMessage = "Details: " + elExtended;
 	var boxSubtitle = "Sub-title: ";
@@ -196,7 +195,7 @@ programme_row_display = function(row) {
         var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
         var prog_start = munge_date(row[i].getAttribute('start'));
 		var prog_stop = munge_date(row[i].getAttribute('stop'));
-        var progID =  "[" + channelID + "]" + prog_start + "==" + prog_stop; 
+        var progID =  channelID + prog_start; 
 		
 		var desc_els = row[i].getElementsByTagName('desc');//[0].firstChild.nodeValue
 		if (desc_els.length != 0) {
@@ -244,9 +243,12 @@ programme_row_display = function(row) {
 
 		var colSpan = show_length * schedule.slotsPerHour;  
 		var prog_td = TD({'id':progID, 'colSpan':colSpan}, // colSpan *not* colspan -- I HATE IE!!!
-			[prog_title, SPAN({'id':'sub-title','class':'invisible'},prog_subtitle),
+			[prog_title, 
+            SPAN({'id':'start','class':'invisible'},isoStart),
+            SPAN({'id':'stop','class':'invisible'},isoStop),
+            SPAN({'id':'sub-title','class':'invisible'},prog_subtitle),
 			SPAN({'id':'desc','class':'invisible'},prog_desc)]); 
-		connect(prog_td,'onclick',boxTest);
+		connect(prog_td,'onclick',prog_click);
 		
 		// insert the formed programme TDs into the TD array
         programme_tds.push(prog_td); 
@@ -321,15 +323,19 @@ function dateToZapTime(date) {
 	return year.toString() + month.toString() + date.toString() + hour.toString() + "0000"
 }*/
 
-var gotChannels = function(req) {
+// Got the channels from server
+var gotChannels_init = function(req) {
    schedule.xmlChannels = req.responseXML; 
 };
 
+// Get the programmes from server
 var gotProgrammes = function(req) {
    schedule.xmlProgrammes = req.responseXML;
+   // Check for and deal with error return
    var error = schedule.xmlProgrammes.getElementsByTagName('error');
    if(error.length != 0) {
        log(error[0].firstChild.nodeValue);
+       schedule.xmlProgrammes = null;
        return;
     }
    formListingTable();
