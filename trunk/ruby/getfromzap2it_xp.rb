@@ -24,7 +24,7 @@
 
 
 require 'date'
-require 'mysql'
+#require 'mysql'
 require 'xml/libxml'
 
 SERVERNAME = "localhost"
@@ -74,10 +74,9 @@ logfile.close()
   #connect to database
   begin
   dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
-#  if get an error (can't connect)
+  #if get an error (can't connect)
   rescue MysqlError => e
-      error_if_not_equal(false,true, "Error code: " + e.errno + "\n")
-      error_if_not_equal(false,true, "Error message: "+ e.error + "\n")
+      error_if_not_equal(false,true, "code: " + e.errno + "message: "+ e.error)
     puts "Unable to connect to database\n"
     if dbh.nil? == false
       #close the database
@@ -90,6 +89,9 @@ logfile.close()
   #2. If a channel has been removed it will check programme to see 
   #   if it is in use and if not it will delete it
   #set up an array of all of the channel IDs to see if a channel has been taken off the air
+    channel_xml = File.open("channel.xml","w+")
+    channel_xml << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
+
     chan_array = Array.new(0)
     db_channelIDs = dbh.query("SELECT channelID FROM Channel")
     if db_channelIDs != nil:
@@ -98,8 +100,8 @@ logfile.close()
       end
     end
     xmldoc.find('channel').each do |e|	  
-      chan_id = e["id"].to_s
-      #chan_desc = e.child
+      channel_xml << e.copy(true).to_s
+      chan_id = e["id"].to_s
       chan_number = e.find_first('display-name').content.to_i
       #send to database
       #check if exists already
@@ -125,5 +127,19 @@ logfile.close()
         puts ci + " still in use!"
       end
     end
-    
-  end 
+   end    
+    newest_day = 000000000000
+    oldest_day = 999999999999
+
+    xmldoc.find('programme').each do |e|
+      if (e["start"][0..7].to_i > newest_day)
+	newest_day = e["start"][0..7].to_i
+      end
+      if(e["stop"][0..7].to_i < oldest_day)
+	oldest_day = e["stop"][0..7].to_i
+      end
+    end
+    channel_xml << "\n<programme_date_range start='"+ oldest_day.to_s + "' stop='" + newest_day.to_s + "' </programme_date_range>\n"
+    channel_xml << "</tv>" 
+    channel_xml.close()
+ 
