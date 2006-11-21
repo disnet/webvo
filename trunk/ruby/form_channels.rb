@@ -23,8 +23,6 @@ require 'cgi'
 require 'xml/libxml'
 require 'date'
 
-puts "Content-Type:text/xml\n\n"
-
 XML_FILE_NAME = 'info.xml'
 def file_available(file_name)
   cur_dir_entries=Dir.entries(Dir.getwd)
@@ -40,23 +38,42 @@ def get_header(xml)
   return output_string
 end
 #Main ------------------------------------------------------------------------
+puts "Content-Type:text/xml\n\n"
+
 #parse xmldoc
-if file_available(XML_FILE_NAME) == false
-  puts "<error> Error " + XML_FILE_NAME + "not in directory</error>"
-  exit
-end
-
-xmldoc = XML::Document.file(XML_FILE_NAME)
-
-#manually return header and parent beginning
-  puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
-
-#get channel and send it up to go to client
-  xmldoc.find('channel').each do |e|	  
-    puts e.to_s # print out the channel
+if file_available("channels.xml") == true:
+  channel_xml = File.open("channels.xml", "r")
+  channel_xml.each_line{|line| puts line}
+else
+  if file_available(XML_FILE_NAME) == false
+    puts "<error> Error " + XML_FILE_NAME + "not in directory</error>"
+    exit
   end
- 
- #write up end of parent
-  puts "</tv>" 
 
+  xmldoc = XML::Document.file(XML_FILE_NAME)
+
+  #manually return header and parent beginning
+    puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
+
+  #get channel and send it up to go to client
+    xmldoc.find('channel').each do |e|	  
+      puts e.to_s # print out the channel
+    end
+
+  #get first and last programme date
+    newest_day = 000000000000
+    oldest_day = 999999999999
+    xmldoc.find('programme').each do |e|
+      if (e["start"][0..7].to_i > newest_day)
+	newest_day = e["start"][0..7].to_i
+      end
+      if(e["stop"][0..7].to_i < oldest_day)
+	oldest_day = e["stop"][0..7].to_i
+      end
+    end
+    puts "\n<programme_date_range start='"+ oldest_day.to_s + "' stop='" + newest_day.to_s + "' </programme_date_range>\n"
+
+  #write up end of parent
+    puts "</tv>" 
+end
 
