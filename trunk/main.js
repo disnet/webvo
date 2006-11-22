@@ -27,13 +27,15 @@ schedule.xmlChannels = null;        // holds the channels -- packed when the use
 schedule.xmlProgrammes = null;      // holds the progrmames -- packed when the user selectes a time  
 schedule.timesHeader = [];          // used to fill the time slots on the top of the schedule table
 schedule.numHours = 3;              // number of hours the schedule will display
+schedule.startDate = null;			// first day that we have programme information on
+schedule.stopDate = null;			// last day that we have programme information on
 schedule.slotsPerHour = 60;
 
 var dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 // Once the page loads, connect up the events
 function init() { 
- 	initFormTime(); // init the time selection boxes
+ 	
     
     // get the channels
     var ch = doSimpleXMLHttpRequest('ruby/form_channels.rb');
@@ -43,11 +45,14 @@ function init() {
 }
 
 function initFormTime() {
-	var day = new Date();
+	var day = isoDate(schedule.startDate.slice(0,4) + "-" +
+		schedule.startDate.slice(4,6) + "-" + schedule.startDate.slice(6,8));
+	var end = isoDate(schedule.stopDate.slice(0,4) + "-" +
+		schedule.stopDate.slice(4,6) + "-" + schedule.stopDate.slice(6,8));
 	var time = new Date();
 	
     // Fill next n days
-	for(var i = 0; i < 20; i++) {
+	while(day <= end) { // add all the days we have on the server
 		var opDate = OPTION({'value':day}, 
 			[dayOfWeek[day.getDay()] + " " + day.getDate()]);
 		$('selDate').appendChild(opDate);
@@ -66,41 +71,41 @@ function initFormTime() {
 
 // Event handler for clicking a programme in the table
 var prog_click = function(e) {
-	log(e.src().parentNode.getAttribute('id'));
 	var mousePos = e.mouse().page;
 	var btnClose = INPUT({'id':'btnClose','type':'button','value':'x'},null);
 	var btnRecord = INPUT({'id':'btnRecord','type':'submit','value':'record'}, null);
+	
 	var elProgramme = e.src();
 	var elExtended = elProgramme.lastChild.firstChild.nodeValue;
 	//var elSubtitled = elProgramme.getElement('sub-title');
-	//log($('sub-title'));
 	
 	connect(btnClose,'onclick',btnClose_click);
 	connect(btnRecord,'onclick',btnRecord_click);
-
+	
+	var prog_id = elProgramme.getAttribute('id'); // get the programme id
+	prog_id = prog_id.slice(0,prog_id.length-6);	// removes the timezone trailer
+	
+	var progID = SPAN({'id':'prog_id','class':'invisible'},prog_id);
 	var boxTitle = "Show name: " + elProgramme.firstChild.nodeValue;
 	var boxMessage = "Details: " + elExtended;
 	var boxSubtitle = "Sub-title: ";
 	
 	var box = DIV({'id':'mnuRecord'},
-		[btnClose, [boxTitle,BR(null,null),BR(null,null),boxMessage], btnRecord]);
+		[btnClose, [boxTitle,BR(null,null),BR(null,null),boxMessage,progID], btnRecord]);
 		
 	setElementPosition(box,mousePos);
 	swapDOM('mnuRecord',box);
 	makeVisible($('mnuRecord'));
 	
 };
-var btnRecord_click = function(e) {
-		//testing now...
-	
+var btnRecord_click = function(e) {	
+	var prog_id = $('prog_id').firstChild.nodeValue;
+	var ad = doSimpleXMLHttpRequest('ruby/add_recording.rb', {'prog_id':prog_id});
+    ad.addCallbacks(gotAdd,fetchFailed);
 }
 
 var btnClose_click = function(e) {
 	makeInvisible($('mnuRecord'));
-};
-
-var btnRecord_click = function(e) {
-	log('record');
 };
 
 // Sets up the async request for the schedule
@@ -122,12 +127,12 @@ var btnLoad_click = function(e) {
     }
 	
     // find what date/time we want
-	schedule.start = dateToZapTime(date);
-	date.setHours(date.getHours() + schedule.numHours);
-	schedule.stop = dateToZapTime(date);
+	schedule.start = date;
+	schedule.stop = new Date(date);
+	schedule.stop.setHours(date.getHours() + schedule.numHours);
 	
     // init the request
-    var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':schedule.start,'end_date_time':schedule.stop});
+    var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':dateToZapTime(schedule.start),'end_date_time':dateToZapTime(schedule.stop)});
     d.addCallbacks(gotProgrammes,fetchFailed);
 };
 
@@ -199,7 +204,7 @@ programme_row_display = function(row) {
     for(var i = 1; i < row.length; i++) { // for every programme in <row>
         var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
         var prog_start = row[i].getAttribute('start');
-		var prog_stop = munge_date(row[i].getAttribute('stop'));
+		var prog_stop = row[i].getAttribute('stop');
         var progID =  channelID + prog_start; 
 		
 		var desc_els = row[i].getElementsByTagName('desc');//[0].firstChild.nodeValue
@@ -216,28 +221,28 @@ programme_row_display = function(row) {
 		else{
 			var prog_subtitle = "";
 		}
-        var isoStart = isoTimestamp(munge_date(row[i].getAttribute('start')));
-        var isoStop = isoTimestamp(munge_date(row[i].getAttribute('stop')));
+        var isoStart = isoTimestamp(munge_date(prog_start));
+        var isoStop = isoTimestamp(munge_date(prog_stop));
 		
 		var show_length;
 		// If the show starts before the current time schedule
-		if (isoStart < isoTimestamp(munge_date(schedule.start))) {
+		if (isoStart < schedule.start) {
 			// If the end is after the current time schedule 
-			if( isoStop > isoTimestamp(munge_date(schedule.stop))) {
+			if( isoStop > schedule.stop) {
 				show_length = schedule.numHours; // set time full
 			}
 			// if the end is before the schedule end
 			else {
-				show_length = isoStop.getHours() - isoTimestamp(munge_date(schedule.start)).getHours();
-				show_length +=  (isoStop.getMinutes() - isoTimestamp(munge_date(schedule.start)).getMinutes()) / 60;
+				show_length = isoStop.getHours() - schedule.start.getHours();
+				show_length +=  (isoStop.getMinutes() - schedule.start.getMinutes()) / 60;
 			}
 		}
 		// if the show starts after the begining of the schedule
 		else {
 			// If the show end is after the schedule end
-			if (isoStop > isoTimestamp(munge_date(schedule.stop))) {
-				show_length = isoTimestamp(munge_date(schedule.stop)).getHours() - isoStart.getHours();
-				show_length +=  (isoTimestamp(munge_date(schedule.stop)).getMinutes() - isoStart.getMinutes()) / 60;
+			if (isoStop > schedule.stop) {
+				show_length = schedule.stop.getHours() - isoStart.getHours();
+				show_length +=  (schedule.stop.getMinutes() - isoStart.getMinutes()) / 60;
 			}
 			// If the show end is before the schedule end
 			else {
@@ -321,16 +326,13 @@ function dateToZapTime(date) {
     
     return zapTime;
 }
-/*function toZapTimestamp(year,month,date,hour) {
-    if(hour < 10) {
-        hour = "0" + hour.toString();
-    }
-	return year.toString() + month.toString() + date.toString() + hour.toString() + "0000"
-}*/
-
 // Got the channels from server
 var gotChannels_init = function(req) {
    schedule.xmlChannels = req.responseXML; 
+   var xmlStartStop = req.responseXML.getElementsByTagName('programme_date_range')[0];
+   schedule.startDate = xmlStartStop.getAttribute('start');
+   schedule.stopDate = xmlStartStop.getAttribute('stop');
+   initFormTime(); // init the time selection boxes
 };
 
 // Get the programmes from server
@@ -344,4 +346,19 @@ var gotProgrammes = function(req) {
        return;
     }
    formListingTable();
+};
+
+var gotAdd = function(req) {
+	xmldoc = req.responseXML;
+	var error = xmldoc.getElementsByTagName('error');
+	var success = xmldoc.getElementsByTagName('success');
+	if(error.length != 0 ) {
+		log(error.firstChild.nodeValue);
+	}
+	else if(success.length != 0) {
+		log("recording scheduled");
+	}
+	else {
+		log('add recording error: ' + req.responseText);
+	}
 };
