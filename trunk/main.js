@@ -89,6 +89,9 @@ var prog_click = function(e) {
 	makeVisible($('mnuRecord'));
 	
 };
+var btnRecord_click = function(e) {
+	log(e.src()	);
+}
 
 var btnClose_click = function(e) {
 	makeInvisible($('mnuRecord'));
