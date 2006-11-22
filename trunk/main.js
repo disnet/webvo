@@ -91,6 +91,8 @@ var prog_click = function(e) {
 };
 var btnRecord_click = function(e) {
 	log(e.src()	);
+	//testing now...
+	
 }
 
 var btnClose_click = function(e) {
