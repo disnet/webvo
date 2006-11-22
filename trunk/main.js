@@ -193,7 +193,7 @@ programme_row_display = function(row) {
 	var programme_tds = []; 	//initialize the array of programme TDs
     for(var i = 1; i < row.length; i++) { // for every programme in <row>
         var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
-        var prog_start = munge_date(row[i].getAttribute('start'));
+        var prog_start = row[i].getAttribute('start');
 		var prog_stop = munge_date(row[i].getAttribute('stop'));
         var progID =  channelID + prog_start; 
 		
