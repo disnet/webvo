@@ -71,7 +71,7 @@ else
 	oldest_day = e["stop"][0..7].to_i
       end
     end
-    puts "\n<programme_date_range start='"+ oldest_day.to_s + "' stop='" + newest_day.to_s + "' </programme_date_range>\n"
+    puts "\n<programme_date_range start='"+ oldest_day.to_s + "' stop='" + newest_day.to_s + "'></programme_date_range>\n"
 
   #write up end of parent
     puts "</tv>" 

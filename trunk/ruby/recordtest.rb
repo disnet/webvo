@@ -73,6 +73,7 @@ else
      pid = readme.gets
      if pid != "NULL"
        commandSent = system("kill #{CAT_PID}")
+       dbh.query("INSERT INTO PID FROM Recording WHERE PID = #{CAT_PID}")
      end
   end   
  end

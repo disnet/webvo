@@ -125,7 +125,7 @@ end
     end
   end
   
-  error_if_not_equal(got_programme, false, "requested programme not in source XML file")
+  error_if_not_equal(got_programme, false, "requested programme not in source XML file ") 
   #connect to database
   begin
   dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
@@ -158,6 +158,7 @@ end
     dbh.close()
   end
   
+  puts("<success>Recording scheduled</success>")
   cgi.shutdown()
   #call record.rb
   exec("ruby record.rb")
