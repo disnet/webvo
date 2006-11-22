@@ -66,6 +66,7 @@ function initFormTime() {
 
 // Event handler for clicking a programme in the table
 var prog_click = function(e) {
+	log(e.src().parentNode.getAttribute('id'));
 	var mousePos = e.mouse().page;
 	var btnClose = INPUT({'id':'btnClose','type':'button','value':'x'},null);
 	var btnRecord = INPUT({'id':'btnRecord','type':'submit','value':'record'}, null);
@@ -90,8 +91,7 @@ var prog_click = function(e) {
 	
 };
 var btnRecord_click = function(e) {
-	log(e.src()	);
-	//testing now...
+		//testing now...
 	
 }
 
