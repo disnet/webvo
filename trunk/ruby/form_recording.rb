@@ -49,13 +49,39 @@ end
 
 #main--------------------------------------------------------------------------
   puts "Content-Type: text/xml\n\n" 
+  cgi = CGI.new     # The CGI object is how we get the arguments 
 #open up database
-#for each entry in recording
-  #get the channel_id and start_time
-  #look up channel_id and start_time in programme
-  #get the xmlNode information
-  #using start date time and stop date time estimate the size of the file
+    begin
+  dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
+#  if gets an error (can't connect)
+  rescue MysqlError => e
+      error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
+    puts "Unable to connect to database\n"
+    if dbh.nil? == false
+      #close the database
+      dbh.close() 
+    end
+  else
+    allrresults = dbh.query("SELECT start, channelID FROM Recording ORDER BY start")
+    allrresults.each_hash do |row|
+      start = row["start"].to_i
+      chan_id = row["channelID"].to_i      
+      show = dbh.query("SELECT xmlNode FROM Programme WHERE (start='#{start}' AND channelID='#{chan_id}')")
+      if show != nil:
+        puts show.fetch_row[0].to_s.gsub(/["_*_"]/, "'")
+      else
+        show.free
+        allpresults.free
+        dbh.close()
+        error_if_not_equal(true, false, "recording programme not in programme")
+      end
+      show.free
+    end
+    allpresults.free
+    dbh.close()
+  end
   
+
 
 
 
