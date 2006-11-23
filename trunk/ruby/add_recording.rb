@@ -46,6 +46,18 @@ def error_if_not_equal(value, standard, error_string)
     exit
   end
 end
+def form_node(start, stop, title, channel, channelID, desc)
+{
+  xmlNode << "<programme>\n"
+  xmlNode << "<title>" + title + "</title>\n"
+  xmlNode << "<desc>" + desc + "</desc>\n"
+  xmlNode << "<start>" + start + "</start>\n"
+  xmlNode << "<stop>" + stop + "</stop>\n"
+  xmlNode << "<channel>" + channel + "</channel>"
+  xmlNode << "<channelID>" + channelID + "</channel>"
+  xmlNode << "</programme>"
+  return xmlNode
+}
 
 #main--------------------------------------------------------------------------
   puts "Content-Type: text/xml\n\n" 
@@ -87,19 +99,29 @@ end
   stop = '00000'
   xmlNode = '00000'
   title = '0000'
-
+  desc = 'stuff'
+  chan_id = 'stuff'
+  
+  #reforming node to look like
+  #<programme>
+  #<title>title of program</title>
+  #<channelID>channel ID</channelID>
+  #<channel>channel</channel>
+  #<desc>description</desc>
+  #<start>start date time </start>
+  #<stop>stop date time </stop>
+  #</programme>
+  
   xml.find("programme").each do |e|
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
       #get channel id, start time, stop time, title, and all xml information
       #channel id -> chan_id
       #start time -> start
       #stop time -> stop
-      #title -> title (note: all ' ' spaces converted to '_' underscores
-      #xml information -> xmlNode
+      #title -> title
       
       error_if_not_equal(got_programme, true, "two or more programmes match that program ID")
       
-      xmlNode = e.copy(true).to_s
       start = e["start"][0..LENGTH_OF_DATE_TIME-1]
       stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
       
@@ -109,11 +131,15 @@ end
       keep_looping = true
       
       #gets the title
-      while need_title == true && keep_looping == true
+      while keep_looping == true:
         if c.name == "title":
-          title = (c.content).gsub(/[' ']/, '_')
+          title = c.content
           need_title = false
         end  
+        if c.name == "desc":
+          desc = c.content
+        end
+        #if there needs to be more things code will need to be added here
         if c.next?:
             c = c.next
         else
@@ -126,28 +152,81 @@ end
   end
   
   error_if_not_equal(got_programme, false, "requested programme not in source XML file ") 
+  
+  #get the integer versions of start and stop to use to check if the programme
+  #to be added is at the same time as a current show.
+  istart = start.to_i
+  istop = stop.to_i
+  
   #connect to database
   begin
   dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
 #  if gets an error (can't connect)
   rescue MysqlError => e
-      error_if_not_equal(false,true, "Error code: " + e.errno + "\n")
-      error_if_not_equal(false,true, "Error message: "+ e.error + "\n")
+      error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
     puts "Unable to connect to database\n"
     if dbh.nil? == false
       #close the database
       dbh.close() 
     end
   else
-    #add the programme to the database
+  
     #check and make sure that the programme isn't already there
     presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
     rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='chan_id}' AND start = '#{start}')")
     
-    error_if_not_equal(presults.fetch_row == nil, true, "programme already added to database")
+    if presults.fetch_row != nil:
+      presults.free
+      rresults.free
+      dbh.close()
+      error_if_not_equal(false, true, "programme already added to database")
+    end
+   
+    #check to see if there is a programme during the same time.
+    allpresults = dbh.query("SELECT start, stop, channelID FROM Programme ORDER BY start")
+    #loop through the results and check if they are during the same time
+    allpresults.each_hash do |row|
+      qstart = row["start"].to_i
+      qstop = row["stop"].to_i
+      
+      #possible locations of programmes
+      begins_before = qstop > istart && qstop <= istop && qstart <= istop && qstart < istart
+      ends_after = qstart >= istart && qstop > istop && qstart < istop
+      occurs_during = qstart >= istart && qstop <= istop
+      occurs_around = (qstart <= istart && qstop >= istop)
+      
+      #if programme to add is during a programme that is already in the database
+      if begins_before || ends_after || occurs_during || occurs_around:
+        sstart = row["start"]
+        schan_id = row["channelID"]
+        #see if this programme is in recording, if so then error out
+        show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{sstart}')")
+        if show_in_recording.fetchrow != nil:
+          title_with_spaces = row["title"].gsub(/["_"]/," ")
+          rresults.free
+          presults.free
+          allpresults.free
+          dbh.close()
+          error_if_not_equal(true, false, "Requested show occurs during: " + title_with_spaces)
+        end
+      end
+      
+    end
+    allpresults.free
     
-    xmlNode = xmlNode.gsub(/["'"]/, "_*_")
-    #send information to programme's table
+    #look up channel number to include in xmlNode
+    channel_info = dbh.query("SELECT number FROM Channel WHERE (channelID ='#{chan_id}')")
+    
+    if channel_info.fetch_row == nil:
+      error_if_not_equal(true, false, "channel from requested show not in database")
+    end
+    
+    xmlNode = form_node(start, stop, title, channel_info.fetch_row[0], chan_id, desc)
+    
+    #send information to programme's table 
+      #change data a bit to get it not to error when put in the database
+      xmlNode = xmlNode.gsub(/["'"]/, "_*_")
+      title = title.gsub(/[" "]/,"_")
     dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
     
     if rresults.fetch_row == nil:
@@ -155,6 +234,9 @@ end
       dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
     end
     #close the database
+    rresults.free
+    presults.free
+    allpresults.free
     dbh.close()
   end
   
