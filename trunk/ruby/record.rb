@@ -36,28 +36,27 @@ def format_to_Ruby (xmlform_data)
    hour = xmlform_data[8..9].to_i
    minute = xmlform_data[10..11].to_i
    second = xmlform_data[12..13].to_i
-   puts "#{year} #{month} #{day}  #{hour} #{minute} #{second}"
    result = DateTime.new(year,month,day,hour,minute,second,-0.3333333334,2361222)
    return result
 end
 
+#connect to the database
 def databaseconnect()
   dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
   return dbh
 end
 
+#find the process number given process name
 def findProcessNum(procCat)
-  puts procCat
   readme = IO.popen("ps -C #{procCat} -o pid")
   sleep (1)
   temp = readme.gets
-  puts temp
   pid = readme.gets
-  puts pid
   readme.close()
   return pid
 end
 
+#find process number given the number
 def findProcNum(procNum)
   readme = IO.popen("ps #{procNum}")
   sleep (1)
@@ -67,6 +66,7 @@ def findProcNum(procNum)
   return pid
 end
 
+#calculate the difference between two given dates in seconds
 def calcTimeTo(date1,date2)
   diffstop = date1 - date2
   sh,sm,ss,sfrac = Date.day_fraction_to_time(diffstop)
@@ -143,7 +143,7 @@ end
   lastshowstart = dbh.query("SELECT Start FROM Recording ORDER BY Start LIMIT 1")
   lastshowchannel = dbh.query("SELECT number FROM Channel WHERE ChannelID = (#{channelIDquery})")
   lastshowstop = dbh.query("SELECT STOP FROM Programme WHERE(ChannelID=(#{channelIDquery})AND START=(SELECT Start FROM Recording ORDER BY Start LIMIT 1))")
-
+  lastshowtitle = dbh.query("SELECT Title FROM Programme WHERE (ChannelID=(#{channelIDquery})AND START=(SELECT Start FROM Recording ORDER BY Start LIMIT 1))")
 #done with DB for now
   dbh.close()
 
@@ -151,8 +151,8 @@ end
   startrow = lastshowstart.fetch_row
   channelrow = lastshowchannel.fetch_row
   stoprow = lastshowstop.fetch_row
-  puts startrow
-  puts "The show to be recorded is on channel #{channelrow}, starts at #{startrow} and ends at #{stoprow}."
+  title = lastshowtitle.fetch_row
+  puts "The show, #{title}, to be recorded is on channel #{channelrow}, starts at #{startrow} and ends at #{stoprow}."
   
 #initialize values of show  
   showStartDate = format_to_Ruby("#{startrow}")
@@ -194,7 +194,6 @@ end
     dbh = databaseconnect()
     dbh.query("UPDATE Recording SET PID = #{CAT_PID.to_i} WHERE Start = #{startrow[0]}")
     puts "PID saved to database\n"
-
 
 #close the database
     dbh.close()
@@ -244,15 +243,18 @@ end
     dbh = databaseconnect()
     
 #move the show from the recording list to recorded list
-    puts "Moving show to recorded list\n"
+    puts "Moving show: #{title}-#{show.starttime} to recorded list\n"
     transferquery = dbh.query("#{channelIDquery}")
     chanID = transferquery.fetch_row
-    puts chanID
-    dbh.query("INSERT INTO Recorded (channelID,start) VALUES ('#{chanID}', '#{startrow}')")
+    dbh.query("INSERT INTO Recorded (channelID,start,showName) VALUES ('#{chanID}', '#{startrow}', '#{title}-#{show.starttime}')")
     puts "Removing show from recording list\n"
     dbh.query("DELETE FROM Recording WHERE PID = #{CAT_PID}")
      
 #close the database
     dbh.close()
-end
 
+#start next recording check
+    puts "Locating next show to record\n"
+    #commandSent = system("ruby record.rb")
+
+end
