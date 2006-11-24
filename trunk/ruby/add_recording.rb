@@ -47,7 +47,6 @@ def error_if_not_equal(value, standard, error_string)
   end
 end
 def form_node(start, stop, title, channel, channelID, desc)
-{
   xmlNode << "<programme>\n"
   xmlNode << "<title>" + title + "</title>\n"
   xmlNode << "<desc>" + desc + "</desc>\n"
@@ -57,7 +56,7 @@ def form_node(start, stop, title, channel, channelID, desc)
   xmlNode << "<channelID>" + channelID + "</channel>"
   xmlNode << "</programme>"
   return xmlNode
-}
+end
 
 #main--------------------------------------------------------------------------
   puts "Content-Type: text/xml\n\n" 
