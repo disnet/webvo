@@ -32,15 +32,21 @@
 </ul></div>
 
 <div class="content">
-    <h2 id="boxTest">TV Listing</h2>
-	<select id="selDate" class="formDayTime"></select>
-	<select id="selTime" class="formDayTime"></select>
-    <input id="btnLoad" type="submit" value="load" />
+ <div id="contentTop">
 	
-    <br />
-    
+	<div id="boxInfo">nil</div>
+	<div id="boxTime">
+	 <select id="selDate" class="formDayTime"></select>
+	 <select id="selTime" class="formDayTime"></select>
+     <input id="btnLoad" type="submit" value="load" />
+	</div>
+	<div id="boxLoading" class="invisible">Loading...</div>
+ </div>
+ <div id="contentMain">
     <table id="schedule"></table>
 	<div id="mnuRecord" class="invisible"></div>
+	<div id="mnuAddStatus" class="invisible"></div>
+ </div>
 </div>
 
 <div class="footer">

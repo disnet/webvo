@@ -7,7 +7,7 @@ margin:0.2em 0 1.2em 0; padding:0.3em;}
 
 h1 {
 padding:0; margin:0;font-size:250%; font-weight:normal; font-style:italic; 
-color:#25d9a4; font-family:"Trebuchet MS", verdana, arial, sans-serif;}
+color:white; font-family:"Trebuchet MS", verdana, arial, sans-serif;}
 
 h2 {
 background-color:#DDDDDD; color:#3B4471; font-size:100%; font-weight:normal; margin:0.2em; padding:0; 
@@ -27,7 +27,10 @@ color:#8CD749; text-decoration:underline;}*/
 
 /* Added by tim -- rest of css from template */
 .invisible { display:none;}
-
+.head {
+	text-align:center;
+	background-color: gray;
+}
 td.listHead{
     text-align:center;
     width: 16%;
@@ -35,23 +38,69 @@ td.listHead{
     background-color:#c2c2c2;
     color:black;
 }
-
+.channelName {
+	background-color:gray;
+}
+.programme {
+	background-color: green;
+}
 table.schedule {
+	clear:right;
     width: 100%;
-    border: 1px solid black;
+    border: 0px;
 }
 table.schedule td{
     border:1px solid black;
 }
-
+#contentTop {
+	height:100%;
+	width:100%;
+}
+#contentMain {
+	height:100%;
+	width:100%;
+}
+#boxTime {
+	float: right;
+	height:100%;
+	background-color:#c2c2c2;
+	padding: 2px 2px 2px 2px;
+	margin-right:2px;
+	border: 2px solid black;
+}
 #mnuRecord {
 	position: absolute;
 	background-color: gray;
-	width: 500px;
-	height: 300px;
+	width: 25%;
+	/*height: 5em;*/
 	border: 3px solid black;
 }
 
+#mnuAddStatus {
+	position: absolute;
+	background-color: gray;
+	text-align:center;
+	width: 25%;
+	/*height: 5em;*/
+	border: 3px solid black;
+}
+
+
+#boxLoading {
+	float: right;
+	margin-right:2px;
+	height:100%;
+	color:white;
+	background-color: green;
+	border: 3px solid black;
+}
+#boxInfo {
+	float: left;
+	height:100%;
+	color:white;
+	background-color:green;
+	border:3px solid black;
+}
 #btnClose {
 	padding:0; 
 	border: 1px solid black; 
@@ -60,74 +109,22 @@ table.schedule td{
 	height:1.5em;
 }
 #btnRecord {
-	position:absolute; 
+	float: right;
 	border: 1px solid black; 
 	bottom:0; 
-	right:0;
+	
 }
 
-/* Programme TDs */
-.prog {
-	height: 100%;
-	min-height: 100%;
-	background-color: gray; 
-	float: left; 
-	border:1px solid black; 
-	margin-left: -1px;
-}
 
-/* testing.... */
-table.test_schedule {
-    width: 100%;
-    border: 1px solid black;
-}
-table.test_schedule td{
-    border:0px solid black;
-}
-
-#cont {
-    padding-left: 1px;
-}
-#a {
-    border: 1px solid black;
-    float: left;
-    width: 50%;
-    margin-left: -2px;
-    background-color: gray;
-}
-#b {
-    border: 1px solid black;
-    float: left;
-    width: 50%;
-    margin-right: -2px;
-    background-color: gray;
-}
-/* end test... */
-
-/* End */
-
-/*.tvShow {
-    background-color:#7ac2c2; color:black}
-.tvRecording {
-    background-color:#d0d0d0;
-    color:#6a6a6a;
-}*/
 .container {
 background-color:#FFFFFF; margin:0 auto 0 auto; padding:0; width:100%;}
 
-/*.tbhead {
-    text-align:center;
-    width: 16%;
-    white-space:nowrap;
-    background-color:#c2c2c2;
-    color:black;
-}*/
 .titleblock {
 padding:2em; margin:0; text-align:left;
 background-image:url(bsg.jpg); background-repeat:no-repeat; background-position:right center;background-color:#000000}
 
 .titleblock p {
-text-indent:4em; color:#25d9a4;}
+text-indent:4em; color:white;}
 
 
 

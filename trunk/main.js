@@ -35,11 +35,14 @@ var dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Sa
 
 // Once the page loads, connect up the events
 function init() { 
- 	
-    
+    makeVisible($('boxLoading'));
+
     // get the channels
     var ch = doSimpleXMLHttpRequest('ruby/form_channels.rb');
     ch.addCallbacks(gotChannels_init,fetchFailed);
+	
+	//var rec = doSimpleXMLHttpRequest('ruby/form_recording.rb');
+	//rec.addCallbacks(gotRecording,fetchFailed);
 	
     connect('btnLoad','onclick',btnLoad_click);
 }
@@ -50,6 +53,8 @@ function initFormTime() {
 	var end = isoDate(schedule.stopDate.slice(0,4) + "-" +
 		schedule.stopDate.slice(4,6) + "-" + schedule.stopDate.slice(6,8));
 	var time = new Date();
+	
+	$('boxInfo').firstChild.nodeValue = time.toLocaleString();
 	
     // Fill next n days
 	while(day <= end) { // add all the days we have on the server
@@ -67,10 +72,20 @@ function initFormTime() {
 		$('selTime').appendChild(opTime);
 		time.setHours(time.getHours() + 1);
 	}
+	makeInvisible('boxLoading');
 }
 
+var prog_mouseOver = function(e) {
+	updateNodeAttributes(e.src(),{'style':{'border':'1px solid red'}});
+};
+
+var prog_mouseOut = function(e) {
+	updateNodeAttributes(e.src(),{'style':{'border':'1px solid black'}});
+};
 // Event handler for clicking a programme in the table
 var prog_click = function(e) {
+	makeInvisible('mnuAddStatus');
+	
 	var mousePos = e.mouse().page;
 	var btnClose = INPUT({'id':'btnClose','type':'button','value':'x'},null);
 	var btnRecord = INPUT({'id':'btnRecord','type':'submit','value':'record'}, null);
@@ -91,7 +106,7 @@ var prog_click = function(e) {
 	var boxSubtitle = "Sub-title: ";
 	
 	var box = DIV({'id':'mnuRecord'},
-		[btnClose, [boxTitle,BR(null,null),BR(null,null),boxMessage,progID], btnRecord]);
+		[btnClose, [boxTitle,BR(null,null),BR(null,null),boxMessage,BR(null,null),progID], btnRecord]);
 		
 	setElementPosition(box,mousePos);
 	swapDOM('mnuRecord',box);
@@ -99,7 +114,16 @@ var prog_click = function(e) {
 	
 };
 var btnRecord_click = function(e) {	
+	makeVisible('boxLoading');
+	
 	var prog_id = $('prog_id').firstChild.nodeValue;
+	
+	setElementPosition('mnuAddStatus',elementPosition('mnuRecord'));
+	setElementDimensions('mnuAddStatus',elementDimensions('mnuRecord'));
+	$('mnuAddStatus').innerHTML = "Adding Show...";
+	
+	makeInvisible('mnuRecord');
+	makeVisible('mnuAddStatus');
 	var ad = doSimpleXMLHttpRequest('ruby/add_recording.rb', {'prog_id':prog_id});
     ad.addCallbacks(gotAdd,fetchFailed);
 }
@@ -113,6 +137,7 @@ var btnClose_click = function(e) {
 // be an `onload` event along with a form for changing
 // the begin and end times.
 var btnLoad_click = function(e) {  
+	makeVisible('boxLoading');
     // Fill a Date object with the date stored in the select box
 	var date = new Date($('selDate').value);
 	date.setHours($('selTime').value);
@@ -161,6 +186,7 @@ var formListingTable = function () {
         TBODY({'style':'width:100%'},
 			form_table_body(rows)));
 	swapDOM('schedule',new_table);
+	makeInvisible('boxLoading');
 };
 
 // Forms the listing table head. It includes a row with empty TD used for spacing and 
@@ -175,10 +201,10 @@ function form_table_head(head) {
 	}
 	
 	var empty_row = [TR(null,
-		map(partial(TD,{'class':'empty'}),empty_data))];
+		map(partial(TD,{'class':'empty', 'style':'border:0px;'}),empty_data))];
 	
 	var head_row = [TR(null,
-		[TD(null,'Ch.')].concat(map(partial(TD,{'colSpan':colSpan}),head)))];
+		[TD({'class':'head'},'Ch.')].concat(map(partial(TD,{'class':'head','colSpan':colSpan}),head)))];
 	
 	return empty_row.concat(head_row);
 }
@@ -198,7 +224,7 @@ programme_row_display = function(row) {
     var channel_name = row[0].getElementsByTagName('display-name')[0].firstChild.nodeValue;
 
 	// first TD has the channel name and it's ID property is the associated channelID
-    var formed_row = [TD({'id':'channelID'}, channel_name)];
+    var formed_row = [TD({'class':'channelName'}, channel_name)];
     
 	var programme_tds = []; 	//initialize the array of programme TDs
     for(var i = 1; i < row.length; i++) { // for every programme in <row>
@@ -233,31 +259,38 @@ programme_row_display = function(row) {
 			}
 			// if the end is before the schedule end
 			else {
-				show_length = isoStop.getHours() - schedule.start.getHours();
-				show_length +=  (isoStop.getMinutes() - schedule.start.getMinutes()) / 60;
+				/*show_length = isoStop.getHours() - schedule.start.getHours();
+				show_length +=  (isoStop.getMinutes() - schedule.start.getMinutes()) / 60;*/
+				show_length = (isoStop-schedule.start) / 3600000;  // 3600000 to convert from ms to hours
 			}
 		}
 		// if the show starts after the begining of the schedule
 		else {
 			// If the show end is after the schedule end
 			if (isoStop > schedule.stop) {
-				show_length = schedule.stop.getHours() - isoStart.getHours();
+				/*show_length = schedule.stop.getHours() - isoStart.getHours();
 				show_length +=  (schedule.stop.getMinutes() - isoStart.getMinutes()) / 60;
+				*/
+				show_length = (schedule.stop-isoStart) / 3600000;  // 3600000 to convert from ms to hours
 			}
 			// If the show end is before the schedule end
 			else {
-				show_length = isoStop.getHours() - isoStart.getHours();
+				/*show_length = isoStop.getHours() - isoStart.getHours();
 				show_length +=  (isoStop.getMinutes() - isoStart.getMinutes()) / 60;
+				*/
+				show_length = (isoStop-isoStart) / 3600000;  // 3600000 to convert from ms to hours			
 			}
 		}
 
 		var colSpan = show_length * schedule.slotsPerHour;  
-		var prog_td = TD({'id':progID, 'colSpan':colSpan}, // colSpan *not* colspan -- I HATE IE!!!
+		var prog_td = TD({'id':progID,'class':'programme','colSpan':colSpan}, // colSpan *not* colspan -- I HATE IE!!!
 			[prog_title, 
             SPAN({'id':'start','class':'invisible'},isoStart),
             SPAN({'id':'stop','class':'invisible'},isoStop),
             SPAN({'id':'sub-title','class':'invisible'},prog_subtitle),
 			SPAN({'id':'desc','class':'invisible'},prog_desc)]); 
+		connect(prog_td,'onmouseover',prog_mouseOver);
+		connect(prog_td,'onmouseout',prog_mouseOut);
 		connect(prog_td,'onclick',prog_click);
 		
 		// insert the formed programme TDs into the TD array
@@ -353,12 +386,16 @@ var gotAdd = function(req) {
 	var error = xmldoc.getElementsByTagName('error');
 	var success = xmldoc.getElementsByTagName('success');
 	if(error.length != 0 ) {
-		log(error.firstChild.nodeValue);
+		$('mnuAddStatus').innerHTML = error[0].firstChild.nodeValue;
 	}
 	else if(success.length != 0) {
-		log("recording scheduled");
+		makeInvisible('mnuAddStatus');
 	}
 	else {
 		log('add recording error: ' + req.responseText);
 	}
+	makeInvisible('boxLoading'); 
+};
+var gotRecording = function(req) {
+	log(req.responseText);
 };
