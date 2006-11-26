@@ -65,7 +65,7 @@ function initFormTime() {
 		$('selDate').appendChild(opDate);
 		day.setDate(day.getDate() + 1);
 	}
-
+	
     // Fill 24 hours
 	time.setHours(0); // start at 00:00
 	for(var i = 0; i < 24; i++) {
@@ -74,8 +74,12 @@ function initFormTime() {
 		$('selTime').appendChild(opTime);
 		time.setHours(time.getHours() + 1);
 	}
+	$('selTime').value = 18;	// default to 6pm
+	
 	connect('btnLoad','onclick',btnLoad_click);
 	makeInvisible('boxLoading');
+	
+	btnLoad_click(null);	// load up default time
 }
 
 var prog_mouseOver = function(e) {
