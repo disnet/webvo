@@ -25,6 +25,7 @@ var schedule = Object();
 
 schedule.xmlChannels = null;        // holds the channels -- packed when the user first navigates to the site
 schedule.xmlProgrammes = null;      // holds the progrmames -- packed when the user selectes a time  
+schedule.rows = Object();
 schedule.timesHeader = [];          // used to fill the time slots on the top of the schedule table
 schedule.numHours = 3;              // number of hours the schedule will display
 schedule.startDate = null;			// first day that we have programme information on
@@ -44,7 +45,8 @@ function init() {
 	//var rec = doSimpleXMLHttpRequest('ruby/form_recording.rb');
 	//rec.addCallbacks(gotRecording,fetchFailed);
 	
-    connect('btnLoad','onclick',btnLoad_click);
+    connect('btnListing','onclick',btnListing_click);
+	connect('btnRecording','onclick',btnRecording_click);
 }
 
 function initFormTime() {
@@ -54,7 +56,7 @@ function initFormTime() {
 		schedule.stopDate.slice(4,6) + "-" + schedule.stopDate.slice(6,8));
 	var time = new Date();
 	
-	$('boxInfo').firstChild.nodeValue = time.toLocaleString();
+	$('boxInfo').firstChild.nodeValue = time.toLocaleDateString();
 	
     // Fill next n days
 	while(day <= end) { // add all the days we have on the server
@@ -68,10 +70,11 @@ function initFormTime() {
 	time.setHours(0); // start at 00:00
 	for(var i = 0; i < 24; i++) {
 		var opTime = OPTION({'value':time.getHours()},
-			time.getHours() + ":00");
+			mil2std(time.getHours() + ":00"));
 		$('selTime').appendChild(opTime);
 		time.setHours(time.getHours() + 1);
 	}
+	connect('btnLoad','onclick',btnLoad_click);
 	makeInvisible('boxLoading');
 }
 
@@ -91,22 +94,40 @@ var prog_click = function(e) {
 	var btnRecord = INPUT({'id':'btnRecord','type':'submit','value':'record'}, null);
 	
 	var elProgramme = e.src();
-	var elExtended = elProgramme.lastChild.firstChild.nodeValue;
-	//var elSubtitled = elProgramme.getElement('sub-title');
 	
 	connect(btnClose,'onclick',btnClose_click);
 	connect(btnRecord,'onclick',btnRecord_click);
 	
 	var prog_id = elProgramme.getAttribute('id'); // get the programme id
+	var start_time = prog_id.slice(prog_id.length-20);
 	prog_id = prog_id.slice(0,prog_id.length-6);	// removes the timezone trailer
+	var channel_id = prog_id.slice(0,prog_id.length-14);
 	
+	var row = schedule.rows[channel_id];
+	
+	for (var i = 0; i < row.length; i++	) {	// search for selected show
+		if(row[i].getAttribute('start') == start_time) {
+			var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
+			var desc_els = row[i].getElementsByTagName('desc');
+			var prog_desc = "";
+			if (desc_els.length != 0) {
+				var prog_desc = desc_els[0].firstChild.nodeValue;
+			}
+			
+			var subtitle_els = row[i].getElementsByTagName('sub-title');
+			var prog_subtitle = "";
+			if(subtitle_els.length != 0) {
+				prog_subtitle = subtitle_els[0].firstChild.nodeValue;
+			}
+		}
+	}
 	var progID = SPAN({'id':'prog_id','class':'invisible'},prog_id);
-	var boxTitle = "Show name: " + elProgramme.firstChild.nodeValue;
-	var boxMessage = "Details: " + elExtended;
-	var boxSubtitle = "Sub-title: ";
+	var boxTitle = "Show name: " + prog_title;
+	var boxMessage = "Details: " + prog_desc;
+	var boxSubtitle = "Sub-title: " + prog_subtitle;
 	
 	var box = DIV({'id':'mnuRecord'},
-		[btnClose, [boxTitle,BR(null,null),BR(null,null),boxMessage,BR(null,null),progID], btnRecord]);
+		[btnClose, [boxTitle,BR(null,null),BR(null,null),boxMessage,BR(null,null),BR(null,null),boxSubtitle,progID], btnRecord]);
 		
 	setElementPosition(box,mousePos);
 	swapDOM('mnuRecord',box);
@@ -146,9 +167,11 @@ var btnLoad_click = function(e) {
 
     // initialize the time header
     schedule.timesHeader = [];
+	headDate = new Date(date);
     for (var i = 0; i < schedule.numHours; i++) {
-        schedule.timesHeader.push( (date.getHours() + i).toString() + ":00");
-        schedule.timesHeader.push( (date.getHours() + i).toString() + ":30");
+        schedule.timesHeader.push( mil2std(headDate.getHours().toString() + ":00"));
+        schedule.timesHeader.push( mil2std(headDate.getHours().toString() + ":30"));
+		headDate.setHours(headDate.getHours() + 1);       
     }
 	
     // find what date/time we want
@@ -161,22 +184,41 @@ var btnLoad_click = function(e) {
     d.addCallbacks(gotProgrammes,fetchFailed);
 };
 
+var btnRecording_click = function(e) {
+	makeInvisible('listingContent');
+	makeVisible('recordingContent');
+		
+};
+var btnListing_click = function(e) {
+	makeInvisible('recordingContent');
+	makeVisible('listingContent');
+};
 // Parses the xml and form the Schedule table
 var formListingTable = function () {
-    var rows = Object();
     var xmldoc = schedule.xmlProgrammes;
 
     var root_node = xmldoc.getElementsByTagName('tv').item(0);
 	// grab all the channels
-    var xml_channels = schedule.xmlChannels.getElementsByTagName('channel');
+	var xml_channels = new Array();
+    xml_channels = schedule.xmlChannels.getElementsByTagName('channel');
 	// grab all the programmes
     var xml_programmes = root_node.getElementsByTagName('programme');
+	
+
+	var cmpChannels = function(ch1,ch2) {
+		var num1 = ch1.getElementsByTagName('display-name')[2].firstChild.nodeValue;
+		var num2 = ch2.getElementsByTagName('display-name')[2].firstChild.nodeValue;
+		return num1 - num2;
+	};
+	
+	xml_channels = map(function(el){ return el}, xml_channels);	// convert from nodelist to array
+	xml_channels.sort(cmpChannels);								// so we can sort it
 
     // 1.  Initialize <rows> Object(). Each channel is added as the first element of it's own property
-    forEach(xml_channels, function(ch) { rows[ch.getAttribute('id')] = [ch]; });
-
+    forEach(xml_channels, function(ch) { schedule.rows[ch.getAttribute('id')] = [ch]; });
+	
     // 2.  Fill  <rows> Object() by pushing programmes into their associated channel slot
-    forEach(xml_programmes, function(el) { rows[el.getAttribute('channel')].push(el); });
+    forEach(xml_programmes, function(el) { schedule.rows[el.getAttribute('channel')].push(el); });
 
 	
 	// create the DOM table from <head_strings> and <rows> using the programm_row_display function
@@ -184,7 +226,7 @@ var formListingTable = function () {
 		THEAD({'style':'width:100%'}, 
 			form_table_head(schedule.timesHeader)),
         TBODY({'style':'width:100%'},
-			form_table_body(rows)));
+			form_table_body(schedule.rows)));
 	swapDOM('schedule',new_table);
 	makeInvisible('boxLoading');
 };
@@ -233,20 +275,6 @@ programme_row_display = function(row) {
 		var prog_stop = row[i].getAttribute('stop');
         var progID =  channelID + prog_start; 
 		
-		var desc_els = row[i].getElementsByTagName('desc');//[0].firstChild.nodeValue
-		if (desc_els.length != 0) {
-			var prog_desc = desc_els[0].firstChild.nodeValue;
-		}
-		else {
-			var prog_desc = "";
-		}
-		var subtitle_els = row[i].getElementsByTagName('sub-title');
-		if(subtitle_els.length != 0) {
-			var prog_subtitle = subtitle_els[0].firstChild.nodeValue;
-		}
-		else{
-			var prog_subtitle = "";
-		}
         var isoStart = isoTimestamp(munge_date(prog_start));
         var isoStop = isoTimestamp(munge_date(prog_stop));
 		
@@ -254,41 +282,26 @@ programme_row_display = function(row) {
 		// If the show starts before the current time schedule
 		if (isoStart < schedule.start) {
 			// If the end is after the current time schedule 
-			if( isoStop > schedule.stop) {
-				show_length = schedule.numHours; // set time full
-			}
+			if( isoStop > schedule.stop) 
+				{ show_length = schedule.numHours; }// set time full
 			// if the end is before the schedule end
-			else {
-				/*show_length = isoStop.getHours() - schedule.start.getHours();
-				show_length +=  (isoStop.getMinutes() - schedule.start.getMinutes()) / 60;*/
-				show_length = (isoStop-schedule.start) / 3600000;  // 3600000 to convert from ms to hours
-			}
+			else 
+				{ show_length = (isoStop-schedule.start) / 3600000; } // 3600000 to convert from ms to hours
 		}
 		// if the show starts after the begining of the schedule
 		else {
 			// If the show end is after the schedule end
-			if (isoStop > schedule.stop) {
-				/*show_length = schedule.stop.getHours() - isoStart.getHours();
-				show_length +=  (schedule.stop.getMinutes() - isoStart.getMinutes()) / 60;
-				*/
-				show_length = (schedule.stop-isoStart) / 3600000;  // 3600000 to convert from ms to hours
-			}
+			if (isoStop > schedule.stop) 
+				{show_length = (schedule.stop-isoStart) / 3600000;}  // 3600000 to convert from ms to hours
 			// If the show end is before the schedule end
-			else {
-				/*show_length = isoStop.getHours() - isoStart.getHours();
-				show_length +=  (isoStop.getMinutes() - isoStart.getMinutes()) / 60;
-				*/
-				show_length = (isoStop-isoStart) / 3600000;  // 3600000 to convert from ms to hours			
-			}
+			else 
+			{show_length = (isoStop-isoStart) / 3600000; }// 3600000 to convert from ms to hours			
+			
 		}
 
 		var colSpan = show_length * schedule.slotsPerHour;  
-		var prog_td = TD({'id':progID,'class':'programme','colSpan':colSpan}, // colSpan *not* colspan -- I HATE IE!!!
-			[prog_title, 
-            SPAN({'id':'start','class':'invisible'},isoStart),
-            SPAN({'id':'stop','class':'invisible'},isoStop),
-            SPAN({'id':'sub-title','class':'invisible'},prog_subtitle),
-			SPAN({'id':'desc','class':'invisible'},prog_desc)]); 
+		var prog_td = TD({'id':progID,'class':'programme','colSpan':colSpan},prog_title); // colSpan *not* colspan -- I HATE IE!!!
+	
 		connect(prog_td,'onmouseover',prog_mouseOver);
 		connect(prog_td,'onmouseout',prog_mouseOut);
 		connect(prog_td,'onclick',prog_click);
@@ -399,3 +412,20 @@ var gotAdd = function(req) {
 var gotRecording = function(req) {
 	log(req.responseText);
 };
+
+function mil2std(mil) {
+	var hour = parseInt(mil.slice(0,2));
+	if (hour < 12) {
+		if(hour == 0) {
+			return "12:" + mil.slice(2) + "AM";
+		}
+		return mil + "AM";
+	}
+	if(hour == 12) {
+		return mil + "PM";
+	}
+	else {
+		hour -= 12;
+		return (hour.toString()) + mil.slice(2) + "PM";
+	}
+}

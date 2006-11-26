@@ -52,11 +52,11 @@ table.schedule {
 table.schedule td{
     border:1px solid black;
 }
-#contentTop {
+#listingContentTop {
 	height:100%;
 	width:100%;
 }
-#contentMain {
+#listingContentMain {
 	height:100%;
 	width:100%;
 }

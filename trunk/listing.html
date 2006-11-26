@@ -25,16 +25,15 @@
 <div class="titleblock"><h1>WebVo</h1><p>&ldquo;Insert some random text here.&rdquo;</p></div>
 
 <div><ul class="navbar">
-		 <li><a href="proto.html" class="nav">TV Listing</a></li>
-		 <li><a href="Scheduled.html" class="nav">Scheduled</a></li>
-		 <li><a href="Recorded.html" class="nav">Recorded</a></li>
+		 <li id="btnListing"><a href="#" class="nav">TV Listing</a></li>
+		 <li id="btnRecording"><a href="#" class="nav">Scheduled</a></li>
+		 <li><a href="#" class="nav">Recorded</a></li>
 		 <li><a href="#" class="nav">About</a></li>
 </ul></div>
 
-<div class="content">
- <div id="contentTop">
-	
-	<div id="boxInfo">nil</div>
+<div id="listingContent" class="content">
+ <div id="listingContentTop">
+	<div id="boxInfo">&nbsp;</div>
 	<div id="boxTime">
 	 <select id="selDate" class="formDayTime"></select>
 	 <select id="selTime" class="formDayTime"></select>
@@ -42,13 +41,15 @@
 	</div>
 	<div id="boxLoading" class="invisible">Loading...</div>
  </div>
- <div id="contentMain">
+ <div id="listingContentMain">
     <table id="schedule"></table>
 	<div id="mnuRecord" class="invisible"></div>
 	<div id="mnuAddStatus" class="invisible"></div>
  </div>
 </div>
-
+<div id="recordingContent" class='invisible'>
+	Hello world
+</div>
 <div class="footer">
   <div class="right">
     <p>&copy; 2006 Cylon Hackers</p>
