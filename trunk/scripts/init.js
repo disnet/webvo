@@ -49,6 +49,7 @@ function init() {
 	connect('btnRecording','onclick',btnRecording_click);
 }
 
+// Populate the date/time switcher
 function initFormTime() {
 	var day = isoDate(schedule.startDate.slice(0,4) + "-" +
 		schedule.startDate.slice(4,6) + "-" + schedule.startDate.slice(6,8));
@@ -58,8 +59,8 @@ function initFormTime() {
 	
 	$('boxInfo').firstChild.nodeValue = time.toLocaleDateString();
 	
-    // Fill next n days
-	while(day <= end) { // add all the days we have on the server
+    // Fill all the days we have on the server
+	while(day <= end) { 
 		var opDate = OPTION({'value':day}, 
 			[dayOfWeek[day.getDay()] + " " + day.getDate()]);
 		$('selDate').appendChild(opDate);

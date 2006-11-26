@@ -1,3 +1,5 @@
+// Collection of utility functions
+
 // Converts an object to an 2D array (sort of)
 // for every property in obj (assume each property is an array)
 // arr[i] = obj.property
@@ -10,23 +12,18 @@ function obj2arr(obj) {
     return arr;
 }
 
-// Forms the zap2it date into an isoTimestamp
-function munge_date(str_date) {
+// Converts zap2it timestamp to a date object
+function zapTimeToDate(str_date) {
     parsed_date = str_date.slice(0,4) + '-';
     parsed_date += str_date.slice(4,6) + '-';
     parsed_date += str_date.slice(6,8) + ' ';
     parsed_date += str_date.slice(8,10) + ':';
     parsed_date += str_date.slice(10,12) + ':';
     parsed_date += str_date.slice(12);
-    return parsed_date;
-}
-function makeInvisible(el) {
-	addElementClass(el,'invisible');
+    return isoTimestamp(parsed_date);
 }
 
-function makeVisible(el) {
-	removeElementClass(el,'invisible');
-}
+// Convets a date object to a zap2it timestamp
 function dateToZapTime(date) {
     isoTime = toISOTimestamp(date);
 	
@@ -44,10 +41,10 @@ function dateToZapTime(date) {
 		zapTime += isoTime.slice(14,16);	//miniute
     	zapTime += isoTime.slice(17,19);	//second
 	}
-    
-    
     return zapTime;
 }
+
+// Converts military time to standard
 function mil2std(mil) {
 	var hour = parseInt(mil.slice(0,2));
 	if (hour < 12) {
@@ -65,3 +62,11 @@ function mil2std(mil) {
 	}
 }
 
+// Hide an element
+function makeInvisible(el) {
+	addElementClass(el,'invisible');
+}
+// Unhide an element
+function makeVisible(el) {
+	removeElementClass(el,'invisible');
+}

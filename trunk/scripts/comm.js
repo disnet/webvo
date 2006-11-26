@@ -1,3 +1,6 @@
+// Derfered reqests handlers
+
+
 // Got the channels from server
 var gotChannels_init = function(req) {
    schedule.xmlChannels = req.responseXML; 
@@ -17,9 +20,12 @@ var gotProgrammes = function(req) {
        schedule.xmlProgrammes = null;
        return;
     }
-   formListingTable();
+	
+	// Create the table
+   	formListingTable();
 };
 
+// Make sure there was not error when adding a show
 var gotAdd = function(req) {
 	xmldoc = req.responseXML;
 	var error = xmldoc.getElementsByTagName('error');
@@ -35,6 +41,7 @@ var gotAdd = function(req) {
 	}
 	makeInvisible('boxLoading'); 
 };
+
 var gotRecording = function(req) {
 	log(req.responseText);
 };

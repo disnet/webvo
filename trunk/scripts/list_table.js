@@ -1,32 +1,31 @@
-// Parses the xml and form the Schedule table
+// Main work funcitons for listing table
+
+// Parses the xml and form the listing table
 var formListingTable = function () {
     var xmldoc = schedule.xmlProgrammes;
 
     var root_node = xmldoc.getElementsByTagName('tv').item(0);
 	// grab all the channels
-	var xml_channels = new Array();
-    xml_channels = schedule.xmlChannels.getElementsByTagName('channel');
+    var xml_channels = schedule.xmlChannels.getElementsByTagName('channel');
 	// grab all the programmes
     var xml_programmes = root_node.getElementsByTagName('programme');
 	
-
+	// Comparator for channal sort function
 	var cmpChannels = function(ch1,ch2) {
 		var num1 = ch1.getElementsByTagName('display-name')[2].firstChild.nodeValue;
 		var num2 = ch2.getElementsByTagName('display-name')[2].firstChild.nodeValue;
 		return num1 - num2;
 	};
-	
 	xml_channels = map(function(el){ return el}, xml_channels);	// convert from nodelist to array
 	xml_channels.sort(cmpChannels);								// so we can sort it
 
-    // 1.  Initialize <rows> Object(). Each channel is added as the first element of it's own property
+    // Initialize <rows> Object(). Each channel is added as the first element of it's own property
     forEach(xml_channels, function(ch) { schedule.rows[ch.getAttribute('id')] = [ch]; });
 	
-    // 2.  Fill  <rows> Object() by pushing programmes into their associated channel slot
+    // Fill  <rows> Object() by pushing programmes into their associated channel slot
     forEach(xml_programmes, function(el) { schedule.rows[el.getAttribute('channel')].push(el); });
 
-	
-	// create the DOM table from <head_strings> and <rows> using the programm_row_display function
+	// create the listing table
     var new_table = TABLE({'id':'schedule','class':'schedule'},
 		THEAD({'style':'width:100%'}, 
 			form_table_head(schedule.timesHeader)),
@@ -36,20 +35,20 @@ var formListingTable = function () {
 	makeInvisible('boxLoading');
 };
 
-// Forms the listing table head. It includes a row with empty TD used for spacing and 
-// a row with the time
+// Forms the listing table header. It includes a row with spacing TDs and a row with the hours
 function form_table_head(head) {
-	var empty_slots = schedule.numHours * schedule.slotsPerHour; // gets the number of minutes in the schedule
-	var colSpan = empty_slots / (schedule.numHours * 2);	// number of slots that a 1/2 hour needs to span
+	var empty_slots = schedule.numHours * schedule.slotsPerHour;
+	// number of slots that a 1/2 hour needs to span 
+	var colSpan = empty_slots / (schedule.numHours * 2);	
 	 
 	var empty_data = [];
 	for (var i = 0; i < empty_slots; i++) {
 		empty_data.push('');
 	}
-	
+	// Create the spacing TDs
 	var empty_row = [TR(null,
 		map(partial(TD,{'class':'empty', 'style':'border:0px;'}),empty_data))];
-	
+	// Create the hours TDs
 	var head_row = [TR(null,
 		[TD({'class':'head'},'Ch.')].concat(map(partial(TD,{'class':'head','colSpan':colSpan}),head)))];
 	
@@ -80,8 +79,8 @@ programme_row_display = function(row) {
 		var prog_stop = row[i].getAttribute('stop');
         var progID =  channelID + prog_start; 
 		
-        var isoStart = isoTimestamp(munge_date(prog_start));
-        var isoStop = isoTimestamp(munge_date(prog_stop));
+        var isoStart = zapTimeToDate(prog_start);
+        var isoStop = zapTimeToDate(prog_stop);
 		
 		var show_length;
 		// If the show starts before the current time schedule
