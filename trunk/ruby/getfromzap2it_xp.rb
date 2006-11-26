@@ -24,7 +24,7 @@
 
 
 require 'date'
-#require 'mysql'
+require 'mysql'
 require 'xml/libxml'
 
 SERVERNAME = "localhost"

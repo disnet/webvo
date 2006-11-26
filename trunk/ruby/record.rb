@@ -56,6 +56,16 @@ def findProcessNum(procCat)
   return pid
 end
 
+#find the category name of the process
+def findProcCat(procNum)
+  readme = IO.popen("ps -p #{procNum} -o cmd")
+  sleep (1)
+  temp = readme.gets
+  cmd = readme.gets
+  readme.close()
+  return cmd
+end
+
 #find process number given the number
 def findProcNum(procNum)
   readme = IO.popen("ps #{procNum}")
@@ -110,23 +120,32 @@ else
 
   #if there is one, need to locate and end process
   else
-     CAT_PID = pidres
-     puts "PID found: #{CAT_PID}"
-     pid = findProcNum(CAT_PID)
+     INIT_PID = pidres
+     puts "PID found: #{INIT_PID}"
+     pid = findProcNum(INIT_PID)
+     cmd = findProcCat(INIT_PID)
      #if not found as actually running,remove from database
      if pid.nil?
        puts "Process not actually running"
-       dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{CAT_PID}")
+       dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{INIT_PID}")
 
-     #if is found to be running, need to confirm that isn't most recent program
+     #if is found to be running, need to confirm that isn't most recent program or a random process that happens to have the same PID number
      else
+       #return PID of closest upcoming show
        row = dbh.query("SELECT PID FROM Recording ORDER BY start LIMIT 1")
+       #return command type of closest upcoming show
+       cmdname = dbh.query("SELECT CMD FROM Recording ORDER BY start LIMIT 1")
        initialpid = row.fetch_row
-       #if is not most recent show, kill process
-       if initialpid.nil?
+       initialcmd = cmdname.fetch_row
+
+       #if process running is not most recent show OR
+       #the commands are the same
+       if initialpid.nil? || cmd == initialcmd
          puts "Current process does not contain most recent show"
-	 commandSent = system("kill #{CAT_PID}")
-         dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{CAT_PID}")
+	 commandSent = system("kill #{INIT_PID}")
+       #update database
+         dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{INIT_PID}")
+         dbh.query("UPDATE Recording SET CMD = "" WHERE PID = #{INIT_PID}")
        
        #otherwise leave it alone, wait for it to finish
        else
@@ -158,18 +177,16 @@ end
   showStartDate = format_to_Ruby("#{startrow}")
   showStopDate = format_to_Ruby("#{stoprow}")
   currDate = DateTime.now
-  show = RecordedShow.new(20061115100,channelrow,startrow,stoprow)
+  show = RecordedShow.new("#{title}#{startrow}#{channelrow}",channelrow,startrow,stoprow)
 
 #calc if show has been missed
   diffstop = calcTimeTo(showStopDate,currDate)
  
 #calc show length in seconds
   showlength = calcTimeTo(showStopDate,showStartDate)
-  puts "show length in seconds " + showlength.to_s
 
 #calculate when recording show starts
   sleeptime = calcTimeTo(showStartDate,currDate)
-  puts "sleep for this long " + sleeptime.to_s
 
 #if the show started already and is over
   if diffstop < 0
@@ -181,19 +198,25 @@ end
     exit
   end
 
+#if the show is still going, set the length of the show to the amount of time left
+  if diffstop < showlength
+    showlength = diffstop
+  end
+
 #if the show hasn't started yet
   if sleeptime > 0
     hours = sleeptime/3600
     minutes = (sleeptime%3600)/60
     seconds = minutes%60
 #locate PID for process
-    CAT_PID = findProcessNum("ruby")
-    puts CAT_PID
+    PROC_PID = findProcessNum("ruby")
 
-#send CAT_PID to database (need to reopen database)
+#send CAT_PID and command to database (need to reopen database)
     dbh = databaseconnect()
-    dbh.query("UPDATE Recording SET PID = #{CAT_PID.to_i} WHERE Start = #{startrow[0]}")
+    dbh.query("UPDATE Recording SET PID = #{PROC_PID.to_i} WHERE Start = #{startrow[0]}")
     puts "PID saved to database\n"
+    dbh.query("UPDATE Recording SET CMD = 'ruby record.rb' WHERE Start = #{startrow[0]}")
+    puts "Command name saved to database\n"
 
 #close the database
     dbh.close()
@@ -223,10 +246,12 @@ end
     CAT_PID = findProcessNum("cat")
     puts CAT_PID
 
-#send CAT_PID to database (need to reopen database)
+#send CAT_PID and command name to database (need to reopen database)
     dbh = databaseconnect()
     dbh.query("UPDATE Recording SET PID = #{CAT_PID.to_i} WHERE Start = #{startrow[0]}")
     puts "PID saved to database\n"
+    dbh.query("UPDATE Recording SET CMD = 'cat' WHERE Start = #{startrow[0]}")
+    puts "Command name saved to database\n"
 
 #close the database
     dbh.close()
