@@ -190,19 +190,15 @@ end
       
       #if programme to add is during a programme that is already in the database
       if begins_before || ends_after || occurs_during || occurs_around:
-        sstart = row["start"]
         schan_id = row["channelID"]
         #see if this programme is in recording, if so then error out
-        show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{sstart}')")
+        show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{qstart.to_s}')")
         if show_in_recording.fetchrow != nil:
           title_with_spaces = row["title"].gsub(/["_"]/," ")
           dbh.close()
           error_if_not_equal(true, false, "Requested show occurs during: " + title_with_spaces)
         end
-        dbh.close()
-        error_if_not_equal(true, false, "Requested show occurs during a show already requested to be recorded")
       end
-      
     end
     
     #look up channel number to include in xmlNode
