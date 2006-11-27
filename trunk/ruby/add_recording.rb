@@ -218,7 +218,7 @@ end
       error_if_not_equal(true, false, "channel from requested show not in database")
     end
     
-    xmlNode = form_node(start, stop, title, channel_info.fetch_row[0], chan_id, desc)
+    puts xmlNode = form_node(start, stop, title, channel_info.fetch_row[0], chan_id, desc)
     
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
