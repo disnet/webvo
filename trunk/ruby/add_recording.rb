@@ -47,7 +47,7 @@ def error_if_not_equal(value, standard, error_string)
   end
 end
 def form_node(start, stop, title, channel, channelID, desc)
-  xmlNode << "<programme>\n"
+  xmlNode = "<programme>\n"
   xmlNode << "<title>" + title + "</title>\n"
   xmlNode << "<desc>" + desc + "</desc>\n"
   xmlNode << "<start>" + start + "</start>\n"
@@ -232,8 +232,9 @@ end
     puts chan_id + " " + desc
     puts channel_num
     puts "3"
+    form_node(start, stop, title, channel_num, chan_id, desc)
+    puts "4"
     puts xmlNode = form_node(start, stop, title, channel_num, chan_id, desc)
-    
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
     xmlNode = xmlNode.gsub(/["'"]/, "_*_")
