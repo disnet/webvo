@@ -252,6 +252,6 @@ end
   end
   
   puts("<success>Recording scheduled</success>")
-  cgi.shutdown()
+  #cgi.shutdown()
   #call record.rb
-  exec("ruby record.rb")
+  #exec("ruby record.rb")
