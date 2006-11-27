@@ -110,9 +110,9 @@ end
   #<start>start date time </start>
   #<stop>stop date time </stop>
   #</programme>
-  
+  puts chan_id
+  puts date_time
   xml.find("programme").each do |e|
-    puts "*"
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
       #get channel id, start time, stop time, title, and all xml information
       #channel id -> chan_id
