@@ -182,10 +182,11 @@ end
     #check to see if there is a programme during the same time.
     allpresults = dbh.query("SELECT start, stop, channelID FROM Programme ORDER BY start")
     #loop through the results and check if they are during the same time
+    puts "openning looping through hash"
     allpresults.each_hash do |row|
       qstart = row["start"].to_i
       qstop = row["stop"].to_i
-      
+      puts "*"
       #possible locations of programmes
       begins_before = qstop > istart && qstop <= istop && qstart <= istop && qstart < istart
       ends_after = qstart >= istart && qstop > istop && qstart < istop
@@ -194,8 +195,8 @@ end
       
       #if programme to add is during a programme that is already in the database
       if begins_before || ends_after || occurs_during || occurs_around:
-        sstart = row["start"]
-        schan_id = row["channelID"]
+        puts sstart = row["start"]
+        puts schan_id = row["channelID"]
         #see if this programme is in recording, if so then error out
         show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{sstart}')")
         if show_in_recording.fetchrow != nil:
