@@ -99,7 +99,6 @@ end
   xmlNode = '00000'
   title = '0000'
   desc = 'stuff'
-  chan_id = 'stuff'
   
   #reforming node to look like
   #<programme>
