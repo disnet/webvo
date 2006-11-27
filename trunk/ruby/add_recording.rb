@@ -64,7 +64,6 @@ end
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
 #checks for 1 argument
-  puts cgi.keys.length()
   error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
   error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
 
@@ -113,6 +112,7 @@ end
   #</programme>
   
   xml.find("programme").each do |e|
+    puts "*"
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
       #get channel id, start time, stop time, title, and all xml information
       #channel id -> chan_id
@@ -148,6 +148,7 @@ end
       end
       error_if_not_equal(need_title, false, "programme doesn't have a title")
       got_programme = false
+      puts "here"
     end
   end
   
