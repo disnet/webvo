@@ -109,8 +109,6 @@ end
   #<start>start date time </start>
   #<stop>stop date time </stop>
   #</programme>
-  puts chan_id
-  puts date_time
   xml.find("programme").each do |e|
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
       #get channel id, start time, stop time, title, and all xml information
@@ -147,7 +145,6 @@ end
       end
       error_if_not_equal(need_title, false, "programme doesn't have a title")
       got_programme = false
-      puts "here"
     end
   end
   
@@ -170,7 +167,7 @@ end
       dbh.close() 
     end
   else
-  
+    puts "opened database"
     #check and make sure that the programme isn't already there
     presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
     rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='chan_id}' AND start = '#{start}')")
