@@ -227,17 +227,13 @@ end
       dbh.close()
       error_if_not_equal(true, false, "channel from requested show not in database")
     end
-    puts start + " " + stop + " " + title + " "
 
-    puts chan_id + " " + desc
-    puts channel_num
-    puts xmlNode = form_node(start, stop, title, channel_num, chan_id, desc)
+    xmlNode = form_node(start, stop, title, channel_num, chan_id, desc)
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
     xmlNode = xmlNode.gsub(/["'"]/, "_*_")
     title = title.gsub(/[" "]/,"_")
     dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
-    puts "Got here"
     if rresults.fetch_row == nil:
       #send information to recording table
       dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
@@ -248,8 +244,8 @@ end
     allpresults.free
     dbh.close()
   end
-  
-  puts("<success>Recording scheduled</success>")
+  puts "got here"
+  puts "<success>Recording scheduled</success>"
   cgi.shutdown()
   #call record.rb
   exec("ruby record.rb")
