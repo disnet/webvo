@@ -59,7 +59,7 @@ def form_node(start, stop, title, channel, channelID, desc)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/plain\n\n" 
+  puts "Content-Type: text/xml\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
@@ -152,8 +152,8 @@ end
   
   #get the integer versions of start and stop to use to check if the programme
   #to be added is at the same time as a current show.
-  puts istart = start.to_i
-  puts istop = stop.to_i
+  istart = start.to_i
+  istop = stop.to_i
   
   #connect to database
   begin
@@ -167,7 +167,6 @@ end
       dbh.close() 
     end
   else
-    puts "opened database"
     #check and make sure that the programme isn't already there
     presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
     rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='chan_id}' AND start = '#{start}')")
@@ -180,11 +179,9 @@ end
     #check to see if there is a programme during the same time.
     allpresults = dbh.query("SELECT start, stop, channelID, title FROM Programme ORDER BY start")
     #loop through the results and check if they are during the same time
-    puts "openning looping through hash"
     allpresults.each_hash do |row|
-      puts qstart = row["start"].to_i
-      puts qstop = row["stop"].to_i
-      puts "*"
+      qstart = row["start"].to_i
+      qstop = row["stop"].to_i
       #possible locations of programmes
       begins_before = qstop > istart && qstop <= istop && qstart <= istop && qstart < istart
       ends_after = qstart >= istart && qstop > istop && qstart < istop
@@ -193,8 +190,8 @@ end
       
       #if programme to add is during a programme that is already in the database
       if begins_before || ends_after || occurs_during || occurs_around:
-        puts sstart = row["start"]
-        puts schan_id = row["channelID"]
+        sstart = row["start"]
+        schan_id = row["channelID"]
         #see if this programme is in recording, if so then error out
         show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{sstart}')")
         if show_in_recording.fetchrow != nil:
@@ -207,7 +204,6 @@ end
       end
       
     end
-    allpresults.free
     
     #look up channel number to include in xmlNode
     channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
@@ -227,11 +223,9 @@ end
       #send information to recording table
       dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
     end
-    puts "hello world"
     #close the database
     dbh.close()
   end
-  puts "got here"
   puts "<success>Recording scheduled</success>"
   cgi.shutdown()
   #call record.rb
