@@ -195,11 +195,15 @@ end
         show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{qstart.to_s}')")
         puts "<error>5</error>"
         if show_in_recording.fetchrow != nil:
+          puts "<error>6</error>"
           title_with_spaces = row["title"].gsub(/["_"]/," ")
+          puts "<error>7</error>"
           dbh.close()
+          puts "<error>8</error>"
           error_if_not_equal(true, false, "Requested show occurs during: " + title_with_spaces)
+          puts "<error>9</error>"
         end
-        puts "<error>6</error>"
+        puts "<error>10</error>"
       end
     end
     
