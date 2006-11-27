@@ -227,7 +227,6 @@ end
       dbh.close()
       error_if_not_equal(true, false, "channel from requested show not in database")
     end
-    puts "number of rows" + channel_info.num_rows
     puts start + " " + stop + " " + title + " "
     puts channel_info.fetch_row.to_s + " " 
     puts chan_id + " " + desc
