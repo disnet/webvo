@@ -64,7 +64,7 @@ end
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
 #checks for 1 argument
-  error_if_not_equal(cgi.length, 1, "Needs one argument")
+  error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
   error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
 
 #get argument
