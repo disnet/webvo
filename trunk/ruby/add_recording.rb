@@ -220,9 +220,9 @@ end
     allpresults.free
     
     #look up channel number to include in xmlNode
-    channel_info = dbh.query("SELECT number FROM Channel WHERE (channelID ='#{chan_id}') LIMIT 1")
-    
-    if channel_info.fetch_row.nil?:
+    channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
+    channel_num = channel_info.fetch_row
+    if channel_num == nil:
       channel_info.free
       dbh.close()
       error_if_not_equal(true, false, "channel from requested show not in database")
@@ -230,9 +230,9 @@ end
     puts start + " " + stop + " " + title + " "
 
     puts chan_id + " " + desc
-    puts channel_info.fetch_row
+    puts channel_num
     puts "3"
-    puts xmlNode = form_node(start, stop, title, channel_info.fetch_row, chan_id, desc)
+    puts xmlNode = form_node(start, stop, title, channel_num, chan_id, desc)
     
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
