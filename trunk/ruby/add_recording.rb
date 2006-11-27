@@ -173,8 +173,6 @@ end
     rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='chan_id}' AND start = '#{start}')")
     
     if presults.fetch_row != nil:
-      presults.free
-      rresults.free
       dbh.close()
       error_if_not_equal(false, true, "programme already added to database")
     end
@@ -201,17 +199,9 @@ end
         show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{sstart}')")
         if show_in_recording.fetchrow != nil:
           title_with_spaces = row["title"].gsub(/["_"]/," ")
-          rresults.free
-          presults.free
-          allpresults.free
-          show_in_recording.free
           dbh.close()
           error_if_not_equal(true, false, "Requested show occurs during: " + title_with_spaces)
         end
-        rresults.free
-        presults.free
-        allpresults.free
-        show_in_recording.free
         dbh.close()
         error_if_not_equal(true, false, "Requested show occurs during a show already requested to be recorded")
       end
@@ -223,7 +213,6 @@ end
     channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
     channel_num = channel_info.fetch_row
     if channel_num == nil:
-      channel_info.free
       dbh.close()
       error_if_not_equal(true, false, "channel from requested show not in database")
     end
@@ -240,9 +229,6 @@ end
     end
     puts "hello world"
     #close the database
-    rresults.free
-    presults.free
-    allpresults.free
     dbh.close()
   end
   puts "got here"
