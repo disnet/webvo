@@ -194,7 +194,8 @@ end
         #see if this programme is in recording, if so then error out
         show_in_recording = dbh.query("SELECT start FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{qstart.to_s}')")
         puts "<error>5</error>"
-        if show_in_recording.fetch_row != nil:
+        puts temp_var = show_in_recording.fetch_row
+        if temp_var != nil:
           puts "<error>6</error>"
           title_with_spaces = row["title"].gsub(/["_"]/," ")
           puts "<error>7</error>"
