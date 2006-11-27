@@ -52,9 +52,9 @@ def form_node(start, stop, title, channel, channelID, desc)
   xmlNode << "<desc>" + desc + "</desc>\n"
   xmlNode << "<start>" + start + "</start>\n"
   xmlNode << "<stop>" + stop + "</stop>\n"
-  xmlNode << "<channel>" + channel + "</channel>"
-  xmlNode << "<channelID>" + channelID + "</channel>"
-  xmlNode << "</programme>"
+  xmlNode << "<channel>" + channel + "</channel>\n"
+  xmlNode << "<channelID>" + channelID + "</channel>\n"
+  xmlNode << "</programme>\n"
   return xmlNode
 end
 
