@@ -220,7 +220,7 @@ end
     allpresults.free
     
     #look up channel number to include in xmlNode
-    channel_info = dbh.query("SELECT number FROM Channel WHERE (channelID ='#{chan_id}')" LIMIT 1)
+    channel_info = dbh.query("SELECT number FROM Channel WHERE (channelID ='#{chan_id}') LIMIT 1")
     
     if channel_info.fetch_row == nil:
       channel_info.free
@@ -232,26 +232,26 @@ end
     puts chan_id + " " + desc
     puts channel_info.fetch_row
     puts "3"
-#    puts xmlNode = form_node(start, stop, title, channel_info.fetch_row, chan_id, desc)
+    puts xmlNode = form_node(start, stop, title, channel_info.fetch_row, chan_id, desc)
     
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
-#    xmlNode = xmlNode.gsub(/["'"]/, "_*_")
-#    title = title.gsub(/[" "]/,"_")
-#    dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
+    xmlNode = xmlNode.gsub(/["'"]/, "_*_")
+    title = title.gsub(/[" "]/,"_")
+    dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
     
-#    if rresults.fetch_row == nil:
+    if rresults.fetch_row == nil:
       #send information to recording table
-#      dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
-#    end
+      dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
+    end
     #close the database
-#    rresults.free
-#    presults.free
-#    allpresults.free
-#    dbh.close()
+    rresults.free
+    presults.free
+    allpresults.free
+    dbh.close()
   end
   
   puts("<success>Recording scheduled</success>")
-  #cgi.shutdown()
+  cgi.shutdown()
   #call record.rb
-  #exec("ruby record.rb")
+  exec("ruby record.rb")
