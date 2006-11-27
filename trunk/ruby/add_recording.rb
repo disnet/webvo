@@ -152,8 +152,8 @@ end
   
   #get the integer versions of start and stop to use to check if the programme
   #to be added is at the same time as a current show.
-  istart = start.to_i
-  istop = stop.to_i
+  puts istart = start.to_i
+  puts istop = stop.to_i
   
   #connect to database
   begin
