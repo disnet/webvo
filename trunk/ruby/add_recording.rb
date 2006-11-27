@@ -187,17 +187,21 @@ end
       ends_after = qstart >= istart && qstop > istop && qstart < istop
       occurs_during = qstart >= istart && qstop <= istop
       occurs_around = (qstart <= istart && qstop >= istop)
-      
+      puts "<error>2</error>"
       #if programme to add is during a programme that is already in the database
       if begins_before || ends_after || occurs_during || occurs_around:
+        puts "<error>3</error>"
         schan_id = row["channelID"]
+        puts "<error>4</error>"
         #see if this programme is in recording, if so then error out
         show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{qstart.to_s}')")
+        puts "<error>5</error>"
         if show_in_recording.fetchrow != nil:
           title_with_spaces = row["title"].gsub(/["_"]/," ")
           dbh.close()
           error_if_not_equal(true, false, "Requested show occurs during: " + title_with_spaces)
         end
+        puts "<error>6</error>"
       end
     end
     
