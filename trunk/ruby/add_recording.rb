@@ -192,7 +192,7 @@ end
         schan_id = row["channelID"]
         #puts "<error>4</error>"
         #see if this programme is in recording, if so then error out
-        show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{qstart.to_s}')")
+        show_in_recording = dbh.query("SELECT start FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{qstart.to_s}')")
         puts "<error>5</error>"
         if show_in_recording.fetchrow != nil:
           puts "<error>6</error>"
