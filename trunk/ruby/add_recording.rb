@@ -222,7 +222,7 @@ end
     #look up channel number to include in xmlNode
     channel_info = dbh.query("SELECT number FROM Channel WHERE (channelID ='#{chan_id}') LIMIT 1")
     
-    if channel_info.fetch_row == nil:
+    if channel_info.fetch_row.nil?:
       channel_info.free
       dbh.close()
       error_if_not_equal(true, false, "channel from requested show not in database")
@@ -240,7 +240,7 @@ end
     title = title.gsub(/[" "]/,"_")
     dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
     
-    if rresults.fetch_row.nil?:
+    if rresults.fetch_row == nil:
       #send information to recording table
       dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
     end
