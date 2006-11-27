@@ -72,7 +72,7 @@ end
         puts show_info.to_s.gsub(/["_*_"]/, "'")
       else
         dbh.close()
-        error_if_not_equal(true, false, "recording programme not in programme")
+        error_if_not_equal(true, false, "recording programme not in programme "+start + " " chan_id)
       end
     end
     dbh.close()
