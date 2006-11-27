@@ -59,7 +59,7 @@ def form_node(start, stop, title, channel, channelID, desc)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/xml\n\n" 
+  puts "Content-Type: text/plain\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
@@ -189,9 +189,8 @@ end
       occurs_around = (qstart <= istart && qstop >= istop)
       #if programme to add is during a programme that is already in the database
       if begins_before || ends_after || occurs_during || occurs_around:
-        puts "<error>3</error>"
         schan_id = row["channelID"]
-        puts "<error>4</error>"
+        #puts "<error>4</error>"
         #see if this programme is in recording, if so then error out
         show_in_recording = dbh.query("SELECT start, channelID FROM Recording WHERE (channelID ='#{row[schan_id]}' AND start = '#{qstart.to_s}')")
         puts "<error>5</error>"
