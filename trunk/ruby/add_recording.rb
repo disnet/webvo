@@ -49,7 +49,6 @@ end
 def form_node(start, stop, title, channel, channelID, desc)
   xmlNode = "<programme>\n"
   xmlNode << "<title>#{title}</title>\n"
-  puts xmlNode
   xmlNode << "<desc>#{desc}</desc>\n"
   xmlNode << "<start>" + start.to_s + "</start>\n"
   xmlNode << "<stop>" + stop.to_s + "</stop>\n"
@@ -232,16 +231,13 @@ end
 
     puts chan_id + " " + desc
     puts channel_num
-    puts "3"
-    form_node(start, stop, title, channel_num, chan_id, desc)
-    puts "4"
     puts xmlNode = form_node(start, stop, title, channel_num, chan_id, desc)
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
     xmlNode = xmlNode.gsub(/["'"]/, "_*_")
     title = title.gsub(/[" "]/,"_")
     dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
-    
+    puts "Got here"
     if rresults.fetch_row == nil:
       #send information to recording table
       dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
