@@ -240,7 +240,7 @@ end
     title = title.gsub(/[" "]/,"_")
     dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
     
-    if rresults.fetch_row == nil:
+    if rresults.fetch_row.nil?:
       #send information to recording table
       dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
     end
