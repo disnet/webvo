@@ -184,8 +184,8 @@ end
     #loop through the results and check if they are during the same time
     puts "openning looping through hash"
     allpresults.each_hash do |row|
-      qstart = row["start"].to_i
-      qstop = row["stop"].to_i
+      puts qstart = row["start"].to_i
+      puts qstop = row["stop"].to_i
       puts "*"
       #possible locations of programmes
       begins_before = qstop > istart && qstop <= istop && qstart <= istop && qstart < istart
@@ -216,6 +216,7 @@ end
     channel_info = dbh.query("SELECT number FROM Channel WHERE (channelID ='#{chan_id}')")
     
     if channel_info.fetch_row == nil:
+      channel_info.free
       error_if_not_equal(true, false, "channel from requested show not in database")
     end
     
