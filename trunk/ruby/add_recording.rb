@@ -187,7 +187,6 @@ end
       ends_after = qstart >= istart && qstop > istop && qstart < istop
       occurs_during = qstart >= istart && qstop <= istop
       occurs_around = (qstart <= istart && qstop >= istop)
-      puts "<error>2</error>"
       #if programme to add is during a programme that is already in the database
       if begins_before || ends_after || occurs_during || occurs_around:
         puts "<error>3</error>"
