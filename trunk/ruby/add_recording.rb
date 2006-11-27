@@ -48,12 +48,12 @@ def error_if_not_equal(value, standard, error_string)
 end
 def form_node(start, stop, title, channel, channelID, desc)
   xmlNode = "<programme>\n"
-  xmlNode << "<title>#{title}</title>\n"
-  xmlNode << "<desc>#{desc}</desc>\n"
-  xmlNode << "<start>" + start.to_s + "</start>\n"
-  xmlNode << "<stop>" + stop.to_s + "</stop>\n"
-  xmlNode << "<channel>" + channel.to_s + "</channel>\n"
-  xmlNode << "<channelID>" + channelID.to_s + "</channel>\n"
+  xmlNode << "\t<title>#{title}</title>\n"
+  xmlNode << "\t<desc>#{desc}</desc>\n"
+  xmlNode << "\t<start>" + start.to_s + "</start>\n"
+  xmlNode << "\t<stop>" + stop.to_s + "</stop>\n"
+  xmlNode << "\t<channel>" + channel.to_s + "</channel>\n"
+  xmlNode << "\t<channelID>" + channelID.to_s + "</channelID>\n"
   xmlNode << "</programme>\n"
   return xmlNode
 end
