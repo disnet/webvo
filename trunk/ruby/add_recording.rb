@@ -59,7 +59,7 @@ def form_node(start, stop, title, channel, channelID, desc)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/plain\n\n" 
+  puts "Content-Type: text/xml\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
@@ -161,7 +161,6 @@ end
 #  if gets an error (can't connect)
   rescue MysqlError => e
       error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
-    puts "Unable to connect to database\n"
     if dbh.nil? == false
       #close the database
       dbh.close() 
@@ -190,21 +189,19 @@ end
       #if programme to add is during a programme that is already in the database
       if begins_before || ends_after || occurs_during || occurs_around:
         schan_id = row["channelID"]
-        #puts "<error>4</error>"
         #see if this programme is in recording, if so then error out
         show_in_recording = dbh.query("SELECT start FROM Recording WHERE (channelID ='#{schan_id}' AND start = '#{qstart.to_s}')")
-        puts "<error>5</error>"
-        puts temp_var = show_in_recording.fetch_row
-        if temp_var != nil:
-          puts "<error>6</error>"
+        recording_res = show_in_recording.fetch_row
+        if recording_res != nil:
+
           title_with_spaces = row["title"].gsub(/["_"]/," ")
-          puts "<error>7</error>"
+
           dbh.close()
-          puts "<error>8</error>"
+
           error_if_not_equal(true, false, "Requested show occurs during: " + title_with_spaces)
-          puts "<error>9</error>"
+
         end
-        puts "<error>10</error>"
+
       end
     end
     
