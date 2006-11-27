@@ -21,7 +21,6 @@
 #sends recording information to client
 
 require 'cgi'
-require 'xml/libxml'
 require 'date'
 require "mysql"
 
@@ -48,7 +47,7 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/xml\n\n" 
+  puts "Content-Type: text/plain\n\n" 
   cgi = CGI.new     # The CGI object is how we get the arguments 
 #open up database
     begin
@@ -62,22 +61,20 @@ end
       dbh.close() 
     end
   else
+    puts "connected to database"
     allrresults = dbh.query("SELECT start, channelID FROM Recording ORDER BY start")
     allrresults.each_hash do |row|
       start = row["start"].to_i
       chan_id = row["channelID"].to_i      
       show = dbh.query("SELECT xmlNode FROM Programme WHERE (start='#{start}' AND channelID='#{chan_id}')")
-      if show != nil:
-        puts show.fetch_row[0].to_s.gsub(/["_*_"]/, "'")
+      show_info = show.fetch_row
+      if show_info != nil:
+        puts show_info.to_s.gsub(/["_*_"]/, "'")
       else
-        show.free
-        allpresults.free
         dbh.close()
         error_if_not_equal(true, false, "recording programme not in programme")
       end
-      show.free
     end
-    allpresults.free
     dbh.close()
   end
   
