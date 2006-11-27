@@ -229,7 +229,7 @@ end
     end
     puts "number of rows" + channel_info.num_rows
     puts start + " " + stop + " " + title + " "
-    puts channel_info.fetch_row[0].to_s + " " 
+    puts channel_info.fetch_row.to_s + " " 
     puts chan_id + " " + desc
     puts xmlNode = form_node(start, stop, title, channel_info.fetch_row[0].to_s, chan_id, desc)
     
