@@ -61,16 +61,14 @@ end
       dbh.close() 
     end
   else
-    puts "connected to database"
     allrresults = dbh.query("SELECT start, channelID FROM Recording ORDER BY start")
     allrresults.each_hash do |row|
-      puts "*"
       start = row["start"]
       chan_id = row["channelID"]      
       show = dbh.query("SELECT xmlNode FROM Programme WHERE (start='#{start}' AND channelID='#{chan_id}')")
       show_info = show.fetch_row
       if show_info != nil:
-        puts show_info.to_s.gsub(/["_*_"]/, "'")
+        puts show_info.to_s.gsub("_*_", "'")
       else
         dbh.close()
         error_if_not_equal(true, false, "recording programme not in programme "+ start.to_s + " " + chan_id.to_s)
