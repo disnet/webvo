@@ -227,7 +227,8 @@ end
       dbh.close()
       error_if_not_equal(true, false, "channel from requested show not in database")
     end
-    
+    puts start + " " + stop + " " + title + " "
+    puts channel_info.fetch_row[0] + " " + chan_id + " " + desc
     puts xmlNode = form_node(start, stop, title, channel_info.fetch_row[0], chan_id, desc)
     
     #send information to programme's table 
