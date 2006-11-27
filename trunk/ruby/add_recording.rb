@@ -238,6 +238,7 @@ end
       #send information to recording table
       dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
     end
+    puts "hello world"
     #close the database
     rresults.free
     presults.free
