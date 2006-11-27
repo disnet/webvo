@@ -94,11 +94,11 @@ end
 
   got_programme = true
   
-  start = '00000'
-  stop = '00000'
-  xmlNode = '00000'
-  title = '0000'
-  desc = 'stuff'
+  start = ' '
+  stop = ' '
+  xmlNode = ' '
+  title = ' '
+  desc = ' '
   
   #reforming node to look like
   #<programme>
