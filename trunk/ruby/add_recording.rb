@@ -228,9 +228,11 @@ end
       error_if_not_equal(true, false, "channel from requested show not in database")
     end
     puts start + " " + stop + " " + title + " "
-    channel_info.each do |row|
-      puts row[0].to_s
+    
+    while row = channel_info.fetch_row do
+      puts row[0]
     end
+
     puts chan_id + " " + desc
     puts xmlNode = form_node(start, stop, title, channel_info.fetch_row[0].to_s, chan_id, desc)
     
