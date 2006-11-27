@@ -180,7 +180,7 @@ end
     end
    
     #check to see if there is a programme during the same time.
-    allpresults = dbh.query("SELECT start, stop, channelID FROM Programme ORDER BY start")
+    allpresults = dbh.query("SELECT start, stop, channelID, title FROM Programme ORDER BY start")
     #loop through the results and check if they are during the same time
     puts "openning looping through hash"
     allpresults.each_hash do |row|
@@ -204,9 +204,16 @@ end
           rresults.free
           presults.free
           allpresults.free
+          show_in_recording.free
           dbh.close()
           error_if_not_equal(true, false, "Requested show occurs during: " + title_with_spaces)
         end
+        rresults.free
+        presults.free
+        allpresults.free
+        show_in_recording.free
+        dbh.close()
+        error_if_not_equal(true, false, "Requested show occurs during a show already requested to be recorded")
       end
       
     end
@@ -217,6 +224,7 @@ end
     
     if channel_info.fetch_row == nil:
       channel_info.free
+      dbh.close()
       error_if_not_equal(true, false, "channel from requested show not in database")
     end
     
@@ -224,8 +232,8 @@ end
     
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
-      xmlNode = xmlNode.gsub(/["'"]/, "_*_")
-      title = title.gsub(/[" "]/,"_")
+    xmlNode = xmlNode.gsub(/["'"]/, "_*_")
+    title = title.gsub(/[" "]/,"_")
     dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
     
     if rresults.fetch_row == nil:
