@@ -232,7 +232,7 @@ end
     puts chan_id + " " + desc
     puts channel_info.fetch_row
     puts "3"
-    puts xmlNode = form_node(start, stop, title, channel_info.fetch_row[1].to_s, chan_id, desc)
+    puts xmlNode = form_node(start, stop, title, channel_info.fetch_row.to_s, chan_id, desc)
     
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
