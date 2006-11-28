@@ -97,18 +97,23 @@ end
       have_errored = true
     else
 	#check if it has a PID
+      puts "1"
       pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}' AND PID)")
       #if it does kill the process
       pid_info = pids.fetch_row
       if pid_info != nil:
+      puts "2"
         CAT_PID = pid_info #need PID number
         readme = IO.popen("ps #{CAT_PID}")
         sleep (1)
         temp = readme.gets
         pid = readme.gets
+        puts "3"
         if pid != "NULL"
+          puts "4"
           commandSent = system("kill #{CAT_PID}")
         end
+        puts "5"
         if presult != nil:
           show_info = presult.to_s + "-" + date_time
           puts "got here"
