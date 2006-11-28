@@ -116,18 +116,22 @@ end
         puts "5"
         if presult != nil:
           show_info = presult.to_s + "-" + date_time
-          puts "got here"
+          puts "6"
           dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
         end
       end
+      puts "7"
       #delete the entry from Recording
       dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
     end
+    puts "8"
     #See if there is an entry for programme
     if(presult == nil)
+      puts "9"
       puts "<error>Programme not in Programme</error>\n"
       have_errored = true
     else
+    puts "10"
       #if there is an entry, delete it
       dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
     end  
