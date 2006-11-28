@@ -97,39 +97,36 @@ end
 #if not there error
     puts "4"
     if(rresults.fetch_row ==nil)
-	puts "<error>Programme not in Recording</error>\n"
+      puts "<error>Programme not in Recording</error>\n"
     else
 	#check if it has a PID
-	pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
-        #if it does kill the process
-	puts pid_info = pids.fetch_row[0]
-	puts "5"
-	if pid_info != nil:
+      pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}' AND PID)")
+      #if it does kill the process
+      puts pid_info = pids.fetch_row
+      puts "5"
+        if pid_info != nil:
           puts "6"
-	  CAT_PID = pid_info #need PID number
+          CAT_PID = pid_info #need PID number
           readme = IO.popen("ps #{CAT_PID}")
           sleep (1)
           temp = readme.gets
           pid = readme.gets
           if pid != "NULL"
             commandSent = system("kill #{CAT_PID}")
-            dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{CAT_PID}")
           end
         end
-	puts "7"
+        puts "7"
         #delete the entry from Recording
-	  dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
-    end
+        dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
+      end
     #See if there is an entry for programme
     if(presults.fetch_row ==nil)
-	puts "<error>Programme not in Programme</error>\n"
+      puts "<error>Programme not in Programme</error>\n"
     else
-    #if there is an entry, delete it
-	dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
-    end
-
-  
-end
+      #if there is an entry, delete it
+      dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
+    end  
+  end
 puts "<success></success>"
 #closing down cgi
 cgi.shutdown()
