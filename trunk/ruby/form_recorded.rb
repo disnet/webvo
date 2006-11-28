@@ -84,8 +84,8 @@ rescue MysqlError => e
     #file may be there but need to compare with title in programme
       rec_info.each_hash do |recorded|
         puts "3"
-        chan_id = recorded["channelID"]
-        start = recorded["start"]
+        puts chan_id = recorded["channelID"]
+        puts start = recorded["start"]
         puts show_name = recorded["ShowName"]
         
         #look up programme that matches start date and channelID to later compare with title
