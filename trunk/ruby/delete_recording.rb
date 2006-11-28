@@ -78,8 +78,7 @@ end
     dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
   #if gets an error (can't connect)
   rescue MysqlError => e
-      error_if_not_equal(false,true, "Error code: " + e.errno + "\n")
-      error_if_not_equal(false,true, "Error message: "+ e.error + "\n")
+      error_if_not_equal(false,true, "Error code: " + e.errno +" "+ e.error + "\n")
     if dbh.nil? == false
       #close the database
       dbh.close() 
@@ -108,7 +107,8 @@ end
             commandSent = system("kill #{CAT_PID}")
           end
           if presult != nil
-            dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{presult}')")
+            show_info = presult.to_s + "-" + date_time
+            dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
           end
         end
           #delete the entry from Recording
