@@ -89,17 +89,17 @@ rescue MysqlError => e
         puts show_name = recorded["ShowName"]
         
         #look up programme that matches start date and channelID to later compare with title
-        programmes = dbh.query("SELECT * FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
+        programmes = dbh.query("SELECT xmlNode FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
         got_programme = false
         puts "3.5"
         
-        programmes.each_hash do |programme|
+        
           puts "4"
-          if rec_array.include?(showName + ".mpg") && got_programme != false:
+          if rec_array.include?(showName + ".mpg"):
             puts "4.25"
             f_size = File.size(showName + ".mpg")
-            puts add_size_to_xmlNode(f_size.to_i, programme["xmlNode"])
-            got_programme = true
+            puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
+            
           else
             puts "4.5"
             #duplicate in db or programme file not in directory either way entry should be deleted
