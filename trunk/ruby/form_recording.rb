@@ -47,8 +47,11 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/plain\n\n" 
+  puts "Content-Type: text/xml\n\n" 
   cgi = CGI.new     # The CGI object is how we get the arguments 
+  #manually return header and parent beginning
+  puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
+
 #open up database
     begin
   dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
@@ -61,6 +64,7 @@ end
       dbh.close() 
     end
   else
+    have_recordings = false
     allrresults = dbh.query("SELECT start, channelID FROM Recording ORDER BY start")
     allrresults.each_hash do |row|
       start = row["start"]
@@ -73,10 +77,14 @@ end
         dbh.close()
         error_if_not_equal(true, false, "recording programme not in programme "+ start.to_s + " " + chan_id.to_s)
       end
-    end
+      have_recordings = true	
+    end	
     dbh.close()
+    error_if_not_equal(have_recordings, true, "no programmes scheduled to record")
   end
   
+  #write up end of parent
+    puts "</tv>" 
 
 
 
