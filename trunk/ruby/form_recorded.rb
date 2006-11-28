@@ -73,7 +73,7 @@ rescue MysqlError => e
     f_size = 0
     rec_dir = Dir.new(SHOW_DIR)
     rec_array = rec_dir.entries
-    rec_info = dbh.query("SELECT start, channelID FROM Recorded")  
+    rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded")  
     
     puts "2"
     #file may be there but need to compare with title in programme
@@ -81,6 +81,7 @@ rescue MysqlError => e
         puts "3"
         chan_id = recorded["channelID"]
         start = recorded["start"]
+        show_name = recorded["ShowName"]
         
         #look up programme that matches start date and channelID to later compare with title
         programmes = dbh.query("SELECT * FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
@@ -89,8 +90,8 @@ rescue MysqlError => e
         channel_num = channel_num_info.fetch_row
         programmes.each_hash do |programme|
           puts "4"
-          if rec_array.include?(programme["title"]+programme["start"] + channel_num + ".mpg") && got_programme != false:
-            f_size = File.size(programme["title"]+programme["start"] +channel_num+ ".mpg")
+          if rec_array.include?(showName + ".mpg") && got_programme != false:
+            f_size = File.size(+ ".mpg")
             puts add_size_to_xmlNode(f_size.to_i, xmlNode)
             got_programme = true
           else
