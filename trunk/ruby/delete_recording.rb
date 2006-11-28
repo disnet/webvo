@@ -47,14 +47,14 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/xml\n\n" 
+  puts "Content-Type: text/plain\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
-  
+  puts "hello"
 #checks for 1 argument
   error_if_not_equal(cgi.keys.length, 1, "Needs one argument")
   error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
-
+  
 #get argument
   prog_id =  cgi[PROG_ID][0]
 
@@ -65,7 +65,6 @@ end
   
   start_date = date_time[0..7]
   start_time = date_time[8..13]
-
 #error checking
   #Check if times are valid
   error_if_not_equal(start_date.to_i.to_s == start_date, true, "the date time needs to have only numbers in it")
@@ -75,7 +74,7 @@ end
   #Check if dates are valid
   error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
   error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
-
+  puts "2"
 #connect to database
   begin
     dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
@@ -89,18 +88,25 @@ end
       dbh.close() 
     end
   else
+    puts "3"
+    puts chan_id
+    puts date_time
 #look up programme in database
-    presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
-    rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='chan_id}' AND start = '#{start}')")
+    presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
+    rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='#{chan_id}' AND start = '#{date_time}')")
 #if not there error
+    puts "4"
     if(rresults.fetch_row ==nil)
-	puts "<error>Programme not in Recording</error>/n"
+	puts "<error>Programme not in Recording</error>\n"
     else
 	#check if it has a PID
-	pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
+	pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
         #if it does kill the process
-	if pids.fetch_row != nil:
-	  CAT_PID = pid.retch_row[0] #need PID number
+	puts pid_info = pids.fetch_row[0]
+	puts "5"
+	if pid_info != nil:
+          puts "6"
+	  CAT_PID = pid_info #need PID number
           readme = IO.popen("ps #{CAT_PID}")
           sleep (1)
           temp = readme.gets
@@ -110,19 +116,21 @@ end
             dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{CAT_PID}")
           end
         end
+	puts "7"
         #delete the entry from Recording
 	  dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
     end
     #See if there is an entry for programme
     if(presults.fetch_row ==nil)
-	puts "<error>Programme not in Programme</error>/n"
+	puts "<error>Programme not in Programme</error>\n"
     else
     #if there is an entry, delete it
 	dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
     end
 
-  end
+  
 end
+puts "<success></success>"
 #closing down cgi
 cgi.shutdown()
 
