@@ -89,7 +89,9 @@ end
     presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
     rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='#{chan_id}' AND start = '#{date_time}')")
 #if not there error
-    if(rresults.fetch_row ==nil)
+    rresult = rresults.fetch_row
+    presult = presults.fetch_row
+    if(rresult == nil)
       puts "<error>Programme not in Recording</error>\n"
     else
 	#check if it has a PID
@@ -105,9 +107,13 @@ end
           if pid != "NULL"
             commandSent = system("kill #{CAT_PID}")
           end
+          if presult != nil
+            dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{presult}')")
+          end
         end
-        #delete the entry from Recording
-        dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
+          #delete the entry from Recording
+          dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
+        
       end
     #See if there is an entry for programme
     if(presults.fetch_row ==nil)
