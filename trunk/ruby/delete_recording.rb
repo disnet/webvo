@@ -47,7 +47,7 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/xml\n\n" 
+  puts "Content-Type: text/plain\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
 #checks for 1 argument
@@ -111,6 +111,7 @@ end
         end
         if presult != nil:
           show_info = presult.to_s + "-" + date_time
+          puts "got here"
           dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
         end
       end
