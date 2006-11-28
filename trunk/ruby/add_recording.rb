@@ -120,15 +120,8 @@ end
   title = ' '
   desc = ' '
   
+  #getting information to put in xmlNode
   #reforming node to look like
-  #<programme>
-  #<title>title of program</title>
-  #<channelID>channel ID</channelID>
-  #<channel>channel</channel>
-  #<desc>description</desc>
-  #<start>start date time </start>
-  #<stop>stop date time </stop>
-  #</programme>
   xml.find("programme").each do |e|
     if (e["channel"] == chan_id && e["start"][0..(LENGTH_OF_DATE_TIME-1).to_i] == date_time):
       #get channel id, start time, stop time, title, and all xml information
@@ -144,7 +137,7 @@ end
       
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
       c = e.child
-      need_title = true
+    
       keep_looping = true
       
       #gets the title
@@ -168,7 +161,7 @@ end
     end
   end
   
-  error_if_not_equal(got_programme, false, "requested programme not in source XML file ") 
+  error_if_not_equal(got_programme, false, "requested show not in source listings") 
   
   #get the integer versions of start and stop to use to check if the programme
   #to be added is at the same time as a current show.
@@ -192,7 +185,7 @@ end
     
     if presults.fetch_row != nil:
       dbh.close()
-      error_if_not_equal(false, true, "programme already added to database")
+      error_if_not_equal(false, true, "show already added")
     end
    
     #check to see if there is a programme during the same time.
@@ -206,6 +199,7 @@ end
       ends_after = qstart >= istart && qstop > istop && qstart < istop
       occurs_during = qstart >= istart && qstop <= istop
       occurs_around = (qstart <= istart && qstop >= istop)
+      
       #if programme to add is during a programme that is already in the database
       if begins_before || ends_after || occurs_during || occurs_around:
         schan_id = row["channelID"]
@@ -213,15 +207,15 @@ end
         show_in_recording = dbh.query("SELECT start FROM Recording WHERE (channelID ='#{schan_id}' AND start = '#{qstart.to_s}')")
         recording_res = show_in_recording.fetch_row
         if recording_res != nil:
-
+          
           title_with_spaces = row["title"].gsub(/["_"]/," ")
-
+          
           dbh.close()
-
+          
           error_if_not_equal(true, false, "Requested show occurs during: " + title_with_spaces)
-
+          
         end
-
+        
       end
     end
     
