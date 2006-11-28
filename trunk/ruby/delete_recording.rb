@@ -97,27 +97,25 @@ end
       pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}' AND PID)")
       #if it does kill the process
       pid_info = pids.fetch_row
-        if pid_info != nil:
-          CAT_PID = pid_info #need PID number
-          readme = IO.popen("ps #{CAT_PID}")
-          sleep (1)
-          temp = readme.gets
-          pid = readme.gets
-          if pid != "NULL"
-            commandSent = system("kill #{CAT_PID}")
-          end
-          if presult != nil:
-            show_info = presult.to_s + "-" + date_time
-            dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
-          end
+      if pid_info != nil:
+        CAT_PID = pid_info #need PID number
+        readme = IO.popen("ps #{CAT_PID}")
+        sleep (1)
+        temp = readme.gets
+        pid = readme.gets
+        if pid != "NULL"
+          commandSent = system("kill #{CAT_PID}")
         end
-          #delete the entry from Recording
-          dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
-        
+        if presult != nil:
+          show_info = presult.to_s + "-" + date_time
+          dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
+        end
       end
+      #delete the entry from Recording
+      dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
     end
     #See if there is an entry for programme
-    if(presults.fetch_row ==nil)
+    if(presult == nil)
       puts "<error>Programme not in Programme</error>\n"
     else
       #if there is an entry, delete it
