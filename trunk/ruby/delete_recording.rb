@@ -106,7 +106,7 @@ end
           if pid != "NULL"
             commandSent = system("kill #{CAT_PID}")
           end
-          if presult != nil
+          if presult != nil:
             show_info = presult.to_s + "-" + date_time
             dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
           end
@@ -115,6 +115,7 @@ end
           dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
         
       end
+    end
     #See if there is an entry for programme
     if(presults.fetch_row ==nil)
       puts "<error>Programme not in Programme</error>\n"
