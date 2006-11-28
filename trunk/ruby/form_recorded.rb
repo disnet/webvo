@@ -48,6 +48,12 @@ def add_size_to_xml_Node(size, xmlNode)
 end
 
 #main ------------------------------------------------------------------------------------
+  puts "Content-Type: text/xml\n\n" 
+  cgi = CGI.new     # The CGI object is how we get the arguments 
+  #manually return header and parent beginning
+  puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
+
+
 #connect to database
 begin
 dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
