@@ -56,9 +56,11 @@ begin
 #if it does,remove it from recording, programme
   else
      dbh.query("DELETE FROM Recorded Where ShowName = '#{showname}'")
+     puts "Removed from Recorded"
      dbh.query("DELETE FROM Programme Where ShowName = '#{showname}'")
-     
+     puts "Removed from Programme"
 #remove from hard drive
      deletefromHD = system ("rm #{VIDEO_PATH}/#{showname}.mpg")
+     puts "Removed from hard drive"
   end
 end
