@@ -171,13 +171,13 @@ end
   channelrow = lastshowchannel.fetch_row
   stoprow = lastshowstop.fetch_row
   title = lastshowtitle.fetch_row
-  puts "The show, #{title}, to be recorded is on channel #{channelrow}, starts at #{startrow} and ends at #{stoprow}."
+  puts "The show to be recorded, #{title}, is on channel #{channelrow}, starts at #{startrow} and ends at #{stoprow}."
   
 #initialize values of show  
   showStartDate = format_to_Ruby("#{startrow}")
   showStopDate = format_to_Ruby("#{stoprow}")
   currDate = DateTime.now
-  show = RecordedShow.new("#{title}#{startrow}#{channelrow}-1",channelrow,startrow,stoprow)
+  show = RecordedShow.new("#{title}#{startrow}#{channelrow}-0",channelrow,startrow,stoprow)
 
 #calc if show has been missed
   diffstop = calcTimeTo(showStopDate,currDate)
