@@ -87,7 +87,7 @@ end
     end
   else
 #look up programme in database
-    presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
+    presults = dbh.query("SELECT title FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
     rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='#{chan_id}' AND start = '#{date_time}')")
 #if not there error
     rresult = rresults.fetch_row
