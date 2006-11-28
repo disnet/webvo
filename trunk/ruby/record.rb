@@ -177,7 +177,7 @@ end
   showStartDate = format_to_Ruby("#{startrow}")
   showStopDate = format_to_Ruby("#{stoprow}")
   currDate = DateTime.now
-  show = RecordedShow.new("#{title}#{startrow}#{channelrow}",channelrow,startrow,stoprow)
+  show = RecordedShow.new("#{title}#{startrow}#{channelrow}-1",channelrow,startrow,stoprow)
 
 #calc if show has been missed
   diffstop = calcTimeTo(showStopDate,currDate)
@@ -194,7 +194,7 @@ end
     dbh = databaseconnect()
     dbh.query("DELETE FROM Recording WHERE start = #{startrow}")
     dbh.close()
-    #commandSent = system ("ruby record.rb")
+    #commandSent = system ("ruby record.rb &")
     exit
   end
 
@@ -208,6 +208,7 @@ end
     hours = sleeptime/3600
     minutes = (sleeptime%3600)/60
     seconds = minutes%60
+
 #locate PID for process
     PROC_PID = findProcessNum("ruby")
 
@@ -225,6 +226,27 @@ end
     puts "The show will start in #{hours.to_i} hours, #{minutes.to_i} minutes and #{seconds.to_i} seconds.\n"
     sleep (sleeptime)
   end
+
+#if the show exists, need to change the name to have a partII denotation
+#check recorded shows to see if show exists already
+    dbh = databaseconnect()
+    duperes = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{show.showID}'")
+    duperecord = duperes.fetch_row
+    puts duperecord
+#if does return a result, change the final digit
+    if !duperecord.nil?
+       lastcharnum = show.showID.length
+	puts lastcharnum
+#get the final number (need to take into account .mpg)
+       lastchar = show.showID[lastcharnum-4]
+        puts lastchar
+#increment to next number
+       lastchar += 1
+        puts lastchar
+#reinsert into title string
+       show.showID[lastcharnum-4] = lastchar
+    end
+    dbh.close()
 
 #if here, begin recording immediately  
 #tune the card to the correct channel
@@ -253,9 +275,6 @@ end
     dbh.query("UPDATE Recording SET CMD = 'cat' WHERE Start = #{startrow[0]}")
     puts "Command name saved to database\n"
 
-#close the database
-    dbh.close()
-
 #sleep for length of the show
    puts "Going to sleep for the show: #{showlength}\n" 
    sleep (showlength)
@@ -264,14 +283,14 @@ end
     commandSent = system("kill #{CAT_PID}")
     puts "Recording done!\n"
  
-#reopen the database (will remove PID)
-    dbh = databaseconnect()
-    
 #move the show from the recording list to recorded list
-    puts "Moving show: #{title}-#{show.starttime} to recorded list\n"
+    puts "Moving show: #{show.showID} to recorded list\n"
     transferquery = dbh.query("#{channelIDquery}")
     chanID = transferquery.fetch_row
-    dbh.query("INSERT INTO Recorded (channelID,start,showName) VALUES ('#{chanID}', '#{startrow}', '#{title}-#{show.starttime}')")
+    dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{show.showID}')")
+
+#reopen the database (will remove PID)
+    dbh = databaseconnect()
     puts "Removing show from recording list\n"
     dbh.query("DELETE FROM Recording WHERE PID = #{CAT_PID}")
      
@@ -280,6 +299,6 @@ end
 
 #start next recording check
     puts "Locating next show to record\n"
-    #commandSent = system("ruby record.rb")
+    #commandSent = system("ruby record.rb &")
 
 end
