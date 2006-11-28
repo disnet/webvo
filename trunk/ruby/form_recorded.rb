@@ -96,8 +96,8 @@ rescue MysqlError => e
         programmes.each_hash do |programme|
           puts "4"
           if rec_array.include?(showName + ".mpg") && got_programme != false:
-            f_size = File.size(+ ".mpg")
-            puts add_size_to_xmlNode(f_size.to_i, xmlNode)
+            f_size = File.size(showName + ".mpg")
+            puts add_size_to_xmlNode(f_size.to_i, programme["xmlNode"])
             got_programme = true
           else
             #duplicate in db or programme file not in directory either way entry should be deleted
