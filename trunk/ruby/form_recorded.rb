@@ -67,11 +67,7 @@ rescue MysqlError => e
     rec_dir = Dir.new(SHOW_DIR)
     rec_array = rec_dir.entries
     rec_info = dbh.query("SELECT start, channelID FROM Recorded")  
-    if rec_info.fetch_row == nil:
-      rec_info.free
-      dbh.close()
-      error_if_not_equal(true, false, "nothing in database")
-    else
+
     #file may be there but need to compare with title in programme
       rec_info.each_hash do |recorded|
         chan_id = recorded["channelID"]
@@ -92,9 +88,7 @@ rescue MysqlError => e
             dbh.query("DELETE FROM Recording WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
           end
         end
-        programmes.free          
       end
-    end
-    rec_info.free
+    
     dbh.close()
   end
