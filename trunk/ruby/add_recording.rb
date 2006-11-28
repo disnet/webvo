@@ -58,6 +58,25 @@ def form_node(start, stop, title, channel, channelID, desc)
   return xmlNode
 end
 
+def freespace()
+  readme = IO.popen("df --type ext3")
+  sleep (1)
+  header = readme.gets
+  header_arr = Array.new
+  header_arr = header.scan(/\w+/)
+  values = readme.gets
+  values_arr = Array.new
+  values_arr = values.scan(/\w+/)
+  if(header_arr.length == values_arr.length)
+    if(values_arr[header_arr.index("Available")].to_i > (50*10000)):
+      return true
+    else
+      return false
+    end
+  end
+  readme.close()
+  return true
+end
 #main--------------------------------------------------------------------------
   puts "Content-Type: text/xml\n\n" 
   
@@ -92,6 +111,7 @@ end
   error_if_not_equal(file_available(XML_FILE_NAME), true, "Source xml file not in directory")
   xml = XML::Document.file(XML_FILE_NAME)
 
+  error_if_not_equal(freespace(), true, "not enough room on server")
   got_programme = true
   
   start = ' '
