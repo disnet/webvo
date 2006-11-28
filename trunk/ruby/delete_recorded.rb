@@ -3,6 +3,7 @@
 #Delete the recording from the hard drive
 
 require "mysql"
+require "cgi"
 
 SERVERNAME = "localhost"
 USERNAME = "root"
@@ -60,7 +61,20 @@ begin
      dbh.query("DELETE FROM Programme Where ShowName = '#{showname}'")
      puts "Removed from Programme"
 #remove from hard drive
-     deletefromHD = system ("rm #{VIDEO_PATH}/#{showname}.mpg")
+     #need to locate all fragments as well
+     lastchar = showname[showname.length-4]
+     deletefromHD = IO.fnrsv ("rm #{VIDEO_PATH}/#{showname}.mpg")
+     while (deletefrom)
+        deletefromHD = system ("rm #{VIDEO_PATH}/#{showname}.mpg")
+        lastchar += 1
+        puts lastchar
+#reinsert into title string
+       show.showID[lastcharnum-4] = lastchar
+
+     checkforfrags = system("ls #{VIDEO_PATH}/#{showname}.mpg")
+     
      puts "Removed from hard drive"
   end
+end
+
 end
