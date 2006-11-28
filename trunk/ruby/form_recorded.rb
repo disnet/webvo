@@ -85,7 +85,8 @@ rescue MysqlError => e
         #look up programme that matches start date and channelID to later compare with title
         programmes = dbh.query("SELECT * FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
         got_programme = false
-        channel_num = dbh.query("SELECT number FROM Channel WHERE (channelID = '#{chan_id}')").fetch_row[0]
+        channel_num_info = dbh.query("SELECT number FROM Channel WHERE (channelID = '#{chan_id}')")
+        channel_num = channel_num_info.fetch_row
         programmes.each_hash do |programme|
           puts "4"
           if rec_array.include?(programme["title"]+programme["start"] + channel_num + ".mpg") && got_programme != false:
