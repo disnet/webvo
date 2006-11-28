@@ -73,6 +73,11 @@ rescue MysqlError => e
     f_size = 0
     rec_dir = Dir.new(SHOW_DIR)
     rec_array = rec_dir.entries
+    
+    rec_array.each do |thing|
+      puts thing
+    end
+    
     rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded")  
     
     puts "2"
