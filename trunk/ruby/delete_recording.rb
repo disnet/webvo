@@ -124,6 +124,7 @@ end
       puts "<error>Programme not in Programme</error>\n"
     else
       #if there is an entry, delete it
+      puts "8"
       dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
     end  
   end
