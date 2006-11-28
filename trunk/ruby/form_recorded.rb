@@ -106,7 +106,7 @@ rescue MysqlError => e
             dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
             dbh.query("DELETE FROM Recording WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
           end
-        end
+        
       end
     puts "5"
     dbh.close()
