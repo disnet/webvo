@@ -86,12 +86,13 @@ rescue MysqlError => e
         puts "3"
         chan_id = recorded["channelID"]
         start = recorded["start"]
-        show_name = recorded["ShowName"]
+        puts show_name = recorded["ShowName"]
         
         #look up programme that matches start date and channelID to later compare with title
         programmes = dbh.query("SELECT * FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
         got_programme = false
         puts "3.5"
+        
         programmes.each_hash do |programme|
           puts "4"
           if rec_array.include?(showName + ".mpg") && got_programme != false:
