@@ -72,7 +72,9 @@ end
   
   #Check if dates are valid
   error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
-  error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
+  error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31")
+  
+  have_errored = false
 #connect to database
   begin
     dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
@@ -92,6 +94,7 @@ end
     presult = presults.fetch_row
     if(rresult == nil)
       puts "<error>Programme not in Recording</error>\n"
+      have_errored = true
     else
 	#check if it has a PID
       pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}' AND PID)")
@@ -117,12 +120,15 @@ end
     #See if there is an entry for programme
     if(presult == nil)
       puts "<error>Programme not in Programme</error>\n"
+      have_errored = true
     else
       #if there is an entry, delete it
       dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
     end  
   end
-puts "<success>Programme Deleted</success>"
+  if have_errored == true
+    puts "<success>Programme Deleted</success>"
+  end
 #closing down cgi
 cgi.shutdown()
 
