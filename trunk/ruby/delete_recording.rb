@@ -97,46 +97,36 @@ end
       have_errored = true
     else
 	#check if it has a PID
-      puts "1"
       pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}' AND PID)")
       #if it does kill the process
       pid_info = pids.fetch_row
       if pid_info != nil:
-      puts "2"
         CAT_PID = pid_info #need PID number
         readme = IO.popen("ps #{CAT_PID}")
         sleep (1)
         temp = readme.gets
         pid = readme.gets
-        puts "3"
         if pid != "NULL"
-          puts "4"
           commandSent = system("kill #{CAT_PID}")
         end
-        puts "5"
         if presult != nil:
           show_info = presult.to_s + "-" + date_time
-          puts "6"
           dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
         end
       end
-      puts "7"
       #delete the entry from Recording
       dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
     end
-    puts "8"
     #See if there is an entry for programme
     if(presult == nil)
-      puts "9"
       puts "<error>Programme not in Programme</error>\n"
       have_errored = true
     else
-    puts "10"
       #if there is an entry, delete it
       dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
     end  
   end
-  if have_errored == true
+  if have_errored == false:
     puts "<success>Programme Deleted</success>"
   end
 #closing down cgi
