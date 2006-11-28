@@ -63,13 +63,20 @@ begin
 #remove from hard drive
      #need to locate all fragments as well
      lastchar = showname[showname.length-4]
-     deletefromHD = IO.fnrsv ("rm #{VIDEO_PATH}/#{showname}.mpg")
-     while (deletefrom)
-        deletefromHD = system ("rm #{VIDEO_PATH}/#{showname}.mpg")
+#remove first fragment
+     deletefromHD = IO.popen ("rm #{VIDEO_PATH}/#{showname}.mpg")
+     puts deletefromHD
+#check for more fragments
+     while (deletefromHD != )
         lastchar += 1
         puts lastchar
+        showname[lastcharnum-4] = lastchar
+        deletefromHD = system ("rm #{VIDEO_PATH}/#{showname}.mpg")
+             
+     end
+
 #reinsert into title string
-       show.showID[lastcharnum-4] = lastchar
+
 
      checkforfrags = system("ls #{VIDEO_PATH}/#{showname}.mpg")
      
