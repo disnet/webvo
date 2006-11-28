@@ -78,7 +78,7 @@ end
     dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
   #if gets an error (can't connect)
   rescue MysqlError => e
-      error_if_not_equal(false,true, "Error code: " + e.errno +" "+ e.error + "\n")
+      error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
     if dbh.nil? == false
       #close the database
       dbh.close() 
