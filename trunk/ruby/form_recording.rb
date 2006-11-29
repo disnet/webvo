@@ -51,9 +51,9 @@ end
   cgi = CGI.new     # The CGI object is how we get the arguments 
   #manually return header and parent beginning
   puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
-
+  have_recordings = false
 #open up database
-    begin
+  begin
   dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
 #  if gets an error (can't connect)
   rescue MysqlError => e
@@ -64,7 +64,7 @@ end
       dbh.close() 
     end
   else
-    have_recordings = false
+
     allrresults = dbh.query("SELECT start, channelID FROM Recording ORDER BY start")
     allrresults.each_hash do |row|
       start = row["start"]
@@ -80,9 +80,9 @@ end
       have_recordings = true	
     end	
     dbh.close()
-    error_if_not_equal(have_recordings, true, "no programmes scheduled to record")
+
   end
-  
+  error_if_not_equal(have_recordings, true, "no programmes scheduled to record")
   #write up end of parent
     puts "</tv>" 
 
