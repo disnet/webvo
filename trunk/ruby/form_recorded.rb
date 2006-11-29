@@ -95,7 +95,7 @@ rescue MysqlError => e
         
         
         puts "4"
-        if rec_array.include?(showName + ".mpg"):
+        if rec_array.include?(show_name + ".mpg"):
           puts "4.25"
           f_size = File.size(showName + ".mpg")
           puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
