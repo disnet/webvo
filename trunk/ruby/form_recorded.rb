@@ -90,9 +90,14 @@ rescue MysqlError => e
         got_programme = false
         
         
-        if rec_array.include?(show_name + ".mpg"):
+        if rec_array.include?(show_name + "-0"+".mpg"):
           puts "true dat"
-          f_size = File.size(showName + ".mpg")
+          f_size = File.size(show_name + "-0" + ".mpg")
+          frag_num = 1
+          while rec_array.include?(show_name + "-" + frag_num + ".mpg")
+            f_size = f_size + File.size(show_name + "-" + frag_num + ".mpg")
+            frag_num = frag_num + 1
+          end
           puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
           
         else
