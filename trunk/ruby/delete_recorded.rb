@@ -28,6 +28,7 @@ def databaseconnect()
     end
   else
     return dbh
+  end
 end
 
 #Error handler
