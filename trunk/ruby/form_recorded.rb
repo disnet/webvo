@@ -93,7 +93,7 @@ rescue MysqlError => e
           puts "true dat"
           f_size = File.size(show_name + "-0" + ".mpg")
           frag_num = 1
-          while rec_array.include?(show_name + "-" + frag_num + ".mpg")
+          while rec_array.include?(show_name + "-" + frag_num.to_s + ".mpg")
             f_size = f_size + File.size(show_name + "-" + frag_num + ".mpg")
             frag_num = frag_num + 1
           end
