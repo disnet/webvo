@@ -118,3 +118,4 @@ rescue MysqlError => e
       end
     dbh.close()
   end
+  puts "</tv>"
