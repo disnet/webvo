@@ -89,9 +89,12 @@ end
 #look up programme in database
     presults = dbh.query("SELECT title FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
     rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='#{chan_id}' AND start = '#{date_time}')")
+    reced_results = dbh.query("SELECT * FROM Recording WHERE (channelID ='#{chan_id}' AND start = '#{date_time}')")
+    
 #if not there error
     rresult = rresults.fetch_row
     presult = presults.fetch_row
+    reced_result = reced_results.fetch_row
     if(rresult == nil)
       puts "<error>Programme not in Recording</error>\n"
       have_errored = true
@@ -115,7 +118,7 @@ end
           
           channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
           channel_num = channel_info.fetch_row
-          show_info = presult.to_s + "-" + date_time + channel_num 
+          show_info = presult.to_s + "-" + date_time + channel_num
           dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
         end
       end
@@ -123,7 +126,7 @@ end
       dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
     end
     #See if there is an entry for programme
-    if(presult == nil)
+    if(presult == nil && reced_result == nil)
       puts "<error>Programme not in Programme</error>\n"
       have_errored = true
     else
