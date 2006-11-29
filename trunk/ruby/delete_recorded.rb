@@ -71,9 +71,10 @@ begin
   puts "show name acquired"
     
 #check the hard drive for the show to be deleted
-  onHD = system("ls #{VIDEO_PATH}/#{showname}.mpg")
+  onHD = IO.popen("ls #{VIDEO_PATH}/#{showname}.mpg")
   test = onHD.gets
   puts test
+  onHD.close()
 #if does not exist, return error
   if test != "#{VIDEO_PATH}/#{showname}.mpg"
      puts "Show does not need to be deleted"
