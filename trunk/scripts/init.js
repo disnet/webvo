@@ -32,6 +32,11 @@ schedule.startDate = null;			// first day that we have programme information on
 schedule.stopDate = null;			// last day that we have programme information on
 schedule.slotsPerHour = 60;
 
+var recording = Object();
+recording.xmlRecording = null;
+
+var defRecording = new Deferred();
+
 var dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 // Once the page loads, connect up the events
@@ -42,11 +47,10 @@ function init() {
     var ch = doSimpleXMLHttpRequest('ruby/form_channels.rb');
     ch.addCallbacks(gotChannels_init,fetchFailed);
 	
-	//var rec = doSimpleXMLHttpRequest('ruby/form_recording.rb');
-	//rec.addCallbacks(gotRecording,fetchFailed);
-	
     connect('btnListing','onclick',btnListing_click);
 	connect('btnRecording','onclick',btnRecording_click);
+	connect('btnRemoveRecording','onclick',btnRemoveRecording_click);
+	connect('btnCloseRecording','onclick',btnCloseRecording_click);
 }
 
 // Populate the date/time switcher
@@ -66,7 +70,6 @@ function initFormTime() {
 		$('selDate').appendChild(opDate);
 		day.setDate(day.getDate() + 1);
 	}
-	
     // Fill 24 hours
 	time.setHours(0); // start at 00:00
 	for(var i = 0; i < 24; i++) {

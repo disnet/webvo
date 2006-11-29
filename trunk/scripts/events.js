@@ -17,8 +17,8 @@ var prog_click = function(e) {
 	var mousePos = e.mouse().page;
 	
 	// Create the close and record buttons
-	var btnClose = INPUT({'id':'btnClose','type':'button','value':'x'},null);
-	var btnRecord = INPUT({'id':'btnRecord','type':'submit','value':'record'}, null);
+	var btnClose = INPUT({'id':'btnClose','class':'button', 'type':'button','value':'x'},null);
+	var btnRecord = INPUT({'id':'btnRecord','class':'button', 'type':'submit','value':'record'}, null);
 	
 	var elProgramme = e.src(); // Clicked programme TD
 	
@@ -49,8 +49,16 @@ var prog_click = function(e) {
 	
 	var box = DIV({'id':'mnuRecord'},
 		[btnClose, [boxTitle,BR(null,null),BR(null,null),boxMessage,BR(null,null),BR(null,null),boxSubtitle,progID], btnRecord]);
-		
-	setElementPosition(box,mousePos);
+	
+	// Positon box approx. box width to the right if at edge of screen
+	var boxWidth = 250; 	// Hard coded because no easy way of finding dynamically
+	if ( (boxWidth + mousePos.x) > elementDimensions('schedule').w) {
+		mousePos.x -= boxWidth;
+		setElementPosition(box,mousePos);
+	}
+	else {
+		setElementPosition(box,mousePos);
+	}
 	swapDOM('mnuRecord',box);
 	makeVisible($('mnuRecord'));
 	
@@ -107,8 +115,12 @@ var btnLoad_click = function(e) {
 
 // Stub for displaying the recording table
 var btnRecording_click = function(e) {
-	makeInvisible('listingContent');
+	//makeInvisible('listingContent');
 	makeVisible('recordingContent');
+	
+	defRecording = doSimpleXMLHttpRequest('ruby/form_recording.rb');
+	defRecording.addCallbacks(gotRecording,fetchFailed);
+	
 		
 };
 
@@ -116,4 +128,23 @@ var btnRecording_click = function(e) {
 var btnListing_click = function(e) {
 	makeInvisible('recordingContent');
 	makeVisible('listingContent');
+};
+
+var btnRemoveRecording_click = function(e) {
+	var chkBox = $('recording').getElementsByTagName('input');
+	var recArray = [];
+	var removeIDs = [];
+	for(var i = 0; i < chkBox.length; i++) {
+		if(chkBox[i].checked == true) {
+			log(chkBox[i].value);
+			recArray.push(doSimpleXMLHttpRequest('ruby/delete_recording.rb',{'prog_id':chkBox[i].value}));
+			recArray[recArray.length - 1].addCallbacks(gotDelRecording,fetchFailed);
+			removeIDs.push(chkBox[i].value);
+		}
+	}
+	map(function(id) { removeElement(id);}, removeIDs);
+};
+
+var btnCloseRecording_click = function(e) {
+	makeInvisible('recordingContent');
 };

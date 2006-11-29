@@ -43,9 +43,14 @@ var gotAdd = function(req) {
 };
 
 var gotRecording = function(req) {
-	log(req.responseText);
+	// TODO: error handling
+	recording.xmlRecording = req.responseXML;
+	formRecordingTable();
 };
 
+var gotDelRecording = function(req) {
+	log(req.responseText);
+};
 // Error handling for listing request
 var fetchFailed = function (err) {
     log("Data is not available");
