@@ -11,6 +11,7 @@ USERNAME = "root"
 USERPASS = "csc4150"
 DBNAME = "WebVo"
 TABLENAME = "Recording"
+VIDEO_PATH = "/home/daryl/Desktop/TestVideos"
 
 #class to hold pertinent data for recording a show
 class RecordedShow
@@ -76,6 +77,14 @@ def findProcNum(procNum)
   return pid
 end
 
+#look for show of this name
+def findname(id)
+  readme = IO.popen("ls #{VIDEO_PATH}/#{id}")
+  sleep(1)
+  check = readme.gets
+  readme.close()
+  return check
+end
 #calculate the difference between two given dates in seconds
 def calcTimeTo(date1,date2)
   diffstop = date1 - date2
@@ -177,7 +186,8 @@ end
   showStartDate = format_to_Ruby("#{startrow}")
   showStopDate = format_to_Ruby("#{stoprow}")
   currDate = DateTime.now
-  show = RecordedShow.new("#{title}#{startrow}#{channelrow}-0",channelrow,startrow,stoprow)
+  show = RecordedShow.new("#{title}-#{startrow}#{channelrow}-0",channelrow,startrow,stoprow)
+  puts show.showID
 
 #calc if show has been missed
   diffstop = calcTimeTo(showStopDate,currDate)
@@ -236,15 +246,17 @@ end
 #if does return a result, change the final digit
     if !duperecord.nil?
        lastcharnum = show.showID.length
-	puts lastcharnum
 #get the final number (need to take into account .mpg)
-       lastchar = show.showID[lastcharnum-4]
+       lastchar = show.showID[lastcharnum-1]
         puts lastchar
 #increment to next number
+       while findname(show.showID) != nil
        lastchar += 1
         puts lastchar
 #reinsert into title string
-       show.showID[lastcharnum-4] = lastchar
+       show.showID[lastcharnum-1] = lastchar
+       puts show.showID
+       end
     end
     dbh.close()
 
@@ -275,6 +287,22 @@ end
     dbh.query("UPDATE Recording SET CMD = 'cat' WHERE Start = #{startrow[0]}")
     puts "Command name saved to database\n"
 
+#move the show from the recording list to recorded list
+    puts "Moving show: #{show.showID} to recorded list\n"
+    #get the channel ID
+    transferquery = dbh.query("#{channelIDquery}")
+    chanID = transferquery.fetch_row
+
+    #check the show name from Recorded to see if entry exists already
+    res = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{show.showID}'")
+    namecheck = res.fetch_row
+    puts namecheck
+    #if it doesn't, insert into record, otherwise leave it alone
+    if namecheck == nil
+    dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{show.showID}')")
+    end
+    dbh.close()
+
 #sleep for length of the show
    puts "Going to sleep for the show: #{showlength}\n" 
    sleep (showlength)
@@ -282,14 +310,8 @@ end
 #stop the recording
     commandSent = system("kill #{CAT_PID}")
     puts "Recording done!\n"
- 
-#move the show from the recording list to recorded list
-    puts "Moving show: #{show.showID} to recorded list\n"
-    transferquery = dbh.query("#{channelIDquery}")
-    chanID = transferquery.fetch_row
-    dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{show.showID}')")
 
-#reopen the database (will remove PID)
+#remove PID from recording
     dbh = databaseconnect()
     puts "Removing show from recording list\n"
     dbh.query("DELETE FROM Recording WHERE PID = #{CAT_PID}")
