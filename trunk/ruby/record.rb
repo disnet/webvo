@@ -79,12 +79,13 @@ end
 
 #look for show of this name
 def findname(id)
-  readme = IO.popen("ls #{VIDEO_PATH}/#{id}")
+  readme = IO.popen("ls #{VIDEO_PATH}/#{id}.mpg")
   sleep(1)
   check = readme.gets
   readme.close()
   return check
 end
+
 #calculate the difference between two given dates in seconds
 def calcTimeTo(date1,date2)
   diffstop = date1 - date2
@@ -246,17 +247,19 @@ end
 #if does return a result, change the final digit
     if !duperecord.nil?
        lastcharnum = show.showID.length
+	puts lastcharnum
 #get the final number (need to take into account .mpg)
        lastchar = show.showID[lastcharnum-1]
         puts lastchar
 #increment to next number
+       puts findname(show.showID)
        while findname(show.showID) != nil
        lastchar += 1
         puts lastchar
 #reinsert into title string
        show.showID[lastcharnum-1] = lastchar
-       puts show.showID
        end
+       puts show.showID
     end
     dbh.close()
 
@@ -288,7 +291,6 @@ end
     puts "Command name saved to database\n"
 
 #move the show from the recording list to recorded list
-    puts "Moving show: #{show.showID} to recorded list\n"
     #get the channel ID
     transferquery = dbh.query("#{channelIDquery}")
     chanID = transferquery.fetch_row
@@ -298,8 +300,11 @@ end
     namecheck = res.fetch_row
     puts namecheck
     #if it doesn't, insert into record, otherwise leave it alone
-    if namecheck == nil
+    if namecheck == nil && duperecord.nil?
+        puts "Moving show: #{show.showID} to recorded list\n"
     dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{show.showID}')")
+    else
+        puts "Show name already saved to database"
     end
     dbh.close()
 
