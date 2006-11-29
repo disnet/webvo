@@ -112,7 +112,7 @@ def format_date(current_date)
   return current_date.year.to_s + month + day + hour + min + sec
 end
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/plain\n\n" 
+  puts "Content-Type: text/xml\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
@@ -176,8 +176,7 @@ end
       today = format_date(DateTime.now)
 
       itoday = today.to_i
-      error_if_not_equal(itoday > stop.to_i, true, "unless you have a time machine, you cannot record this show")
-      puts "interesting"
+      error_if_not_equal(itoday < stop.to_i, true, "unless you have a time machine, you cannot record this show")
       
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
       c = e.child
