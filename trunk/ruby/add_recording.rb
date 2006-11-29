@@ -174,6 +174,7 @@ end
       stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
       
       #make sure that stop is after current date time
+      puts "danger wil robinson"
       puts today = format_date(DateTime.now)
 
       puts itoday = today.to_s
