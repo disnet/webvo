@@ -43,6 +43,7 @@ puts "Content-Type: text/plain\n\n"
 begin
   cgi = CGI.new     # The CGI object is how we get the arguments 
   puts "Input taken"
+  puts cgi
 
 #checks for 1 argument
   error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
