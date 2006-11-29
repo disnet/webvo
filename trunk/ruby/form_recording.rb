@@ -84,7 +84,6 @@ end
     dbh.close()
     puts "closed"
   end
-  error_if_not_equal(have_recordings, true, "no programmes scheduled to record")
   #write up end of parent
     puts "</tv>" 
 
