@@ -5,7 +5,7 @@
 require "mysql"
 require "cgi"
 
-SERVERNAME = "localhost"
+SERVERNAME = "http://tvbox.homelinux.com/phpmyadmin/"
 USERNAME = "root"
 USERPASS = "csc4150"
 DBNAME = "WebVo"
