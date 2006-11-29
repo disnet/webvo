@@ -87,7 +87,6 @@ rescue MysqlError => e
         
         #look up programme that matches start date and channelID to later compare with title
         programmes = dbh.query("SELECT xmlNode FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
-        got_programme = false
         
         
         if rec_array.include?(show_name + "-0"+".mpg"):
