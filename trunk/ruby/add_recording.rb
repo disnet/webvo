@@ -173,10 +173,11 @@ end
       
       #make sure that stop is after current date time
 
-      puts today = format_date(DateTime.now)
+      today = format_date(DateTime.now)
 
-      puts itoday = today.to_s
+      itoday = today.to_i
       error_if_not_equal(itoday > stop.to_i, true, "unless you have a time machine, you cannot record this show")
+      puts "interesting"
       
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
       c = e.child
