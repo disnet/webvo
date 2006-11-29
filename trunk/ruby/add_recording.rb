@@ -77,6 +77,42 @@ def freespace()
   readme.close()
   return true
 end
+
+def format_date(current_date)
+  month = current_date.month.to_s
+  day = current_date.day.to_s
+  if (current_date.month.to_s.length != 2):
+    month = "0"+ current_date.month.to_s
+  else
+    month = current_date.month.to_s
+  end
+  
+  if (current_date.day.to_s.length != 2):
+    day = "0" + current_date.day.to_s
+  else
+    day = current_date.day.to_s
+  end
+  
+  if(current_date.hour.to_s.length !=2):
+    hour = "0" + current_date.hour.to_s
+  else
+    hour = current_date.hour.to_s
+  end
+  
+  if(current_date.min.to_s.length !=2):
+    hour = "0" + current_date.min.to_s
+  else
+    hour = current_date.min.to_s
+  end
+  
+  if(current_date.min.to_s.length !=2):
+    hour = "0" + current_date.sec.to_s
+  else
+    hour = current_date.sec.to_s
+  end
+  
+  return current_date.year.to_s + month + day + hour + day + sec
+end
 #main--------------------------------------------------------------------------
   puts "Content-Type: text/plain\n\n" 
   
@@ -138,8 +174,9 @@ end
       stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
       
       #make sure that stop is after current date time
-      today = DateTime.now
-      puts itoday = (today.year.to_s + today.month.to_s + today.day.to_s+ today.hour.to_s + today.minute.to_s + today.second.to_s).to_i
+      puts today = format_date(DateTime.now)
+
+      puts itoday = today.to_s
       error_if_not_equal(itoday > stop.to_i, true, "unless you have a time machine, you cannot record this show")
       
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
