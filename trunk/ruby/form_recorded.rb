@@ -66,7 +66,6 @@ rescue MysqlError => e
       dbh.close() 
     end
   else
-    puts "1"
     #look up information in directory where recorded shows are being saved
     
     #for each check against record.rb's pattern
@@ -80,10 +79,8 @@ rescue MysqlError => e
     
     rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded")  
     
-    puts "2"
     #file may be there but need to compare with title in programme
       rec_info.each_hash do |recorded|
-        puts "3"
         puts chan_id = recorded["channelID"]
         puts start = recorded["start"]
         puts show_name = recorded["ShowName"]
@@ -91,12 +88,9 @@ rescue MysqlError => e
         #look up programme that matches start date and channelID to later compare with title
         programmes = dbh.query("SELECT xmlNode FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
         got_programme = false
-        puts "3.5"
         
         
-        puts "4"
         if rec_array.include?(show_name + ".mpg"):
-          puts "4.25"
           f_size = File.size(showName + ".mpg")
           puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
           
