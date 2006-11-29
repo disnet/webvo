@@ -52,6 +52,29 @@ table.schedule {
 table.schedule td{
     border:1px solid black;
 }
+
+.tblRecording td {
+	background-color: green ;
+	border:1px solid black;
+}
+
+.tblRecordingHead td{
+	background-color: gray;
+	border:1px solid black;
+	text-align:center;
+}
+
+table.tblRecording  {
+	text-align:left;
+}
+#recordingContent {
+	position: absolute;
+	top:230px;
+	left:100px;
+	width:50%;
+	background-color:#ADADAD;
+	border:3px solid black;
+}
 #listingContentTop {
 	height:100%;
 	width:100%;
@@ -70,8 +93,8 @@ table.schedule td{
 }
 #mnuRecord {
 	position: absolute;
-	background-color: gray;
-	width: 25%;
+	background-color: #ADADAD;
+	width: 250px;
 	/*height: 5em;*/
 	border: 3px solid black;
 }
@@ -103,18 +126,17 @@ table.schedule td{
 }
 #btnClose {
 	padding:0; 
-	border: 1px solid black; 
 	float:right; 
 	width:1em; 
 	height:1.5em;
 }
 #btnRecord {
 	float: right;
-	border: 1px solid black; 
-	bottom:0; 
-	
 }
-
+.button {
+	border:1px solid black;
+	margin: 3px;
+}
 
 .container {
 background-color:#FFFFFF; margin:0 auto 0 auto; padding:0; width:100%;}
