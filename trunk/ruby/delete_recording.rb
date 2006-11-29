@@ -126,12 +126,14 @@ end
       dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
     end
     #See if there is an entry for programme
-    if(presult == nil && reced_result == nil)
+    if(presult == nil)
       puts "<error>Programme not in Programme</error>\n"
       have_errored = true
     else
       #if there is an entry, delete it
-      dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
+      if reced_result != nil:
+        dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
+      end
     end  
   end
   if have_errored == false:
