@@ -76,7 +76,8 @@ begin
   puts test
   onHD.close()
 #if does not exist, return error
-  if test != "#{VIDEO_PATH}/#{showname}.mpg"
+  check = "#{VIDEO_PATH}/#{showname}.mpg"
+  if test != check
      puts "Show does not need to be deleted"
      exit
 #if it does,remove it from recording, programme
