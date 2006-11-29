@@ -42,6 +42,7 @@ end
 def error_if_not_equal(value, standard, error_string)
   if value != standard:
     puts "<error>Error " + error_string +"</error>"
+    puts "\n</tv>"
     exit
   end
 end
