@@ -61,7 +61,7 @@ begin
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   puts chan_id
   puts date_time
-  if chan_id == nil or date_time == nil
+  if chan_id == nil || date_time == nil
      puts "Show does not exist"
      exit
   else
@@ -104,8 +104,7 @@ begin
      puts deletefromHD
 
 #check for more fragments
-     while (!deletefromHD.nil?)  puts "chanID and datetime acquired"
-
+     while (!deletefromHD.nil?)
         lastchar += 1
         puts lastchar
      #reinsert into title string
