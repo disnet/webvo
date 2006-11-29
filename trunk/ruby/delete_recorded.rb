@@ -16,6 +16,15 @@ VIDEO_PATH = "/home/daryl/Desktop/TestVideos"
 #connect to the database
 def databaseconnect()
   dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
+  rescue MysqlError => e
+       print "Error code: ", e.errno, "\n"
+       print "Error message: ", e.error, "\n"
+  puts "Unable to connect to database\n"
+  if dbh.nil? == false
+    dbh.close() 
+    exit
+  end
+ end
   return dbh
 end
 
