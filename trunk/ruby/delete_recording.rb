@@ -110,7 +110,12 @@ end
           commandSent = system("kill #{CAT_PID}")
         end
         if presult != nil:
-          show_info = presult.to_s + "-" + date_time
+          rec_dir = Dir.new(SHOW_DIR)
+          rec_array = rec_dir.entries
+          
+          channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
+          channel_num = channel_info.fetch_row
+          show_info = presult.to_s + "-" + date_time + channel_num 
           dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
         end
       end
