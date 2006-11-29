@@ -79,40 +79,37 @@ def freespace()
 end
 
 def format_date(current_date)
-  month = current_date.month.to_s
-  day = current_date.day.to_s
   
   if (current_date.month.to_s.length != 2):
     month = "0"+ current_date.month.to_s
   else
     month = current_date.month.to_s
   end
-  puts month
+
   if (current_date.day.to_s.length != 2):
     day = "0" + current_date.day.to_s
   else
     day = current_date.day.to_s
   end
-  puts day
+
   if(current_date.hour.to_s.length !=2):
     hour = "0" + current_date.hour.to_s
   else
     hour = current_date.hour.to_s
   end
-  puts hour
+
   if(current_date.min.to_s.length !=2):
     min = "0" + current_date.min.to_s
   else
     min = current_date.min.to_s
   end
-  puts min
+  
   if(current_date.sec.to_s.length !=2):
     sec = "0" + current_date.sec.to_s
   else
     sec = current_date.sec.to_s
   end
-  puts sec
-  return current_date.year.to_s + month + day + hour + day + min + sec
+  return current_date.year.to_s + month + day + hour + min + sec
 end
 #main--------------------------------------------------------------------------
   puts "Content-Type: text/plain\n\n" 
