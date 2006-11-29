@@ -114,6 +114,8 @@ end
   error_if_not_equal(freespace(), true, "not enough room on server")
   got_programme = true
   
+
+  
   start = ' '
   stop = ' '
   xmlNode = ' '
@@ -134,6 +136,11 @@ end
       
       start = e["start"][0..LENGTH_OF_DATE_TIME-1]
       stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
+      
+      #make sure that stop is after current date time
+      today = DateTime.now
+      itoday = (today.year + today.month + today.day+ today.hour + today.minute + today.second).to_i
+      error_if_not_equal(itoday > stop.to_i, true, "unless you have a time machine, you cannot record this show")
       
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
       c = e.child
