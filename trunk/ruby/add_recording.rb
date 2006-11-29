@@ -78,7 +78,7 @@ def freespace()
   return true
 end
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/xml\n\n" 
+  puts "Content-Type: text/plain\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
@@ -139,7 +139,7 @@ end
       
       #make sure that stop is after current date time
       today = DateTime.now
-      itoday = (today.year + today.month + today.day+ today.hour + today.minute + today.second).to_i
+      puts itoday = (today.year + today.month + today.day+ today.hour + today.minute + today.second).to_i
       error_if_not_equal(itoday > stop.to_i, true, "unless you have a time machine, you cannot record this show")
       
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
