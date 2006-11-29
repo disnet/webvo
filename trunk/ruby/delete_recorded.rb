@@ -95,6 +95,10 @@ begin
 #if it does,remove it from recording, programme
   else
      puts "Show located"
+#check in Recording to see if still recording one of the fragments
+     schedcheck = ("SELECT PID FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
+     if schedcheck != nil
+	
      dbh.query("DELETE FROM Recorded Where ShowName = '#{showname}'")
      puts "Removed from Recorded"
      dbh.query("DELETE FROM Programme Where(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
@@ -103,18 +107,20 @@ begin
 
 #remove from hard drive
      #need to locate all fragments as well
-     lastchar = showname[showname.length-4]
+     lastchar = showname[showname.length-1]
 
 #remove first fragment
      deletefromHD = IO.popen ("rm #{VIDEO_PATH}/#{showname}.mpg")
      puts deletefromHD
+     puts "#{VIDEO_PATH}/#{showname}.mpg has been removed"
 
 #check for more fragments
      while (!deletefromHD.nil?)
         lastchar += 1
         puts lastchar
      #reinsert into title string
-        showname[lastcharnum-4] = lastchar
+        showname[showname.length-1] = lastchar
+        puts showname
      #see if the show exists
         checkforfrags = system("ls #{VIDEO_PATH}/#{showname}.mpg")
      #if it doesn't, get out of loop
@@ -124,6 +130,7 @@ begin
 #if it does, delete from HD, look for another fragment
         else  
           deletefromHD = system ("rm #{VIDEO_PATH}/#{showname}.mpg")
+          puts "#{VIDEO_PATH}/#{showname}.mpg has been removed"
         end  
     
      end
