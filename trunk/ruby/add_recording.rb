@@ -107,9 +107,9 @@ def format_date(current_date)
   end
   puts min
   if(current_date.sec.to_s.length !=2):
-    hour = "0" + current_date.sec.to_s
+    sec = "0" + current_date.sec.to_s
   else
-    hour = current_date.sec.to_s
+    sec = current_date.sec.to_s
   end
   puts sec
   return current_date.year.to_s + month + day + hour + day + min + sec
