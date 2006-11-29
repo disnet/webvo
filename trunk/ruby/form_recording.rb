@@ -80,7 +80,7 @@ end
     dbh.close()
   end
   #write up end of parent
-    puts "</tv>" 
+  puts "\n</tv>" 
 
 
 
