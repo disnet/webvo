@@ -94,12 +94,14 @@ rescue MysqlError => e
           f_size = File.size(show_name + "-0" + ".mpg")
           frag_num = 1
           while rec_array.include?(show_name + "-" + frag_num.to_s + ".mpg")
+            puts "*"
             f_size = f_size + File.size(show_name + "-" + frag_num + ".mpg")
             frag_num = frag_num + 1
           end
+          puts "made it past the while"
           programme = programmes.fetch_row
-          if programme != nil
-            puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
+          if programme != nil:
+            puts add_size_to_xmlNode(f_size.to_i, programme)
             puts "interesting"
           end
           puts "other world"
