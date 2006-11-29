@@ -47,7 +47,7 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/plain\n\n" 
+  puts "Content-Type: text/xml\n\n" 
   cgi = CGI.new     # The CGI object is how we get the arguments 
   #manually return header and parent beginning
   puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
@@ -58,16 +58,13 @@ end
 #  if gets an error (can't connect)
   rescue MysqlError => e
       error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
-    puts "Unable to connect to database\n"
     if dbh.nil? == false
       #close the database
       dbh.close() 
     end
   else
-    puts "hello"
     allrresults = dbh.query("SELECT start, channelID FROM Recording ORDER BY start")
     allrresults.each_hash do |row|
-      puts "1"
       start = row["start"]
       chan_id = row["channelID"]      
       show = dbh.query("SELECT xmlNode FROM Programme WHERE (start='#{start}' AND channelID='#{chan_id}')")
@@ -80,9 +77,7 @@ end
       end
       have_recordings = true	
     end	
-    puts "end"
     dbh.close()
-    puts "closed"
   end
   #write up end of parent
     puts "</tv>" 
