@@ -73,6 +73,10 @@ rescue MysqlError => e
     rec_dir = Dir.new(SHOW_DIR)
     rec_array = rec_dir.entries
     
+    rec_array.each do |thing|
+      puts thing
+    end
+    
     rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded")  
     
     #file may be there but need to compare with title in programme
@@ -87,6 +91,7 @@ rescue MysqlError => e
         
         
         if rec_array.include?(show_name + ".mpg"):
+          puts "true dat"
           f_size = File.size(showName + ".mpg")
           puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
           
