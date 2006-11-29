@@ -97,8 +97,12 @@ rescue MysqlError => e
             f_size = f_size + File.size(show_name + "-" + frag_num + ".mpg")
             frag_num = frag_num + 1
           end
-          puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
-          
+          programme = programmes.fetch_row
+          if programme != nil
+            puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
+            puts "interesting"
+          end
+          puts "other world"
         else
           #duplicate in db or programme file not in directory either way entry should be deleted
           dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
