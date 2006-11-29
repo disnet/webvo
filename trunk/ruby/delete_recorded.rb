@@ -16,6 +16,7 @@ LENGTH_OF_DATE_TIME = 14
 
 #connect to the database
 def databaseconnect()
+  begin
   dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
   rescue MysqlError => e
     print "Error code: ", e.errno, "\n"
