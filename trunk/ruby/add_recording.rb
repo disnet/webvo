@@ -139,7 +139,7 @@ end
       
       #make sure that stop is after current date time
       today = DateTime.now
-      puts itoday = (today.year + today.month + today.day+ today.hour + today.minute + today.second).to_i
+      puts itoday = (today.year.to_s + today.month.to_s + today.day.to_s+ today.hour.to_s + today.minute.to_s + today.second.to_s).to_i
       error_if_not_equal(itoday > stop.to_i, true, "unless you have a time machine, you cannot record this show")
       
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
