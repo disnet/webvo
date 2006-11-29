@@ -73,10 +73,6 @@ rescue MysqlError => e
     rec_dir = Dir.new(SHOW_DIR)
     rec_array = rec_dir.entries
     
-    rec_array.each do |thing|
-      puts thing
-    end
-    
     rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded")  
     
     #file may be there but need to compare with title in programme
@@ -95,14 +91,11 @@ rescue MysqlError => e
           puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
           
         else
-          puts "4.5"
           #duplicate in db or programme file not in directory either way entry should be deleted
           dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
           dbh.query("DELETE FROM Recording WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
         end
         
       end
-    puts "5"
     dbh.close()
   end
-  puts "6"
