@@ -94,18 +94,18 @@ rescue MysqlError => e
         puts "3.5"
         
         
-          puts "4"
-          if rec_array.include?(showName + ".mpg"):
-            puts "4.25"
-            f_size = File.size(showName + ".mpg")
-            puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
-            
-          else
-            puts "4.5"
-            #duplicate in db or programme file not in directory either way entry should be deleted
-            dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-            dbh.query("DELETE FROM Recording WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-          end
+        puts "4"
+        if rec_array.include?(showName + ".mpg"):
+          puts "4.25"
+          f_size = File.size(showName + ".mpg")
+          puts add_size_to_xmlNode(f_size.to_i, programmes.fetch_row)
+          
+        else
+          puts "4.5"
+          #duplicate in db or programme file not in directory either way entry should be deleted
+          dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
+          dbh.query("DELETE FROM Recording WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
+        end
         
       end
     puts "5"
