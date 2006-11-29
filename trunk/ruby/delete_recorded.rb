@@ -77,6 +77,7 @@ begin
   onHD.close()
 #if does not exist, return error
   check = "#{VIDEO_PATH}/#{showname}.mpg"
+  puts check
   if test != check
      puts "Show does not need to be deleted"
      exit
