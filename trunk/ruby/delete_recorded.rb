@@ -65,12 +65,14 @@ begin
   dbh = databaseconnect()
   shownameres = dbh.query("SELECT Title FROM Programme WHERE (ChannelID='#{chan_id}'AND START= '#{date_time}')")
   showname = shownameres.fetch_row
+  puts showname
   puts "show name acquired"
     
 #check the hard drive for the show to be deleted
-  onHD = system("ls #{VIDEO_PATH}/#{showname}.mpg")     
+  onHD = system("ls #{VIDEO_PATH}/#{showname}.mpg")
+  test = onHD.gets     
 #if does not exist, return error
-  if onHD.gets != "#{VIDEO_PATH}/#{showname}.mpg"
+  if test != "#{VIDEO_PATH}/#{showname}.mpg"
      puts "Show does not need to be deleted"
      exit
 #if it does,remove it from recording, programme
