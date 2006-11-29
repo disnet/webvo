@@ -99,7 +99,7 @@ rescue MysqlError => e
           puts show_name + "-" + frag_num.to_s + ".mpg"
           until rec_array.include?(show_name + "-" + frag_num.to_s + ".mpg") == false:
             puts "*"
-            f_size = f_size + File.size(show_name + "-" + frag_num + ".mpg")
+            f_size = f_size + File.size("#{show_name}-#{frag_num.to_s}.mpg")
             frag_num = frag_num + 1
           end
           puts "made it past the while"
