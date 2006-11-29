@@ -72,7 +72,7 @@ end
       show_info = show.fetch_row
       if show_info != nil:
         show_info.to_s.gsub!("_*_", "'")
-        puts show_info.gsub!("&", "&#38;")
+        puts show_info.gsub("&", "&#38;")
       else
         dbh.close()
         error_if_not_equal(true, false, "recording programme not in programme "+ start.to_s + " " + chan_id.to_s)
