@@ -61,7 +61,12 @@ begin
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   puts chan_id
   puts date_time
-  puts "chanID and datetime acquired"
+  if chan_id == nil or date_time == nil
+     puts "Show does not exist"
+     exit
+  else
+     puts "chanID and datetime acquired"
+  end
 
 #get the showName
   dbh = databaseconnect()
@@ -99,7 +104,8 @@ begin
      puts deletefromHD
 
 #check for more fragments
-     while (!deletefromHD.nil?)
+     while (!deletefromHD.nil?)  puts "chanID and datetime acquired"
+
         lastchar += 1
         puts lastchar
      #reinsert into title string
