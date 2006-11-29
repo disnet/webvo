@@ -97,8 +97,10 @@ begin
      puts "Show located"
 #check in Recording to see if still recording one of the fragments
      schedcheck = ("SELECT PID FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
+#if is still recording, need to kill process (if it exists) and remove from Recording
      if schedcheck != nil
-	
+
+     end
      dbh.query("DELETE FROM Recorded Where ShowName = '#{showname}'")
      puts "Removed from Recorded"
      dbh.query("DELETE FROM Programme Where(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
