@@ -73,15 +73,21 @@ begin
   shownameres = dbh.query("SELECT showName FROM Recorded WHERE (ChannelID='#{chan_id}'AND START= '#{date_time}')")
   showname = shownameres.fetch_row
   puts showname
-  puts "show name acquired"
+  if showname == nil
+     puts "Show does not exist"
+     exit
+  else
+     showname += '-0'
+     puts "showname acquired"
+  end
     
 #check the hard drive for the show to be deleted
-  onHD = IO.popen("ls #{VIDEO_PATH}/#{showname}.mpg")
+  check = "#{VIDEO_PATH}/#{showname}.mpg"
+  onHD = IO.popen("ls #{check}.mpg")
   test = onHD.gets
   puts test
   onHD.close()
 #if does not exist, return error
-  check = "#{VIDEO_PATH}/#{showname}.mpg"
   puts check
   if test != check
      puts "Show does not need to be deleted"
