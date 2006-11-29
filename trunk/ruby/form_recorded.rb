@@ -71,7 +71,9 @@ rescue MysqlError => e
     #for each check against record.rb's pattern
     f_size = 0
     rec_dir = Dir.new(SHOW_DIR)
+    Dir.chdir(rec_dir)
     rec_array = rec_dir.entries
+    
     
     rec_array.each do |thing|
       puts thing
