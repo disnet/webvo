@@ -81,37 +81,38 @@ end
 def format_date(current_date)
   month = current_date.month.to_s
   day = current_date.day.to_s
+  
   if (current_date.month.to_s.length != 2):
     month = "0"+ current_date.month.to_s
   else
     month = current_date.month.to_s
   end
-  
+  puts month
   if (current_date.day.to_s.length != 2):
     day = "0" + current_date.day.to_s
   else
     day = current_date.day.to_s
   end
-  
+  puts day
   if(current_date.hour.to_s.length !=2):
     hour = "0" + current_date.hour.to_s
   else
     hour = current_date.hour.to_s
   end
-  
+  puts hour
   if(current_date.min.to_s.length !=2):
-    hour = "0" + current_date.min.to_s
+    min = "0" + current_date.min.to_s
   else
-    hour = current_date.min.to_s
+    min = current_date.min.to_s
   end
-  
+  puts min
   if(current_date.min.to_s.length !=2):
     hour = "0" + current_date.sec.to_s
   else
     hour = current_date.sec.to_s
   end
-  
-  return current_date.year.to_s + month + day + hour + day + sec
+  puts sec
+  return current_date.year.to_s + month + day + hour + day + min + sec
 end
 #main--------------------------------------------------------------------------
   puts "Content-Type: text/plain\n\n" 
@@ -174,7 +175,7 @@ end
       stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
       
       #make sure that stop is after current date time
-      puts "danger wil robinson"
+
       puts today = format_date(DateTime.now)
 
       puts itoday = today.to_s
