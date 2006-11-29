@@ -34,6 +34,7 @@ TABLENAME = "Recording"
 PROG_ID = "prog_id"
 LENGTH_OF_DATE_TIME = 14
 XML_FILE_NAME = "info.xml"
+SHOW_DIR = "/home/daryl/Desktop/TestVideos/"
 
 def file_available(file_name)
   cur_dir_entries=Dir.entries(Dir.getwd)
