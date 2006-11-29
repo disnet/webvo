@@ -5,7 +5,7 @@
 require "mysql"
 require "cgi"
 
-SERVERNAME = "tvbox.homelinux.com/phpmyadmin/"
+SERVERNAME = "http://tvbox.homelinux.com/phpmyadmin"
 USERNAME = "root"
 USERPASS = "csc4150"
 DBNAME = "WebVo"
@@ -53,7 +53,6 @@ begin
   puts "prog_id returned"
   puts prog_id
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
-  puts "checked"
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   puts "chanID and datetime acquired"
