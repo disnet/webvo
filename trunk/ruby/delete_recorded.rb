@@ -65,7 +65,7 @@ begin
 
 #get the showName
   dbh = databaseconnect()
-  shownameres = dbh.query("SELECT Title FROM Programme WHERE (ChannelID='#{chan_id}'AND START= '#{date_time}')")
+  shownameres = dbh.query("SELECT showName FROM Recorded WHERE (ChannelID='#{chan_id}'AND START= '#{date_time}')")
   showname = shownameres.fetch_row
   puts showname
   puts "show name acquired"
