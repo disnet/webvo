@@ -24,7 +24,6 @@ def databaseconnect()
     dbh.close() 
     exit
   end
- end
   return dbh
 end
 
