@@ -106,7 +106,7 @@ def format_date(current_date)
     min = current_date.min.to_s
   end
   puts min
-  if(current_date.min.to_s.length !=2):
+  if(current_date.sec.to_s.length !=2):
     hour = "0" + current_date.sec.to_s
   else
     hour = current_date.sec.to_s
