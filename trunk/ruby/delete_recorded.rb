@@ -12,6 +12,7 @@ DBNAME = "WebVo"
 TABLENAME = "Recording"
 PROG_ID = "prog_id"
 VIDEO_PATH = "/home/daryl/Desktop/TestVideos"
+LENGTH_OF_DATE_TIME = 14
 
 #connect to the database
 def databaseconnect()
@@ -50,6 +51,7 @@ begin
 #get argument
   prog_id =  cgi[PROG_ID][0]
   puts "prog_id returned"
+  puts prog_id
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   puts "checked"
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
