@@ -93,15 +93,15 @@ rescue MysqlError => e
         
         if rec_array.include?(show_name + ".mpg")#"-0"+".mpg"):
           puts "true dat"
-          puts "#{show_name}-0.mpg"
+          #puts "#{show_name}-0.mpg"
           puts f_size = File.size("#{show_name}.mpg")#-0.mpg")
           frag_num = 1
-          puts show_name #+ #"-" + frag_num.to_s + ".mpg"
-          until rec_array.include?(show_name + ".mpg") == false #"-" + frag_num.to_s + ".mpg") == false:
-            puts "*"
-            f_size = f_size + File.size("#{show_name}")#-#{frag_num.to_s}.mpg")
-            frag_num = frag_num + 1
-          end
+          #puts show_name #+ #"-" + frag_num.to_s + ".mpg"
+          #until rec_array.include?(show_name + ".mpg") == false #"-" + frag_num.to_s + ".mpg") == false:
+          #  puts "*"
+          #  f_size = f_size + File.size("#{show_name}")#-#{frag_num.to_s}.mpg")
+          #  frag_num = frag_num + 1
+          #end
           puts "made it past the while"
           programme = programmes.fetch_row
           if programme != nil:
