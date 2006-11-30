@@ -42,13 +42,9 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 def add_size_to_xml_Node(size, xmlNode)
-  puts "before delete"
-  xmlNode.gsub!("</programme>"," ")
-  puts "after delete"
-  xmlNode << "<size>" + size.to_s + "</size>\n"
-  puts "adding size"
+  xmlNode.gsub!("</programme>\n"," ")
+  xmlNode << "\t<size>" + size.to_s + "</size>\n"
   xmlNode << "</programme>\n"
-  puts "after func"
   return xmlNode
 end
 
