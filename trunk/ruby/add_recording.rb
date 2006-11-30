@@ -271,7 +271,7 @@ end
       error_if_not_equal(true, false, "channel from requested show not in database")
     end
 
-    xmlNode = form_node(start, stop, title, channel_num, chan_id, desc)
+    xmlNode = form_node(start, stop, title, channel_num, chan_id, desc).to_s
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
     xmlNode.gsub!(/["'"]/, "_*_")
