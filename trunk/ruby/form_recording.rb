@@ -71,8 +71,9 @@ end
       show = dbh.query("SELECT xmlNode FROM Programme WHERE (start='#{start}' AND channelID='#{chan_id}')")
       show_info = show.fetch_row
       if show_info != nil:
-        xml_node = show_info.gsub("_*_", "'")
-        xml_node = xml_node.gsub("&", "&#38;")
+        xml_node = show_info.to_s
+        xml_node.gsub!("_*_", "'")
+        xml_node.gsub!("&", "&#38;")
         puts xml_node
       else
         dbh.close()
