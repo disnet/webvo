@@ -97,8 +97,8 @@ rescue MysqlError => e
           puts "#{show_name}-0.mpg"
           puts f_size = File.size("#{show_name}.mpg-0.mpg")
           frag_num = 1
-          #puts show_name #+ #"-" + frag_num.to_s + ".mpg"
-          until rec_array.include?(show_name + "-" + frag_num.to_s + ".mpg") == true:
+          puts show_name + "-" + frag_num.to_s + ".mpg"
+          while rec_array.include?(show_name + "-" + frag_num.to_s + ".mpg") == true:
             puts "*"
             f_size = f_size + File.size("#{show_name}-#{frag_num.to_s}.mpg")
             frag_num = frag_num + 1
