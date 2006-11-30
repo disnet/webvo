@@ -274,7 +274,8 @@ end
     xmlNode = form_node(start, stop, title, channel_num, chan_id, desc)
     #send information to programme's table 
       #change data a bit to get it not to error when put in the database
-    xmlNode = xmlNode.gsub(/["'"]/, "_*_")
+    xmlNode.gsub!(/["'"]/, "_*_")
+    xmlNode.gsub!("&", "&#38;")
     title = title.gsub(/[" "]/,"_")
     dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
     if rresults.fetch_row == nil:
