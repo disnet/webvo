@@ -55,22 +55,15 @@ puts "Content-Type: text/plain\n\n"
 
 begin
   cgi = CGI.new     # The CGI object is how we get the arguments 
-  puts "Input taken"
-  puts cgi
 
 #checks for 1 argument
   error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
   error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
-  puts "checked for 1 arg"
 #get argument
   prog_id =  cgi[PROG_ID][0]
-  puts "prog_id returned"
-  puts prog_id
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
-  puts chan_id
-  puts date_time
   if chan_id == nil || date_time == nil
      puts "Show does not exist"
      exit
@@ -81,13 +74,15 @@ begin
 #get the showName
   dbh = databaseconnect()
   shownameres = dbh.query("SELECT showName FROM Recorded WHERE (ChannelID='#{chan_id}'AND START= '#{date_time}')")
-  showname = shownameres.fetch_row
-  puts showname
+  temp = shownameres.fetch_row
+  showname = temp.to_s
+  showname.strip
   if showname == nil
      puts "Show does not exist"
      exit
   else
      showname << "-0"
+     puts showname
      puts "showname acquired"
   end
     
@@ -100,7 +95,7 @@ begin
 
 #if does not exist, return error
   puts check
-  if test != check
+  if !(test.strip == check.strip)
      puts "Show does not need to be deleted"
      exit
 
@@ -109,14 +104,17 @@ begin
      puts "Show located"
 
 #check in Recording to see if still recording one of the fragments
-     schedcheck = ("SELECT PID FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
-     cmdcheck = ("SELECT CMD FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
-     puts schedcheck + " " + cmdcheck
+     schedcheck = dbh.query("SELECT PID FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
+     cmdcheck = dbh.query("SELECT CMD FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
+     sched = schedcheck.fetch_row
+     cmd = cmdcheck.fetch_row
+     puts "#{sched} #{cmd}"
+
 #if is still recording, need to kill process (if it exists) and remove from Recording
-     if schedcheck != nil
-        cmd = findProcNum(schedcheck)
-        puts cmd
-        if cmd == cmdcheck
+     if sched != nil
+        comd = findProcNum(sched)
+        puts comd
+        if comd == cmdcheck
 	    commandSent = system ("kill #[schedcheck}")
 	end
      end
@@ -136,15 +134,14 @@ begin
 
 #get the fragment number from the name
      lastchar = showname[showname.length-1]
+     checkforfrags = IO.popen("ls #{check}")
 
 #remove first fragment
-     deletefromHD = IO.popen ("rm #{VIDEO_PATH}/#{showname}.mpg")
-     puts deletefromHD
-     puts "#{VIDEO_PATH}/#{showname}.mpg has been removed"
-
+     exec("rm #{check}")
+     puts "#{check} has been removed"
 #check for more fragments
      #while the show is not located on HD
-     while (!deletefromHD.nil?)
+     while (!checkforfrags.nil?)
      #increment the fragment number
         lastchar += 1
         puts lastchar
@@ -152,12 +149,13 @@ begin
         showname[showname.length-1] = lastchar
         puts showname
      #see if the show exists
-        checkforfrags = system("ls #{VIDEO_PATH}/#{showname}.mpg")
+        checkforfrags = IO.popen("ls #{VIDEO_PATH}/#{showname}.mpg")
      #if it doesn't, get out of loop
         if checkforfrags.nil?
           deletefromHD.close()
+          checkforfrag.close()
           break
-#if it does, delete from HD, look for another fragment
+#if it does, delete from HD,      puts "retrieved"look for another fragment
         else  
           deletefromHD = IO.popen("rm #{VIDEO_PATH}/#{showname}.mpg")
           puts "#{VIDEO_PATH}/#{showname}.mpg has been removed"
