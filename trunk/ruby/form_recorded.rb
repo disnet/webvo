@@ -111,7 +111,7 @@ rescue MysqlError => e
           if programme != nil:
             puts "in conditional"
             puts programme.to_s
-            puts add_size_to_xmlNode(f_size.to_i, programme)
+            puts add_size_to_xmlNode(f_size.to_i, programme.to_s)
             puts "interesting"
           end
           puts "other world"
