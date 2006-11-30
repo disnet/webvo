@@ -241,7 +241,7 @@ end
 #if the show exists, need to change the name to have a partII denotation
 #check recorded shows to see if show exists already
     dbh = databaseconnect()
-    duperes = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{show.showID}'")
+    duperes = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{title}-#{startrow}#{channelrow}'")
     duperecord = duperes.fetch_row
     puts duperecord
 #if does return a result, change the final digit
@@ -296,13 +296,13 @@ end
     chanID = transferquery.fetch_row
 
     #check the show name from Recorded to see if entry exists already
-    res = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{show.showID}'")
+    res = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{title}-#{startrow}#{channelrow}'")
     namecheck = res.fetch_row
     puts namecheck
     #if it doesn't, insert into record, otherwise leave it alone
     if namecheck == nil && duperecord.nil?
         puts "Moving show: #{show.showID} to recorded list\n"
-    dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{show.showID}')")
+    dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{title}-#{startrow}#{channelrow}')")
     else
         puts "Show name already saved to database"
     end
