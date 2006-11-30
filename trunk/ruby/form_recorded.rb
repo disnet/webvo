@@ -45,7 +45,7 @@ def add_size_to_xml_Node(size, xmlNode)
   puts "before delete"
   xmlNode.delete("</programme>\n")
   puts "after delete"
-  xmlNode << "<size>" + size + "</size>\n"
+  xmlNode << "<size>" + size.to_s + "</size>\n"
   puts "adding size"
   xmlNode << "</programme>\n"
   puts "after func"
@@ -111,7 +111,7 @@ rescue MysqlError => e
           if programme != nil:
             puts "in conditional"
             puts programme.to_s
-            puts add_size_to_xmlNode(f_size.to_i, programme.to_s)
+            puts add_size_to_xml_Node(f_size.to_i, programme.to_s)
             puts "interesting"
           end
           puts "other world"
