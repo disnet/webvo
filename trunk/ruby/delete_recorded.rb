@@ -92,7 +92,7 @@ begin
   end
     
 #check the hard drive for the show to be deleted
-  check = "#{VIDEO_PATH}/#{showname}.mpg"
+  check = "#{VIDEO_PATH}/#{showname}"
   onHD = IO.popen("ls #{check}.mpg")
   test = onHD.gets
   puts test
