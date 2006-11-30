@@ -43,7 +43,7 @@ end
 
 def add_size_to_xml_Node(size, xmlNode)
   puts "before delete"
-  xmlNode.delete!("</programme>")
+  xmlNode.gsub!("</programme>"," ")
   puts "after delete"
   xmlNode << "<size>" + size.to_s + "</size>\n"
   puts "adding size"
