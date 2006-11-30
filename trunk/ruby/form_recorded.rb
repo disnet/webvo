@@ -61,7 +61,6 @@ dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}"
 #  if gets an error (can't connect)
 rescue MysqlError => e
       error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
-    puts "Unable to connect to database\n"
     if dbh.nil? == false
       #close the database
       dbh.close() 
@@ -95,12 +94,12 @@ rescue MysqlError => e
           end
           programme = programmes.fetch_row
           if programme != nil:
-            puts add_size_to_xml_Node(f_size.to_i, programme.to_s)
+            puts add_size_to_xml_Node(f_size.to_i, programme.to_s.gsub!("_*_","'")
           end
         else
           #duplicate in db or programme file not in directory either way entry should be deleted
           #dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-          #dbh.query("DELETE FROM Recording WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
+          #dbh.query("DELETE FROM Recorded WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
         end
         
       end
