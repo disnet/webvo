@@ -105,6 +105,7 @@ rescue MysqlError => e
           puts "made it past the while"
           programme = programmes.fetch_row
           if programme != nil:
+            puts "in loop"
             puts add_size_to_xmlNode(f_size.to_i, programme)
             puts "interesting"
           end
