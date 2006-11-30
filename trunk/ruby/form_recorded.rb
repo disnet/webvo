@@ -94,7 +94,7 @@ rescue MysqlError => e
           end
           programme = programmes.fetch_row
           if programme != nil:
-            puts add_size_to_xml_Node(f_size.to_i, programme.to_s.gsub!("_*_","'")
+            puts add_size_to_xml_Node(f_size.to_i, programme.to_s.gsub("_*_","'"))
           end
         else
           #duplicate in db or programme file not in directory either way entry should be deleted
