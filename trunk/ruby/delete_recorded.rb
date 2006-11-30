@@ -87,7 +87,7 @@ begin
      puts "Show does not exist"
      exit
   else
-     showname += '-0'
+     showname << "-0"
      puts "showname acquired"
   end
     
