@@ -205,7 +205,7 @@ end
     dbh = databaseconnect()
     dbh.query("DELETE FROM Recording WHERE start = #{startrow}")
     dbh.close()
-    #commandSent = system ("ruby record.rb &")
+    commandSent = system ("ruby record.rb &")
     exit
   end
 
