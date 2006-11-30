@@ -276,6 +276,7 @@ end
     commandSent = system ("cat /dev/video0 > /home/daryl/Desktop/TestVideos/#{show.showID}.mpg &")
     if commandSent != true
       puts "Recording failed to start\n"
+      exit 
     end
 
 #locate PID for process
