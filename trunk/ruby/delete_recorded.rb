@@ -39,6 +39,16 @@ def error_if_not_equal(value, standard, error_string)
   end
 end
 
+#find the category name of the process
+def findProcCat(procNum)
+  readme = IO.popen("ps -p #{procNum} -o cmd")
+  sleep (1)
+  temp = readme.gets
+  cmd = readme.gets
+  readme.close()
+  return cmd
+end
+
 if __FILE__ == $0
 
 puts "Content-Type: text/plain\n\n" 
@@ -87,28 +97,44 @@ begin
   test = onHD.gets
   puts test
   onHD.close()
+
 #if does not exist, return error
   puts check
   if test != check
      puts "Show does not need to be deleted"
      exit
-#if it does,remove it from recording, programme
+
+#if it does,remove it from recording, recorded and programme
   else
      puts "Show located"
+
 #check in Recording to see if still recording one of the fragments
      schedcheck = ("SELECT PID FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
+     cmdcheck = ("SELECT CMD FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
+     puts schedcheck + " " + cmdcheck
 #if is still recording, need to kill process (if it exists) and remove from Recording
      if schedcheck != nil
-
+        cmd = findProcNum(schedcheck)
+        puts cmd
+        if cmd == cmdcheck
+	    commandSent = system ("kill #[schedcheck}")
+	end
      end
+
+#remove from recording now that checked to make sure no longer running
+     dbh.query("DELETE FROM Recording Where (ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
+     puts "Removed from Recording"
+#remove from recorded
      dbh.query("DELETE FROM Recorded Where ShowName = '#{showname}'")
      puts "Removed from Recorded"
+#remove from programme
      dbh.query("DELETE FROM Programme Where(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
      puts "Removed from Programme"
      dbh.close()
 
-#remove from hard drive
-     #need to locate all fragments as well
+#remove from hard drive (need to locate all fragments as well)
+
+#get the fragment number from the name
      lastchar = showname[showname.length-1]
 
 #remove first fragment
@@ -117,7 +143,9 @@ begin
      puts "#{VIDEO_PATH}/#{showname}.mpg has been removed"
 
 #check for more fragments
+     #while the show is not located on HD
      while (!deletefromHD.nil?)
+     #increment the fragment number
         lastchar += 1
         puts lastchar
      #reinsert into title string
@@ -131,10 +159,10 @@ begin
           break
 #if it does, delete from HD, look for another fragment
         else  
-          deletefromHD = system ("rm #{VIDEO_PATH}/#{showname}.mpg")
+          deletefromHD = IO.popen("rm #{VIDEO_PATH}/#{showname}.mpg")
           puts "#{VIDEO_PATH}/#{showname}.mpg has been removed"
         end  
-    
+     #close while loop
      end
 #all done
      puts "Removed from hard drive"
