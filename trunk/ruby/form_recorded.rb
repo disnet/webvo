@@ -49,6 +49,7 @@ def add_size_to_xml_Node(size, xmlNode)
   puts "adding size"
   xmlNode << "</programme>\n"
   puts "after func"
+  return xmlNode
 end
 
 #main ------------------------------------------------------------------------------------
