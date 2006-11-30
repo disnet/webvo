@@ -95,7 +95,7 @@ rescue MysqlError => e
         if rec_array.include?(show_name + "-0"+".mpg"):
           puts "true dat"
           puts "#{show_name}-0.mpg"
-          puts f_size = File.size("#{show_name}.mpg-0.mpg")
+          puts f_size = File.size("#{show_name}-0.mpg")
           frag_num = 1
           puts show_name + "-" + frag_num.to_s + ".mpg"
           while rec_array.include?(show_name + "-" + frag_num.to_s + ".mpg") == true
