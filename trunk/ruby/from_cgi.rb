@@ -8,6 +8,6 @@ require 'cgi'
   puts "calling faux_record.rb"
   
   
-  #system("ruby faux_record.rb")
+  system("ruby faux_record.rb")
   
   puts "done"
