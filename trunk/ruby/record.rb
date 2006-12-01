@@ -127,17 +127,20 @@ else
   pidres = pidrow.fetch_row
   #if there is no pid continue normally
   if pidres.nil?
-     log << "No PIDs found\n"
-
+     log << DateTime.now
+     log << "\nNo PIDs found\n"
+     
   #if there is one, need to locate and end process
   else
      INIT_PID = pidres
-     log <<  "PID found: #{INIT_PID}"
+     log << DateTime.now
+     log <<  "\nPID found: #{INIT_PID}"
      pid = findProcNum(INIT_PID)
      cmd = findProcCat(INIT_PID)
      #if not found as actually running,remove from database
      if pid.nil?
-       log << "Process not actually running"
+     log << DateTime.now
+       log << "\nProcess not actually running\n"
        dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{INIT_PID}")
 
      #if is found to be running, need to confirm that isn't most recent program or a random process that happens to have the same PID number
@@ -152,7 +155,8 @@ else
        #if process running is not most recent show OR
        #the commands are the same
        if initialpid.nil? || cmd == initialcmd
-         log << "Current process does not contain most recent show"
+     log << DateTime.now
+         log << "\nCurrent process does not contain most recent show\n"
 	 commandSent = system("kill #{INIT_PID}")
        #update database
          dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{INIT_PID}")
@@ -160,7 +164,8 @@ else
        
        #otherwise leave it alone, wait for it to finish
        else
-       log <<  "Most current show already recording, please wait until finished\n"
+     log << DateTime.now
+       log <<  "\nMost current show already recording, please wait until finished\n"
        dbh.close()
        exit
        end 
@@ -182,7 +187,8 @@ end
   channelrow = lastshowchannel.fetch_row
   stoprow = lastshowstop.fetch_row
   title = lastshowtitle.fetch_row
-  log <<  "The show to be recorded, #{title}, is on channel #{channelrow}, starts at #{startrow} and ends at #{stoprow}."
+     log << DateTime.now
+  log <<  "\nThe show to be recorded, #{title}, is on channel #{channelrow}, starts at #{startrow} and ends at #{stoprow}.\n"
   
 #initialize values of show  
   showStartDate = format_to_Ruby("#{startrow}")
@@ -202,7 +208,8 @@ end
 
 #if the show started already and is over
   if diffstop < 0
-    log << "Sorry, the time has passed for this show\n"
+     log << DateTime.now
+    log << "\nSorry, the time has passed for this show\n"
     dbh = databaseconnect()
     dbh.query("DELETE FROM Recording WHERE start = #{startrow}")
     dbh.close()
@@ -227,7 +234,8 @@ end
 #send CAT_PID and command to database (need to reopen database)
     dbh = databaseconnect()
     dbh.query("UPDATE Recording SET PID = #{PROC_PID.to_i} WHERE Start = #{startrow[0]}")
-    puts "PID saved to database\n"
+    log << DateTime.now
+    log << "PID saved to database\n"
     dbh.query("UPDATE Recording SET CMD = 'ruby record.rb' WHERE Start = #{startrow[0]}")
     log << "Command name saved to database\n"
 
@@ -247,6 +255,7 @@ end
     log << duperecord
 #if does return a result, change the final digit
     if !duperecord.nil?
+       log << DateTime.now
        lastcharnum = show.showID.length
 	log << lastcharnum
 #get the final number (need to take into account .mpg)
@@ -268,15 +277,18 @@ end
 #tune the card to the correct channel
     commandSent = system ("ivtv-tune -c #{show.channel}")
     if commandSent != true
-      log << "Channel set failed\n"
+     log << DateTime.now
+      log << "\nChannel set failed\n"
     end
   
 #start the recording
-    log << "Recording channel #{show.channel} from #{show.starttime} to #{show.stoptime}.\n"
+
+    log << "\nRecording channel #{show.channel} from #{show.starttime} to #{show.stoptime}.\n"
     log << "Beginning recording \n"
     commandSent = system ("cat /dev/video0 > #{VIDEO_PATH}#{show.showID}.mpg &")
     if commandSent != true
-      log << "Recording failed to start\n"
+     log << DateTime.now 
+     log << "\nRecording failed to start\n"
       exit 
     end
 
@@ -288,7 +300,8 @@ end
 #send CAT_PID and command name to database (need to reopen database)
     dbh = databaseconnect()
     dbh.query("UPDATE Recording SET PID = #{CAT_PID.to_i} WHERE Start = #{startrow[0]}")
-    log << "PID saved to database\n"
+     log << DateTime.now
+    log << "\nPID saved to database\n"
     dbh.query("UPDATE Recording SET CMD = 'cat' WHERE Start = #{startrow[0]}")
     log << "Command name saved to database\n"
 
@@ -303,24 +316,28 @@ end
     log << namecheck
     #if it doesn't, insert into record, otherwise leave it alone
     if namecheck == nil && duperecord.nil?
-        log << "Moving show: #{show.showID} to recorded list\n"
+     log << DateTime.now
+        log << "\nMoving show: #{show.showID} to recorded list\n"
     dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{title}-#{startrow}#{channelrow}')")
     else
-        log << "Show name already saved to database"
+     log << DateTime.now
+        log << "\nShow name already saved to database"
     end
     dbh.close()
 
 #sleep for length of the show
-   log << "Going to sleep for the show: #{showlength}\n" 
+   log << "\nGoing to sleep for the show: #{showlength}\n" 
    sleep (showlength)
 
 #stop the recording
     commandSent = system("kill #{CAT_PID}")
-    log << "Recording done!\n"
+     log << DateTime.now
+    log << "\nRecording done!\n"
 
 #remove PID from recording
     dbh = databaseconnect()
-    log << "Removing show from recording list\n"
+     log << DateTime.now
+    log << "\nRemoving show from recording list\n"
     dbh.query("DELETE FROM Recording WHERE PID = #{CAT_PID}")
      
 #close the database
@@ -330,5 +347,4 @@ end
     log << "Locating next show to record\n"
     commandSent = system("ruby record.rb &")
     exit
-
 end
