@@ -20,11 +20,13 @@
 #add_recording.rb
 #takes a programmeid from the front end and adds it to the database
 
-require 'cgi'
-require 'xml/libxml'
-require 'date'
-require "mysql"
+#get some libraries
+require 'cgi'         #allows for communication with the front end
+require 'xml/libxml'  #allows for parsing the info.xml
+require 'date'        #allows for finding the current date
+require "mysql"       #allows for communication with the mysql database
 
+#constants
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
@@ -36,17 +38,22 @@ LENGTH_OF_DATE_TIME = 14
 XML_FILE_NAME = "info.xml"
 SHOW_DIR = "/home/daryl/Desktop/TestVideos/"
 
+#Functions-----------------------------------------------------------------------
+#checks to see if the file is there
 def file_available(file_name)
   cur_dir_entries=Dir.entries(Dir.getwd)
   return cur_dir_entries.include?(file_name)
 end
-#Error handler
+
+#error handler, changes errors into valid xml
 def error_if_not_equal(value, standard, error_string)
   if value != standard:
     puts "<error>Error " + error_string +"</error>"
     exit
   end
 end
+
+#takes in information and forms it into a xmlNode for more information
 def form_node(start, stop, title, channel, channelID, desc)
   xmlNode = "<programme>\n"
   xmlNode << "\t<title>#{title}</title>\n"
@@ -59,9 +66,13 @@ def form_node(start, stop, title, channel, channelID, desc)
   return xmlNode
 end
 
+#this function finds the available free space on the hard drive to determine
 def freespace()
+  #runs UNIX free space command
   readme = IO.popen("df --type ext3")
-  sleep (1)
+  sleep (0.5)
+  
+  #gets information from the 
   header = readme.gets
   header_arr = Array.new
   header_arr = header.scan(/\w+/)
@@ -79,8 +90,9 @@ def freespace()
   return true
 end
 
+#this this takes the date and turns it into YYYYMMDDHHMMSS 
 def format_date(current_date)
-  
+  #if elses for padding the numbers
   if (current_date.month.to_s.length != 2):
     month = "0"+ current_date.month.to_s
   else
@@ -143,14 +155,14 @@ end
   error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
 
 #get programme from info.xml
-  error_if_not_equal(file_available(XML_FILE_NAME), true, "Source xml file not in directory")
+  error_if_not_equal(file_available(XML_FILE_NAME), true, "Source .xml file not in directory")
   xml = XML::Document.file(XML_FILE_NAME)
 
   error_if_not_equal(freespace(), true, "not enough room on server")
   got_programme = true
   
 
-  
+#These all filled with ' ' just incase they are not filled below
   start = ' '
   stop = ' '
   xmlNode = ' '
@@ -173,16 +185,13 @@ end
       stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
       
       #make sure that stop is after current date time
-
       today = format_date(DateTime.now)
-
       itoday = today.to_i
-      error_if_not_equal(itoday < stop.to_i, true, "unless you have a time machine, you cannot record this show")
-      
+      error_if_not_equal(itoday < stop.to_i, true, "today is #{today} and your requested show ends in the past at #{stop}")
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
       c = e.child
-    
-      keep_looping = true
+      
+      keep_looping = true #varible to do a do-while
       
       #gets the title
       while keep_looping == true:
@@ -234,6 +243,7 @@ end
    
     #check to see if there is a programme during the same time.
     allpresults = dbh.query("SELECT start, stop, channelID, title FROM Programme ORDER BY start")
+    
     #loop through the results and check if they are during the same time
     allpresults.each_hash do |row|
       qstart = row["start"].to_i
