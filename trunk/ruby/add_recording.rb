@@ -302,6 +302,7 @@ end
     exec("ruby record.rb &")
   end
   Process.detach
+  cgi.close()
   #log = File.open("add_recoringlog.txt","a")
   
   #if executed_record == true:
