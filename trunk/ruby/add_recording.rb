@@ -298,7 +298,7 @@ end
   puts "<success>#{prog_id}</success>"
   #cgi.close()
   #call record.rb
-  executed_record = system("ruby record.rb &")
+  exec("ruby record.rb &")
   
   log = File.open("add_recoringlog.txt","a")
   
