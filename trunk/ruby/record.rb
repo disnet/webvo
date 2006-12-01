@@ -11,7 +11,7 @@ USERNAME = "root"
 USERPASS = "csc4150"
 DBNAME = "WebVo"
 TABLENAME = "Recording"
-VIDEO_PATH = "/home/daryl/Desktop/TestVideos"
+VIDEO_PATH = "/home/public_html/WebVo/Movies"
 
 #class to hold pertinent data for recording a show
 class RecordedShow
