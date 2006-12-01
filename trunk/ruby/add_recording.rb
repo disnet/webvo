@@ -298,14 +298,16 @@ end
   puts "<success>#{prog_id}</success>"
   #cgi.close()
   #call record.rb
-  exec("ruby record.rb &")
-  
-  log = File.open("add_recoringlog.txt","a")
-  
-  if executed_record == true:
-    log << DateTime.now + " Called ruby record.rb"
-  elsif executed_record == false:
-    log << DateTime.now + " Did not ruby record.rb"
+  fork
+    exec("ruby record.rb &")
   end
+  Process.detach
+  #log = File.open("add_recoringlog.txt","a")
   
-  log.close()
+  #if executed_record == true:
+  #  log << DateTime.now + " Called ruby record.rb"
+  #elsif executed_record == false:
+  #  log << DateTime.now + " Did not ruby record.rb"
+  #end
+  
+  #log.close()
