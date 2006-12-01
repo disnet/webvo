@@ -296,7 +296,7 @@ end
     dbh.close()
   end
   puts "<success>#{prog_id}</success>"
-  cgi.shutdown()
+  #cgi.shutdown()
   #call record.rb
   executed_record = system("ruby record.rb &")
   
