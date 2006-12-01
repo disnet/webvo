@@ -296,13 +296,12 @@ end
     dbh.close()
   end
   puts "<success>#{prog_id}</success>"
-  cgi.close()
+
   #call record.rb
-  Kernel.fork
-    exec("ruby record.rb &")
-  end
-  Process.detach
-  cgi.close()
+
+  system("ruby record.rb &")
+
+  
   #log = File.open("add_recoringlog.txt","a")
   
   #if executed_record == true:
