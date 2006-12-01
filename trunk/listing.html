@@ -22,17 +22,18 @@
 <script src="scripts/comm.js" type="text/javascript"></script>
 <script src="scripts/list_table.js" type="text/javascript"></script>
 <script src="scripts/recording_table.js" type="text/javascript"></script>
+<script src="scripts/recorded_table.js" type="text/javascript"></script>
 
 
 <body>
 <div class="container">
 
-<div class="titleblock"><h1>WebVo</h1><p>&ldquo;Insert some random text here.&rdquo;</p></div>
+<div class="titleblock"><h1>WebVo</h1><p>&ldquo;Engaging the culture, changing the world.&rdquo;</p></div>
 
 <div><ul class="navbar">
 		 <li id="btnListing"><a href="#" class="nav">TV Listing</a></li>
 		 <li id="btnRecording"><a href="#" class="nav">Scheduled</a></li>
-		 <li><a href="#" class="nav">Recorded</a></li>
+		 <li id="btnRecorded"><a href="#" class="nav">Recorded</a></li>
 		 <li><a href="#" class="nav">About</a></li>
 </ul></div>
 
@@ -45,7 +46,7 @@
 	<div id="boxTime">
 	 <select id="selDate" class="formDayTime"></select>
 	 <select id="selTime" class="formDayTime"></select>
-     <input id="btnLoad" type="submit" value="load" />
+     <input id="btnLoad" class="button" type="submit" value="load" />
 	</div>
 	<div id="boxLoading" class="invisible">Loading...</div>
  </div>
@@ -60,15 +61,22 @@
  <div id="recordingContent" class='invisible'>
 	<div id="mnuRecording">
 		<h2>Shows to be recorded</h2>
-		
 		<table id="recording"></table>
 		<div class="rjust">
-			<input id="btnRemoveRecording" class="button" type="submit" value="Remove"></input>
-			<input id="btnCloseRecording" class="button" type="submit" value="Close"></input>
+			<input id="btnRemoveRecording" class="button" type="submit" value="Remove Selected"></input>
 		</div>
 	</div>
-</div>
+ </div>
 
+ <div id="recordedContent" class='invisible'>
+ 	<div id="mnuRecorded">
+ 		<h2>Shows that have been recorded</h2>
+		<table id="recorded"></table>
+		<div class="rjust">
+			<input id="btnDeleteRecorded" class="button" type="submit" value="Delete Selected"></input>
+		</div>
+	</div>
+ </div>
 </div>
 
 <div id="recordingContent" class='invisible'>
@@ -76,6 +84,7 @@
 		<table id="recording"></table>
 	</div>
 </div>
+
 <div class="footer">
   <div class="right">
     <p>&copy; 2006 Cylon Hackers</p>

@@ -42,7 +42,16 @@ td.listHead{
 	background-color:gray;
 }
 .programme {
+	background-color: #408040;
+}
+.programmeOver {
 	background-color: green;
+}
+.recordingProgramme {
+	background-color:gray;	
+}
+.recordingProgrammeOver {
+	background-color: black;
 }
 table.schedule {
 	clear:right;
@@ -53,27 +62,23 @@ table.schedule td{
     border:1px solid black;
 }
 
-.tblRecording td {
-	background-color: green ;
+.tblRecord td {
+	background-color: #408040 ;
 	border:1px solid black;
 }
 
-.tblRecordingHead td{
+.tblRecordHead td{
 	background-color: gray;
 	border:1px solid black;
 	text-align:center;
 }
 
-table.tblRecording  {
+table.tblRecord  {
+	width: 100%;
 	text-align:left;
 }
 #recordingContent {
-	position: absolute;
-	top:230px;
-	left:100px;
-	width:50%;
-	background-color:#ADADAD;
-	border:3px solid black;
+	width:100%;
 }
 #listingContentTop {
 	height:100%;
@@ -91,6 +96,7 @@ table.tblRecording  {
 	margin-right:2px;
 	border: 2px solid black;
 }
+
 #mnuRecord {
 	position: absolute;
 	background-color: #ADADAD;
@@ -135,7 +141,6 @@ table.tblRecording  {
 }
 .button {
 	border:1px solid black;
-	margin: 3px;
 }
 
 .container {
