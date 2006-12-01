@@ -295,7 +295,7 @@ end
     #close the database
     dbh.close()
   end
-  puts "<success>Recording scheduled</success>"
+  puts "<success>#{prog_id}</success>"
   cgi.shutdown()
   #call record.rb
   exec("ruby record.rb")
