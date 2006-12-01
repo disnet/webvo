@@ -1,3 +1,4 @@
+#!/usr/local/bin/ruby
 require 'cgi'
 
   puts "Content-Type: text/plain\n\n" 
