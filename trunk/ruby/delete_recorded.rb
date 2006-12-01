@@ -49,11 +49,9 @@ def findProcCat(procNum)
   return cmd
 end
 
-if __FILE__ == $0
 
 puts "Content-Type: text/plain\n\n" 
 
-begin
   cgi = CGI.new     # The CGI object is how we get the arguments 
 
 #checks for 1 argument
@@ -165,6 +163,4 @@ begin
 #all done
      puts "Removed from hard drive"
   end
-end
-
 end
