@@ -195,7 +195,6 @@ end
   showStopDate = format_to_Ruby("#{stoprow}")
   currDate = DateTime.now
   show = RecordedShow.new("#{title}-#{startrow}#{channelrow}-0",channelrow,startrow,stoprow)
-  log <<  show.showID
 
 #calc if show has been missed
   diffstop = calcTimeTo(showStopDate,currDate)
@@ -252,24 +251,18 @@ end
     dbh = databaseconnect()
     duperes = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{title}-#{startrow}#{channelrow}'")
     duperecord = duperes.fetch_row
-    log << duperecord
 #if does return a result, change the final digit
     if !duperecord.nil?
        log << DateTime.now
        lastcharnum = show.showID.length
-	log << lastcharnum
 #get the final number (need to take into account .mpg)
        lastchar = show.showID[lastcharnum-1]
-        log << lastchar
 #increment to next number
-       log << findname(show.showID)
        while findname(show.showID) != nil
        lastchar += 1
-        log << lastchar
 #reinsert into title string
        show.showID[lastcharnum-1] = lastchar
        end
-       log << show.showID
     end
     dbh.close()
 
@@ -313,7 +306,6 @@ end
     #check the show name from Recorded to see if entry exists already
     res = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{title}-#{startrow}#{channelrow}'")
     namecheck = res.fetch_row
-    log << namecheck
     #if it doesn't, insert into record, otherwise leave it alone
     if namecheck == nil && duperecord.nil?
      log << DateTime.now
@@ -327,9 +319,11 @@ end
 
 #sleep for length of the show
    log << "\nGoing to sleep for the show: #{showlength}\n" 
+   log.close()
    sleep (showlength)
 
 #stop the recording
+    log = File.open(logfile.txt)
     commandSent = system("kill #{CAT_PID}")
      log << DateTime.now
     log << "\nRecording done!\n"
@@ -345,6 +339,6 @@ end
 
 #start next recording check
     log << "Locating next show to record\n"
+    log.close()
     commandSent = system("ruby record.rb &")
-    exit
 end
