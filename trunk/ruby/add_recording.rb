@@ -300,7 +300,7 @@ end
   #call record.rb
   executed_record = system("ruby record.rb &")
   
-  log = File.open("add_recoringlog.txt","w")
+  log = File.open("add_recoringlog.txt","a")
   
   if executed_record == true:
     log << DateTime.now + " Called ruby record.rb"
