@@ -62,7 +62,7 @@ puts "Content-Type: text/plain\n\n"
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
-  if chan_id == nil || date_time == nil
+  if chan_id == nil || date_time == nil:
      puts "Show does not exist"
      exit
   else
@@ -113,8 +113,8 @@ puts "Content-Type: text/plain\n\n"
         comd = findProcNum(sched)
         puts comd
         if comd == cmdcheck
-	    commandSent = system ("kill #[schedcheck}")
-	end
+          commandSent = system ("kill #[schedcheck}")
+        end
      end
 
 #remove from recording now that checked to make sure no longer running
@@ -163,4 +163,4 @@ puts "Content-Type: text/plain\n\n"
 #all done
      puts "Removed from hard drive"
   end
-end
+
