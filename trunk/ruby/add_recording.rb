@@ -296,7 +296,7 @@ end
     dbh.close()
   end
   puts "<success>#{prog_id}</success>"
-  cgi.close()
+  #cgi.close()
   #call record.rb
   executed_record = system("ruby record.rb &")
   
@@ -304,7 +304,7 @@ end
   
   if executed_record == true:
     log << DateTime.now + " Called ruby record.rb"
-  else
+  elsif executed_record == false:
     log << DateTime.now + " Did not ruby record.rb"
   end
   
