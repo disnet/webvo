@@ -2,8 +2,12 @@
 
 // Chaneges the background of a programme TD on a mouseover
 var prog_mouseOver = function(e) {
-	if( getNodeAttribute(e.src(),'class') == 'programme' ) {
+	var progClass = getNodeAttribute(e.src(),'class');
+	if( progClass == 'programme' ) {
 		updateNodeAttributes(e.src(),{'class':'programmeOver'});
+	}
+	else if (progClass == 'programmePast') { // don't do any backgound change if it is in the past 
+		return;
 	}
 	else {
 		updateNodeAttributes(e.src(),{'class':'recordingProgrammeOver'});
@@ -12,8 +16,12 @@ var prog_mouseOver = function(e) {
 
 // Reverts the background chage from a mouseover
 var prog_mouseOut = function(e) {
-	if( getNodeAttribute(e.src(),'class') == 'programmeOver') {
+	var progClass = getNodeAttribute(e.src(),'class');
+	if( progClass == 'programmeOver') {
 		updateNodeAttributes(e.src(),{'class':'programme'});
+	}
+	else if (progClass == 'programmePast') {
+		return;
 	}
 	else {
 		updateNodeAttributes(e.src(),{'class':'recordingProgramme'});
@@ -36,15 +44,16 @@ var prog_click = function(e) {
 	connect(btnRecord,'onclick',btnRecord_click);
 	
 	var prog_id = elProgramme.getAttribute('id'); 
-	var start_time = prog_id.slice(prog_id.length-20);		// Start time is part of progID
-	prog_id = prog_id.slice(0,prog_id.length-6);			// removes the timezone trailer
+	var start_time = prog_id.slice(prog_id.length-14);		// Start time is part of progID
 	var channel_id = prog_id.slice(0,prog_id.length-14);	// ChannelID is also part of progID
 	
 	var row = schedule.rows[channel_id];			// get the selected channel row and
-	for (var i = 0; i < row.length; i++	) {			// search for selected show
-		if(row[i].getAttribute('start') == start_time) {
+	for (var i = 1; i < row.length; i++	) {			// search for selected show
+		var rowStart = row[i].getAttribute('start');
+		rowStart = rowStart.slice(0,rowStart.length - 6);
+		if(rowStart == start_time) {
 			var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
-			
+		
 			var prog_start = zapTimeToDate( row[i].getAttribute('start') );
 			var prog_stop = zapTimeToDate( row[i].getAttribute('stop') );
 			

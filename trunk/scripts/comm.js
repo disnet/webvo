@@ -30,10 +30,14 @@ var gotAdd = function(req) {
 	xmldoc = req.responseXML;
 	var error = xmldoc.getElementsByTagName('error');
 	var success = xmldoc.getElementsByTagName('success');
+	
+		
 	if(error.length != 0 ) {
 		$('mnuAddStatus').innerHTML = error[0].firstChild.nodeValue;
 	}
 	else if(success.length != 0) {
+		var progID = success[0].firstChild.nodeValue;
+		updateNodeAttributes(progID,{'class':'recordingProgramme'});
 		makeInvisible('mnuAddStatus');
 	}
 	else {
