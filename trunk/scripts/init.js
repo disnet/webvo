@@ -32,10 +32,29 @@ schedule.startDate = null;			// first day that we have programme information on
 schedule.stopDate = null;			// last day that we have programme information on
 schedule.slotsPerHour = 60;
 
-var recording = Object();
-recording.xmlRecording = null;
+var recording = Object();			// Object for recording programmes
+recording.programmes = null;		// To store array of programme elements
+
+recording.find = function (progID) {//  
+	if(recording.programmes == null) {return false;}
+	
+	var ch = null;
+	var st = null;
+	for (var i = 0; i < recording.programmes.length; i++) {
+		ch = recording.programmes[i].getElementsByTagName('channelID')[0].firstChild.nodeValue;
+		st = recording.programmes[i].getElementsByTagName('start')[0].firstChild.nodeValue;
+		if( progID == ch + st) {
+			return true;
+		}
+	}
+	return false;	
+};
+
+var recorded = Object();
+recorded.programmes = null;
 
 var defRecording = new Deferred();
+var defRecorded = new Deferred();
 
 var dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
@@ -47,10 +66,17 @@ function init() {
     var ch = doSimpleXMLHttpRequest('ruby/form_channels.rb');
     ch.addCallbacks(gotChannels_init,fetchFailed);
 	
+	defRecording = doSimpleXMLHttpRequest('ruby/form_recording.rb');
+	defRecording.addCallbacks(gotRecording,fetchFailed);
+	
+	defRecorded = doSimpleXMLHttpRequest('ruby/form_recorded.rb');
+	defRecorded.addCallbacks(gotRecorded,fetchFailed);
+	
     connect('btnListing','onclick',btnListing_click);
 	connect('btnRecording','onclick',btnRecording_click);
+	connect('btnRecorded','onclick',btnRecorded_click);
 	connect('btnRemoveRecording','onclick',btnRemoveRecording_click);
-	connect('btnCloseRecording','onclick',btnCloseRecording_click);
+	connect('btnDeleteRecorded','onclick',btnDeleteRecorded_click);
 }
 
 // Populate the date/time switcher

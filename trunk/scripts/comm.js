@@ -44,8 +44,16 @@ var gotAdd = function(req) {
 
 var gotRecording = function(req) {
 	// TODO: error handling
-	recording.xmlRecording = req.responseXML;
+	recording.programmes = req.responseXML.getElementsByTagName('programme');
+	recording.programmes = map(function(el) {return el;}, recording.programmes); 	// convert nodelist to array
 	formRecordingTable();
+};
+
+var gotRecorded = function(req) {
+	// TODO: error handling
+	recorded.programmes = req.responseXML.getElementsByTagName('programme');
+	recorded.programmes = map(function(el) {return el;}, recorded.programmes); 	// convert nodelist to array
+	formRecordedTable();
 };
 
 var gotDelRecording = function(req) {

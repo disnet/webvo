@@ -78,7 +78,7 @@ programme_row_display = function(row) {
         var prog_start = row[i].getAttribute('start');
 		var prog_stop = row[i].getAttribute('stop');
         var progID =  channelID + prog_start; 
-		
+
         var isoStart = zapTimeToDate(prog_start);
         var isoStop = zapTimeToDate(prog_stop);
 		
@@ -102,10 +102,15 @@ programme_row_display = function(row) {
 			{show_length = (isoStop-isoStart) / 3600000; }// 3600000 to convert from ms to hours			
 			
 		}
-
+		
+		var isRecording = recording.find(progID.slice(0,progID.length - 6)); // need to slice off the timezone--should make it consistant sometime
 		var colSpan = show_length * schedule.slotsPerHour;  
-		var prog_td = TD({'id':progID,'class':'programme','colSpan':colSpan},prog_title); // colSpan *not* colspan -- I HATE IE!!!
-	
+		if(isRecording) {
+			var prog_td = TD({'id':progID,'class':'recordingProgramme','colSpan':colSpan},prog_title); // colSpan *not* colspan -- I HATE IE!!!
+		}
+		else {
+			var prog_td = TD({'id':progID,'class':'programme','colSpan':colSpan},prog_title); // colSpan *not* colspan -- I HATE IE!!!
+		}
 		connect(prog_td,'onmouseover',prog_mouseOver);
 		connect(prog_td,'onmouseout',prog_mouseOut);
 		connect(prog_td,'onclick',prog_click);

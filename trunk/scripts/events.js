@@ -2,12 +2,22 @@
 
 // Chaneges the background of a programme TD on a mouseover
 var prog_mouseOver = function(e) {
-	updateNodeAttributes(e.src(),{'style':{'backgroundColor':'#408040'}});
+	if( getNodeAttribute(e.src(),'class') == 'programme' ) {
+		updateNodeAttributes(e.src(),{'class':'programmeOver'});
+	}
+	else {
+		updateNodeAttributes(e.src(),{'class':'recordingProgrammeOver'});
+	}
 };
 
 // Reverts the background chage from a mouseover
 var prog_mouseOut = function(e) {
-	updateNodeAttributes(e.src(),{'style':{'backgroundColor':'green'}});
+	if( getNodeAttribute(e.src(),'class') == 'programmeOver') {
+		updateNodeAttributes(e.src(),{'class':'programme'});
+	}
+	else {
+		updateNodeAttributes(e.src(),{'class':'recordingProgramme'});
+	}
 };
 
 // Creates and displays extended info/record menu on a programme TD click
@@ -35,6 +45,9 @@ var prog_click = function(e) {
 		if(row[i].getAttribute('start') == start_time) {
 			var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
 			
+			var prog_start = zapTimeToDate( row[i].getAttribute('start') );
+			var prog_stop = zapTimeToDate( row[i].getAttribute('stop') );
+			
 			var desc_els = row[i].getElementsByTagName('desc');
 			var prog_desc = (desc_els.length != 0)?desc_els[0].firstChild.nodeValue: "";
 			
@@ -43,12 +56,21 @@ var prog_click = function(e) {
 		}
 	}
 	var progID = SPAN({'id':'prog_id','class':'invisible'},prog_id);
-	var boxTitle = "Show name: " + prog_title;
-	var boxMessage = (prog_desc != "")?"Details: " + prog_desc:"";
-	var boxSubtitle = (prog_subtitle != "")?"Sub-title: " + prog_subtitle:"";
+	var boxTitle = (prog_subtitle != "") ? 
+		("Show: " + prog_title + " -- " + prog_subtitle) : ("Show: " + prog_title); 
+	
+	var startMin = (prog_start.getMinutes() < 10) ? 
+		("0" + prog_start.getMinutes().toString()) : (prog_start.getMinutes().toString());
+	var stopMin = (prog_stop.getMinutes() < 10) ? 
+		("0" + prog_stop.getMinutes().toString()) : (prog_stop.getMinutes().toString());
+	var boxStart = "Start: " + mil2std(prog_start.getHours() + ":" + startMin);
+	var boxStop = "Stop: " + mil2std(prog_stop.getHours() + ":" + stopMin);
+	
+	var boxMessage = (prog_desc != "") ? ("Description: " + prog_desc) : ("");
+	
 	
 	var box = DIV({'id':'mnuRecord'},
-		[btnClose, [boxTitle,BR(null,null),BR(null,null),boxMessage,BR(null,null),BR(null,null),boxSubtitle,progID], btnRecord]);
+		[btnClose, [boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID], btnRecord]);
 	
 	// Positon box approx. box width to the right if at edge of screen
 	var boxWidth = 250; 	// Hard coded because no easy way of finding dynamically
@@ -115,13 +137,22 @@ var btnLoad_click = function(e) {
 
 // Stub for displaying the recording table
 var btnRecording_click = function(e) {
-	//makeInvisible('listingContent');
+	makeInvisible('listingContent');
 	makeVisible('recordingContent');
+	makeInvisible('recordedContent');
 	
 	defRecording = doSimpleXMLHttpRequest('ruby/form_recording.rb');
-	defRecording.addCallbacks(gotRecording,fetchFailed);
+	defRecording.addCallbacks(gotRecording,fetchFailed);		
+};
+
+// Stub for displaying the recording table
+var btnRecorded_click = function(e) {
+	makeInvisible('listingContent');
+	makeVisible('recordedContent');
+	makeInvisible('recordingContent');
 	
-		
+	defRecording = doSimpleXMLHttpRequest('ruby/form_recorded.rb');
+	defRecording.addCallbacks(gotRecorded,fetchFailed);		
 };
 
 // Displays listing table
@@ -145,6 +176,17 @@ var btnRemoveRecording_click = function(e) {
 	map(function(id) { removeElement(id);}, removeIDs);
 };
 
-var btnCloseRecording_click = function(e) {
-	makeInvisible('recordingContent');
+var btnDeleteRecorded_click = function(e) {
+	var chkBox = $('recorded').getElementsByTagName('input');
+	var recArray = [];
+	var removeIDs = [];
+	for(var i = 0; i < chkBox.length; i++) {
+		if(chkBox[i].checked == true) {
+			log(chkBox[i].value);
+			recArray.push(doSimpleXMLHttpRequest('ruby/delete_recorded.rb',{'prog_id':chkBox[i].value}));
+			recArray[recArray.length - 1].addCallbacks(gotDelRecorded,fetchFailed);
+			removeIDs.push(chkBox[i].value);
+		}
+	}
+	map(function(id) { removeElement(id);}, removeIDs);
 };
