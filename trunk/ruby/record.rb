@@ -327,7 +327,7 @@ end
 
 #start next recording check
     puts "Locating next show to record\n"
-    #commandSent = system("ruby record.rb &")
+    commandSent = system("ruby record.rb &")
     exit
 
 end
