@@ -32,7 +32,7 @@ TABLENAME = "Recording"
 
 LENGTH_OF_DATE_TIME = 14
 
-SHOW_DIR = "/home/public_html/webvo/Movies"
+SHOW_DIR = "/home/public_html/webvo/movies"
 
 def error_if_not_equal(value, standard, error_string)
   if value != standard:
