@@ -296,7 +296,7 @@ end
     dbh.close()
   end
   puts "<success>#{prog_id}</success>"
-  #cgi.close()
+  cgi.close()
   #call record.rb
   Kernel.fork
     exec("ruby record.rb &")
