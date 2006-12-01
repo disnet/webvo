@@ -298,7 +298,7 @@ end
   puts "<success>#{prog_id}</success>"
   #cgi.close()
   #call record.rb
-  fork
+  Kernel.fork
     exec("ruby record.rb &")
   end
   Process.detach
