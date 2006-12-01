@@ -11,7 +11,7 @@ USERNAME = "root"
 USERPASS = "csc4150"
 DBNAME = "WebVo"
 TABLENAME = "Recording"
-VIDEO_PATH = "/home/public_html/webvo/movies"
+VIDEO_PATH = "/home/public_html/webvo/movies/"
 
 #class to hold pertinent data for recording a show
 class RecordedShow
@@ -79,7 +79,7 @@ end
 
 #look for show of this name
 def findname(id)
-  readme = IO.popen("ls #{VIDEO_PATH}/#{id}.mpg")
+  readme = IO.popen("ls #{VIDEO_PATH}#{id}.mpg")
   sleep(1)
   check = readme.gets
   readme.close()
@@ -273,7 +273,7 @@ end
 #start the recording
     puts "Recording channel #{show.channel} from #{show.starttime} to #{show.stoptime}.\n"
     puts "Beginning recording \n"
-    commandSent = system ("cat /dev/video0 > /home/daryl/Desktop/TestVideos/#{show.showID}.mpg &")
+    commandSent = system ("cat /dev/video0 > #{VIDEO_PATH}#{show.showID}.mpg &")
     if commandSent != true
       puts "Recording failed to start\n"
       exit 
