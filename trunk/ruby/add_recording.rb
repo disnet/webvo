@@ -130,11 +130,11 @@ end
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
 #checks for 1 argument
-#  error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
-#  error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
+  error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
+  error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
 
 #get argument
-#  prog_id =  cgi[PROG_ID][0]
+  prog_id =  cgi[PROG_ID][0]
 
 #  error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 
@@ -295,12 +295,12 @@ end
     #close the database
 #    dbh.close()
 #  end
-#  puts "<success>#{prog_id}</success>"
+  puts "<success>#{prog_id}</success>"
 
   #call record.rb
 
   pid = fork do
-    exec("ruby faux_record.rb &")
+    exec("ruby record.rb &")
   end
   
   cgi.close()
