@@ -11,5 +11,4 @@ require 'cgi'
   end
   Process.detach(pid)
   puts "done"
-  Process.detach
   cgi.close
