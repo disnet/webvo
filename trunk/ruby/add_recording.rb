@@ -126,12 +126,11 @@ def format_date(current_date)
   return current_date.year.to_s + month + day + hour + min + sec
 end
 #main--------------------------------------------------------------------------
-  
+  puts "Content-Type: text/xml\n\n" 
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
-  cgi.header("type" => "text/xml", "expires" => Time.now + 10)
   
-  
+  session = CGI::Session(cgi)
 #checks for 1 argument
   error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
   error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
@@ -301,9 +300,11 @@ end
   puts "<success>#{prog_id}</success>"
 
   #call record.rb
+  session.close
   pid = fork do
     exec("ruby record.rb &")
   end
+  
   
 
   
