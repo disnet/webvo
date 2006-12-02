@@ -130,7 +130,7 @@ end
   
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
-  session = CGI::Session(cgi)
+
 #checks for 1 argument
   error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
   error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
@@ -300,7 +300,6 @@ end
   puts "<success>#{prog_id}</success>"
 
   #call record.rb
-  session.close
   pid = fork do
     exec("ruby record.rb &")
   end
