@@ -11,3 +11,4 @@ require 'cgi'
   system("ruby faux_record.rb &")
   
   puts "done"
+  cgi.close
