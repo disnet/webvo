@@ -303,6 +303,7 @@ end
     exec("ruby faux_record.rb &")
   end
   
+  cgi.close()
   Process.detach(pid)
 
   
