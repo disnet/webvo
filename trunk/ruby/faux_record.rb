@@ -1,3 +1,4 @@
 #!/usr/local/bin/ruby
 puts "got here"
-sleep(120)
+cgi.close
+sleep(14)
