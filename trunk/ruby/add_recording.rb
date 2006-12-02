@@ -302,7 +302,8 @@ end
     dbh.close()
   end
   puts "<success>#{prog_id}</success>"
-
+  
+  STDOUT.close
   #call record.rb
   pid = fork do
     system("ruby record.rb &")
