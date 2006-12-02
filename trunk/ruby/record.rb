@@ -98,6 +98,8 @@ end
 
 if __FILE__ == $0
 
+cgi = CGI.new
+cgi.close
 #connect to the mysql server
 begin
   log = File.open("logfile.txt","a")
@@ -106,7 +108,7 @@ begin
 rescue MysqlError => e
        print "Error code: ", e.errno, "\n"
        print "Error message: ", e.error, "\n"
-  puts "Unable to connect to database\n"
+  log << "Unable to connect to database\n"
   if dbh.nil? == false
     dbh.close() 
   end
