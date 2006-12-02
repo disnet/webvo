@@ -3,15 +3,13 @@
 #Delete the recording from the hard drive
 
 require "mysql"
-require "cgi"
 
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
 DBNAME = "WebVo"
 TABLENAME = "Recording"
-PROG_ID = "prog_id"
-VIDEO_PATH = "/home/daryl/Desktop/TestVideos"
+VIDEO_PATH = "/home/public_html/webvo/movies/"
 LENGTH_OF_DATE_TIME = 14
 
 #connect to the database
@@ -49,24 +47,25 @@ def findProcCat(procNum)
   return cmd
 end
 
-
-puts "Content-Type: text/plain\n\n" 
-
-  cgi = CGI.new     # The CGI object is how we get the arguments 
+#main------------------------------------------------------------
+puts "Content-Type: text/xml\n\n"
+puts "<?xml version='1.0' encoding='ISO-8859-1'?>"
 
 #checks for 1 argument
-  error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
-  error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
+  error_if_not_equal(ARGV.length(),1, "Needs one argument")
+  
 #get argument
-  prog_id =  cgi[PROG_ID][0]
+  prog_id = ARGV[0]
+
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
   chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
+
   if chan_id == nil || date_time == nil:
-     puts "Show does not exist"
+     puts "<error>Show does not exist</error>"
      exit
   else
-     puts "chanID and datetime acquired"
+     puts "<success>chanID and datetime acquired</success>"
   end
 
 #get the showName
@@ -76,42 +75,37 @@ puts "Content-Type: text/plain\n\n"
   showname = temp.to_s
   showname.strip
   if showname == nil
-     puts "Show does not exist"
+     puts "<error>Show does not exist</error>"
+     dbh.close()
      exit
   else
      showname << "-0"
-     puts showname
-     puts "showname acquired"
   end
     
 #check the hard drive for the show to be deleted
-  check = "#{VIDEO_PATH}/#{showname}.mpg"
+  check = "#{VIDEO_PATH}#{showname}.mpg"
   onHD = IO.popen("ls #{check}")
   test = onHD.gets
-  puts test
   onHD.close()
 
 #if does not exist, return error
-  puts check
-  if !(test.strip == check.strip)
-     puts "Show does not need to be deleted"
+  if test.nil?
+     puts "<error>Show does not need to be deleted</error>"
      exit
 
 #if it does,remove it from recording, recorded and programme
   else
-     puts "Show located"
+     puts "<success>Show located</success>"
 
 #check in Recording to see if still recording one of the fragments
      schedcheck = dbh.query("SELECT PID FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
      cmdcheck = dbh.query("SELECT CMD FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
      sched = schedcheck.fetch_row
      cmd = cmdcheck.fetch_row
-     puts "#{sched} #{cmd}"
 
 #if is still recording, need to kill process (if it exists) and remove from Recording
      if sched != nil
-        comd = findProcNum(sched)
-        puts comd
+        comd = findProcCat(sched)
         if comd == cmdcheck
           commandSent = system ("kill #[schedcheck}")
         end
@@ -119,48 +113,50 @@ puts "Content-Type: text/plain\n\n"
 
 #remove from recording now that checked to make sure no longer running
      dbh.query("DELETE FROM Recording Where (ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
-     puts "Removed from Recording"
+     puts "<success>Removed from Recording</success>"
 #remove from recorded
-     dbh.query("DELETE FROM Recorded Where ShowName = '#{showname}'")
-     puts "Removed from Recorded"
+     dbh.query("DELETE FROM Recorded Where (ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
+     puts "<success>Removed from Recorded</success>"
 #remove from programme
      dbh.query("DELETE FROM Programme Where(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
-     puts "Removed from Programme"
+     puts "<success>Removed from Programme</success>"
      dbh.close()
 
 #remove from hard drive (need to locate all fragments as well)
 
 #get the fragment number from the name
      lastchar = showname[showname.length-1]
-     checkforfrags = IO.popen("ls #{check}")
+     hold = IO.popen("ls #{check}")
+     checkforfrags = hold.gets
 
-#remove first fragment
-     exec("rm #{check}")
-     puts "#{check} has been removed"
 #check for more fragments
      #while the show is not located on HD
      while (!checkforfrags.nil?)
+     
+     #remove first fragment
+       system("rm #{check}")
+       puts "<success>#{check} has been removed</success>"
+
      #increment the fragment number
-        lastchar += 1
-        puts lastchar
+       lastchar += 1
      #reinsert into title string
         showname[showname.length-1] = lastchar
-        puts showname
+        check = "#{VIDEO_PATH}#{showname}.mpg"
      #see if the show exists
-        checkforfrags = IO.popen("ls #{VIDEO_PATH}/#{showname}.mpg")
+        hold = IO.popen("ls #{check}")
+        checkforfrags = hold.gets
      #if it doesn't, get out of loop
         if checkforfrags.nil?
-          deletefromHD.close()
-          checkforfrag.close()
           break
-#if it does, delete from HD,      puts "retrieved"look for another fragment
-        else  
-          deletefromHD = IO.popen("rm #{VIDEO_PATH}/#{showname}.mpg")
-          puts "#{VIDEO_PATH}/#{showname}.mpg has been removed"
         end  
      #close while loop
      end
 #all done
-     puts "Removed from hard drive"
+     puts "<success>Removed from hard drive</success>"
   end
-
+  hold.close()
+#close stdout
+  STDOUT.close
+#call record.rb
+  system ("ruby record.rb &")
+  exit

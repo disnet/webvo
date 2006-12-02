@@ -18,11 +18,9 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ################################################################################
 #add_recording.rb
-#takes a programmeid from the front end and adds it to the database
+#takes a programmeid from the python script and adds the indicated programme to the database
 
 #get some libraries
-require 'cgi'         #allows for communication with the front end
-require 'cgi/session' 
 require 'xml/libxml'  #allows for parsing the info.xml
 require 'date'        #allows for finding the current date
 require "mysql"       #allows for communication with the mysql database
@@ -37,7 +35,7 @@ TABLENAME = "Recording"
 PROG_ID = "prog_id"
 LENGTH_OF_DATE_TIME = 14
 XML_FILE_NAME = "info.xml"
-SHOW_DIR = "/home/daryl/Desktop/TestVideos/"
+SHOW_DIR = "/home/public_html/webvo/movies"
 
 #Functions-----------------------------------------------------------------------
 #checks to see if the file is there
@@ -126,20 +124,10 @@ def format_date(current_date)
   return current_date.year.to_s + month + day + hour + min + sec
 end
 #main--------------------------------------------------------------------------
-  #puts "Content-Type: text/xml\n\n" 
-  
-  #cgi = CGI.new     # The CGI object is how we get the arguments 
-  
-
 #checks for 1 argument
-  #error_if_not_equal(cgi.keys.length(), 1, "Needs one argument")
-  #error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
-
   error_if_not_equal(ARGV.length(),1, "Needs two arguments")
   
 #get argument
-  #prog_id =  cgi[PROG_ID][0]
-
   prog_id = ARGV[0]
   
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
@@ -305,19 +293,4 @@ end
   
   STDOUT.close
   #call record.rb
-  pid = fork do
-    system("ruby record.rb &")
-  end
-  
-  
-
-  
-  #log = File.open("add_recoringlog.txt","a")
-  
-  #if executed_record == true:
-  #  log << DateTime.now + " Called ruby record.rb"
-  #elsif executed_record == false:
-  #  log << DateTime.now + " Did not ruby record.rb"
-  #end
-  
-  #log.close()
+  system("ruby record.rb &")

@@ -41,15 +41,17 @@
 
 <div id="content" class="content">
 <div id="listingContent">
- <div id="listingContentTop">
-	<div id="boxInfo">&nbsp;</div>
-	<div id="boxTime">
+ <table id="listingContentTop">
+ <tr>
+	<td id="tdInfo"><h2 id="boxInfo">&nbsp;</h2></td>
+	<td id="boxLoading" class="invisible">Loading...</td>
+	<td id="boxTime">
 	 <select id="selDate" class="formDayTime"></select>
 	 <select id="selTime" class="formDayTime"></select>
      <input id="btnLoad" class="button" type="submit" value="load" />
-	</div>
-	<div id="boxLoading" class="invisible">Loading...</div>
- </div>
+	</td>
+ </tr>
+ </table>
 
  <div id="listingContentMain">
     <table id="schedule"></table>

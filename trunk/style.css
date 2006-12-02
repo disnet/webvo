@@ -39,19 +39,24 @@ td.listHead{
     color:black;
 }
 .channelName {
-	background-color:gray;
+	background-color: gray;
 }
 .programme {
-	background-color: #408040;
+    color:black;
+	background-color:#999999 ;
+    margin-left: 0px;
 }
 .programmeOver {
-	background-color: green;
+	background-color: #8CD749;
+}
+.programmePast {
+	background-color: #AAAAAA;
 }
 .recordingProgramme {
-	background-color:gray;	
+	background-color:#FF4242;	
 }
 .recordingProgrammeOver {
-	background-color: black;
+	background-color:#FF5C5C;
 }
 table.schedule {
 	clear:right;
@@ -89,46 +94,30 @@ table.tblRecord  {
 	width:100%;
 }
 #boxTime {
-	float: right;
-	height:100%;
 	background-color:#c2c2c2;
-	padding: 2px 2px 2px 2px;
+	border: 2px solid black;
+    white-space:nowrap;
+}
+#mnuAddStatus {
+    position: absolute;
+	background-color: #8CD749;
+	width: 250px;
+    border: 3px solid black;
+}
+#mnuRecord{
+    position: absolute;
+	background-color: #8CD749;
+	width: 250px;
+    border: 3px solid black;
+}
+#boxLoading {
 	margin-right:2px;
+	color:black;
+	background-color: #DDDDDD;
 	border: 2px solid black;
 }
-
-#mnuRecord {
-	position: absolute;
-	background-color: #ADADAD;
-	width: 250px;
-	/*height: 5em;*/
-	border: 3px solid black;
-}
-
-#mnuAddStatus {
-	position: absolute;
-	background-color: gray;
-	text-align:center;
-	width: 25%;
-	/*height: 5em;*/
-	border: 3px solid black;
-}
-
-
-#boxLoading {
-	float: right;
-	margin-right:2px;
-	height:100%;
-	color:white;
-	background-color: green;
-	border: 3px solid black;
-}
-#boxInfo {
-	float: left;
-	height:100%;
-	color:white;
-	background-color:green;
-	border:3px solid black;
+#tdInfo {
+    width:100%;
 }
 #btnClose {
 	padding:0; 

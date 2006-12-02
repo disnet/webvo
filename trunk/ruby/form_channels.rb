@@ -37,6 +37,23 @@ def get_header(xml)
   output_string << xml.uri + "\n\n"
   return output_string
 end
+#this this takes the date and turns it into YYYYMMDDHHMMSS 
+def format_date(current_date)
+  #if elses for padding the numbers
+  if (current_date.month.to_s.length != 2):
+    month = "0"+ current_date.month.to_s
+  else
+    month = current_date.month.to_s
+  end
+
+  if (current_date.day.to_s.length != 2):
+    day = "0" + current_date.day.to_s
+  else
+    day = current_date.day.to_s
+  end
+
+  return current_date.year.to_s + month + day
+end
 #Main ------------------------------------------------------------------------
 puts "Content-Type:text/xml\n\n"
 
@@ -71,6 +88,14 @@ else
 	oldest_day = e["stop"][0..7].to_i
       end
     end
+    
+    #new_date = newest_day.to_s[0..7]
+    #day_before = Date.new((new_date[0..3]).to_i,(new_date[4..5]).to_i, (new_date[6..7]).to_i)-1
+    #newest_date = format_date(day_before)
+    #newest_day = newest_date.to_i
+    #new_date = newest_day.to_s
+
+
     puts "\n<programme_date_range start='"+ oldest_day.to_s + "' stop='" + newest_day.to_s + "'></programme_date_range>\n"
 
   #write up end of parent

@@ -1,4 +1,3 @@
-#!/usr/local/bin/ruby
 ################################################################################
 #WebVo: Web-based PVR
 #Copyright (C) 2006 Molly Jo Bault, Tim Disney, Daryl Siu
@@ -20,7 +19,6 @@
 #delete_recording.rb
 #takes a programmeid from the front end and deletes it from the database
 
-require 'cgi'
 require 'date'
 require "mysql"
 
@@ -47,15 +45,12 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 #main--------------------------------------------------------------------------
-  puts "Content-Type: text/xml\n\n" 
-  
-  cgi = CGI.new     # The CGI object is how we get the arguments 
+
 #checks for 1 argument
-  error_if_not_equal(cgi.keys.length, 1, "Needs one argument")
-  error_if_not_equal(cgi.has_key?(PROG_ID), true, "Needs Programme ID")
+  error_if_not_equal(ARGV.length(),1, "Needs 1 arguments")
   
 #get argument
-  prog_id =  cgi[PROG_ID][0]
+  prog_id = ARGV[0]
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 
@@ -106,7 +101,7 @@ end
       if pid_info != nil:
         CAT_PID = pid_info #need PID number
         readme = IO.popen("ps #{CAT_PID}")
-        sleep (1)
+        sleep (0.5)
         temp = readme.gets
         pid = readme.gets
         if pid != "NULL"
@@ -122,7 +117,7 @@ end
           dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
         end
       end
-      #delete the entry from Recording
+     #delete the entry from Recording
       dbh.query("DELETE FROM Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")        
     end
     #See if there is an entry for programme
@@ -137,10 +132,10 @@ end
     end  
   end
   if have_errored == false:
-    puts "<success>Programme Deleted</success>"
+    puts "<success>prog_id</success>"
   end
-#closing down cgi
-cgi.shutdown()
+#closing down standard out
+  STDOUT.close()
 
 #call record.rb
-  exec("ruby record.rb")
+  system("ruby record.rb &")
