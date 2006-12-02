@@ -299,7 +299,7 @@ end
 
   #call record.rb
 
-  system("ruby record.rb &")
+  system("ruby faux_record.rb &")
 
   
   #log = File.open("add_recoringlog.txt","a")
