@@ -3,7 +3,6 @@
 #Daryl Siu
 #Write to the recorder in Ruby
 
-cgi.close
 require "date"
 require "mysql"
 
