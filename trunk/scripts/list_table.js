@@ -77,7 +77,7 @@ programme_row_display = function(row) {
         var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
         var prog_start = row[i].getAttribute('start');
 		var prog_stop = row[i].getAttribute('stop');
-        var progID =  channelID + prog_start.slice(0,prog_start.length - 6);  
+        var progID = channelID + prog_start.slice(0,prog_start.length - 6); // Drop the timezone in start time 
 
         var isoStart = zapTimeToDate(prog_start);
         var isoStop = zapTimeToDate(prog_stop);
@@ -103,7 +103,7 @@ programme_row_display = function(row) {
 			
 		}
 		
-		var isRecording = recording.find(progID); // need to slice off the timezone--should make it consistant sometime
+		var isRecording = recording.find(progID); 
 		var colSpan = show_length * schedule.slotsPerHour;  
 		if(isRecording) {
 			var prog_td = TD({'id':progID,'class':'recordingProgramme','colSpan':colSpan},prog_title); // colSpan *not* colspan -- I HATE IE!!!
@@ -111,19 +111,19 @@ programme_row_display = function(row) {
 		else {
 			var currTime = new Date();
 			if(isoStart < currTime) {	// if show starts before now
-				var prog_td = TD({'id':progID,'class':'programmePast','colSpan':colSpan},prog_title); // colSpan *not* colspan -- I HATE IE!!!
+				var prog_td = TD({'id':progID,'class':'programmePast','colSpan':colSpan},prog_title); 
 			}
 			else {
-				var prog_td = TD({'id':progID,'class':'programme','colSpan':colSpan},prog_title); // colSpan *not* colspan -- I HATE IE!!!
+				var prog_td = TD({'id':progID,'class':'programme','colSpan':colSpan},prog_title); 
 			}
 		}
+
 		connect(prog_td,'onmouseover',prog_mouseOver);
 		connect(prog_td,'onmouseout',prog_mouseOut);
 		connect(prog_td,'onclick',prog_click);
 		
 		// insert the formed programme TDs into the TD array
         programme_tds.push(prog_td); 
-        
     }
 	
     formed_row.push(programme_tds); 

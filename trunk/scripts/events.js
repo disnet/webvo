@@ -48,9 +48,9 @@ var prog_click = function(e) {
 	var channel_id = prog_id.slice(0,prog_id.length-14);	// ChannelID is also part of progID
 	
 	var row = schedule.rows[channel_id];			// get the selected channel row and
-	for (var i = 1; i < row.length; i++	) {			// search for selected show
+	for (var i = 1; i < row.length; i++	) {			// search for selected show by start time
 		var rowStart = row[i].getAttribute('start');
-		rowStart = rowStart.slice(0,rowStart.length - 6);
+		rowStart = rowStart.slice(0,rowStart.length - 6);   // drop timezone
 		if(rowStart == start_time) {
 			var prog_title = row[i].getElementsByTagName('title')[0].firstChild.nodeValue;
 		
@@ -58,20 +58,21 @@ var prog_click = function(e) {
 			var prog_stop = zapTimeToDate( row[i].getAttribute('stop') );
 			
 			var desc_els = row[i].getElementsByTagName('desc');
-			var prog_desc = (desc_els.length != 0)?desc_els[0].firstChild.nodeValue: "";
+			var prog_desc = (desc_els.length != 0) ? (desc_els[0].firstChild.nodeValue) : ("");
 			
 			var subtitle_els = row[i].getElementsByTagName('sub-title');
-			var prog_subtitle = (subtitle_els.length != 0)?subtitle_els[0].firstChild.nodeValue:"";
+			var prog_subtitle = (subtitle_els.length != 0) ? (subtitle_els[0].firstChild.nodeValue) : ("");
 		}
 	}
 	var progID = SPAN({'id':'prog_id','class':'invisible'},prog_id);
-	var boxTitle = (prog_subtitle != "") ? 
+	var boxTitle = (prog_subtitle != "") ?  // Add subtitle if it exists
 		("Show: " + prog_title + " -- " + prog_subtitle) : ("Show: " + prog_title); 
 	
-	var startMin = (prog_start.getMinutes() < 10) ? 
+	var startMin = (prog_start.getMinutes() < 10) ?  // Pad time with 0 if needed
 		("0" + prog_start.getMinutes().toString()) : (prog_start.getMinutes().toString());
 	var stopMin = (prog_stop.getMinutes() < 10) ? 
 		("0" + prog_stop.getMinutes().toString()) : (prog_stop.getMinutes().toString());
+
 	var boxStart = "Start: " + mil2std(prog_start.getHours() + ":" + startMin);
 	var boxStop = "Stop: " + mil2std(prog_stop.getHours() + ":" + stopMin);
 	
@@ -82,7 +83,7 @@ var prog_click = function(e) {
 		[btnClose, [boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID], btnRecord]);
 	
 	// Positon box approx. box width to the right if at edge of screen
-	var boxWidth = 250; 	// Hard coded because no easy way of finding dynamically
+	var boxWidth = 250; 	// CBB: Hard coded because no easy way of finding dynamically
 	if ( (boxWidth + mousePos.x) > elementDimensions('schedule').w) {
 		mousePos.x -= boxWidth;
 		setElementPosition(box,mousePos);
@@ -90,15 +91,16 @@ var prog_click = function(e) {
 	else {
 		setElementPosition(box,mousePos);
 	}
+
 	swapDOM('mnuRecord',box);
 	makeVisible($('mnuRecord'));
-	
 };
 
 // Send a record request and display a wait box when record button is clicked
 var btnRecord_click = function(e) {	
 	makeVisible('boxLoading');
 	
+    // Setup loading box
 	var prog_id = $('prog_id').firstChild.nodeValue;
 	
 	setElementPosition('mnuAddStatus',elementPosition('mnuRecord'));
@@ -107,6 +109,8 @@ var btnRecord_click = function(e) {
 	
 	makeInvisible('mnuRecord');
 	makeVisible('mnuAddStatus');
+    
+    // Initiate request
 	var ad = doSimpleXMLHttpRequest('ruby/add_recording.rb', {'prog_id':prog_id});
     ad.addCallbacks(gotAdd,fetchFailed);
 }
@@ -140,7 +144,8 @@ var btnLoad_click = function(e) {
 	schedule.stop.setHours(date.getHours() + schedule.numHours);
 	
     // send the request
-    var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',{'start_date_time':dateToZapTime(schedule.start),'end_date_time':dateToZapTime(schedule.stop)});
+    var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',
+        {'start_date_time':dateToZapTime(schedule.start),'end_date_time':dateToZapTime(schedule.stop)});
     d.addCallbacks(gotProgrammes,fetchFailed);
 };
 
@@ -176,7 +181,6 @@ var btnRemoveRecording_click = function(e) {
 	var removeIDs = [];
 	for(var i = 0; i < chkBox.length; i++) {
 		if(chkBox[i].checked == true) {
-			log(chkBox[i].value);
 			recArray.push(doSimpleXMLHttpRequest('ruby/delete_recording.rb',{'prog_id':chkBox[i].value}));
 			recArray[recArray.length - 1].addCallbacks(gotDelRecording,fetchFailed);
 			removeIDs.push(chkBox[i].value);
@@ -191,7 +195,6 @@ var btnDeleteRecorded_click = function(e) {
 	var removeIDs = [];
 	for(var i = 0; i < chkBox.length; i++) {
 		if(chkBox[i].checked == true) {
-			log(chkBox[i].value);
 			recArray.push(doSimpleXMLHttpRequest('ruby/delete_recorded.rb',{'prog_id':chkBox[i].value}));
 			recArray[recArray.length - 1].addCallbacks(gotDelRecorded,fetchFailed);
 			removeIDs.push(chkBox[i].value);
