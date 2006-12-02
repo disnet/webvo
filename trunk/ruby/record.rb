@@ -7,6 +7,7 @@ require "cgi"
 require "date"
 require "mysql"
 
+cgi.close
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
@@ -97,7 +98,7 @@ end
 #begin recording script
 
 if __FILE__ == $0
-cgi.close
+
 #connect to the mysql server
 begin
   log = File.open("logfile.txt","a")
