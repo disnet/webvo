@@ -9,6 +9,6 @@ require 'cgi'
   
   
   system("ruby faux_record.rb &")
-  
+  Process.detach
   puts "done"
   cgi.close
