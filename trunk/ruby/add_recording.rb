@@ -299,7 +299,11 @@ end
 
   #call record.rb
 
-  system("ruby faux_record.rb &")
+  pid = fork do
+    exec("ruby faux_record.rb &")
+  end
+  
+  Process.detach(pid)
 
   
   #log = File.open("add_recoringlog.txt","a")
