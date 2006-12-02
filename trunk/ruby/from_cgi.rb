@@ -6,7 +6,7 @@ require 'cgi'
   cgi = CGI.new     # The CGI object is how we get the arguments 
   
   puts "calling faux_record.rb"
-  pid = fork
+  pid = fork do
     cgi.close
     system("ruby faux_record.rb &")
   end
