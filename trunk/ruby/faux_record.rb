@@ -1,4 +1,4 @@
 #!/usr/local/bin/ruby
-puts "got here"
+puts "<hello>got here</hello>"
 cgi.close
 sleep(14)
