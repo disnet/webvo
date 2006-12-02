@@ -8,8 +8,9 @@ require 'cgi'
   puts "calling faux_record.rb"
   
   fork
-    Process.detach
+    
     system("ruby faux_record.rb &")
+    Process.detach
   end
   puts "done"
   
