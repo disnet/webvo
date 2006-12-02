@@ -3,11 +3,11 @@
 #Daryl Siu
 #Write to the recorder in Ruby
 
-require "cgi"
+cgi.close
 require "date"
 require "mysql"
 
-cgi.close
+
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
