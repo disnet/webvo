@@ -9,6 +9,5 @@ require 'cgi'
   pid = fork do
     exec("ruby faux_record.rb &")
   end
-  Process.detach(pid)
   puts "done"
   cgi.close
