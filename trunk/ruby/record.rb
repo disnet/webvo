@@ -98,8 +98,6 @@ end
 
 if __FILE__ == $0
 
-cgi = CGI.new
-cgi.close
 #connect to the mysql server
 begin
   log = File.open("logfile.txt","a")
