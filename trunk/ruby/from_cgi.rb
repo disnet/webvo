@@ -7,8 +7,10 @@ require 'cgi'
   
   puts "calling faux_record.rb"
   
-  
-  system("ruby faux_record.rb &")
-  Process.detach
+  fork
+    Process.detach
+    system("ruby faux_record.rb &")
+  end
   puts "done"
+  
   cgi.close
