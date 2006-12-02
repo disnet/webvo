@@ -305,7 +305,7 @@ end
 
   #call record.rb
   pid = fork do
-    exec("ruby record.rb &")
+    system("ruby record.rb &")
   end
   
   
