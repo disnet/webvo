@@ -110,7 +110,7 @@ programme_row_display = function(row) {
 		}
 		else {
 			var currTime = new Date();
-			if(isoStart < currTime) {	// if show starts before now
+			if(isoStop < currTime) {	// if show ends before now
 				var prog_td = TD({'id':progID,'class':'programmePast','colSpan':colSpan},prog_title); 
 			}
 			else {

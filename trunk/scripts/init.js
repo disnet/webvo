@@ -66,6 +66,9 @@ function init() {
     var ch = doSimpleXMLHttpRequest('ruby/form_channels.rb');
     ch.addCallbacks(gotChannels_init,fetchFailed);
 	
+    var st = doSimpleXMLHttpRequest('ruby/form_space.rb');
+    st.addCallbacks(gotSpace,fetchFailed);
+
 	defRecording = doSimpleXMLHttpRequest('ruby/form_recording.rb');
 	defRecording.addCallbacks(gotRecording,fetchFailed);
 	
@@ -87,7 +90,7 @@ function initFormTime() {
 		schedule.stopDate.slice(4,6) + "-" + schedule.stopDate.slice(6,8));
 	var time = new Date();
 	
-	$('boxInfo').firstChild.nodeValue = time.toLocaleDateString();
+	$('boxDate').firstChild.nodeValue = time.toLocaleDateString();
 	
     // Fill all the days we have on the server
 	while(day <= end) { 
@@ -96,6 +99,14 @@ function initFormTime() {
 		$('selDate').appendChild(opDate);
 		day.setDate(day.getDate() + 1);
 	}
+    today = time;
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    selDay = new Date( $('selDate').value );
+    if (today > selDay) {
+        $('selDate').value = today;
+    }
     // Fill 24 hours
 	time.setHours(0); // start at 00:00
 	for(var i = 0; i < 24; i++) {
@@ -104,7 +115,14 @@ function initFormTime() {
 		$('selTime').appendChild(opTime);
 		time.setHours(time.getHours() + 1);
 	}
-	$('selTime').value = 18;	// default to 6pm
+
+    var now = new Date().getHours();
+    if (now > 18) {                     // if the current time is after 6pm
+        $('selTime').value = now;
+    }
+    else {                         
+        $('selTime').value = 18;	// default to 6pm
+    }
 	
 	connect('btnLoad','onclick',btnLoad_click);
 	makeInvisible('boxLoading');

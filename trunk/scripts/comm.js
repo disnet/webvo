@@ -42,16 +42,19 @@ var gotAdd = function(req) {
 	var success = xmldoc.getElementsByTagName('success');
 	
 	if(error.length != 0 ) {
-		$('mnuAddStatus').innerHTML = error[0].firstChild.nodeValue;
+		$('boxContent').innerHTML = error[0].firstChild.nodeValue;
 	}
 	else if(success.length != 0) {
 		var progID = success[0].firstChild.nodeValue;
 		updateNodeAttributes(progID,{'class':'recordingProgramme'});    // change the style of the programe TD
-		makeInvisible('mnuAddStatus');
+		makeInvisible('mnuRecord');
 	}
 	else {
 		alert('Error: ' + req.responseText + errMsg);
 	}
+
+    var d = doSimpleXMLHttpRequest('ruby/form_recording.rb');
+    d.addCallbacks(gotRecording,fetchFailed);
 
 	makeInvisible('boxLoading'); 
 };
@@ -67,6 +70,14 @@ var gotRecording = function(req) {
     }
 
 	recording.programmes = map(function(el) {return el;}, recording.programmes); 	// convert nodelist to array
+    var now = new Date();
+    forEach(recording.programmes, function(prog) {
+         if(zapTimeToDate(prog.getElementsByTagName('start')[0].firstChild.nodeValue) < now) {
+            $('boxCurrRecord').firstChild.nodeValue = " -- Currently Recording '" +
+                prog.getElementsByTagName('title')[0].firstChild.nodeValue + "'";
+            
+        }
+    });
 	formRecordingTable();
 };
 
@@ -84,9 +95,12 @@ var gotRecorded = function(req) {
 
 var gotDelRecording = function(req) {
     var error = req.responseXML.getElementsByTagName('error');
+    var progID = req.responseXML.getElementsByTagName('success')[0];
     if(error.length != 0) {
         alert("Error: " + error[0].firstChild.nodeValue + errMsg);
     }
+    updateNodeAttributes(progID.firstChild.nodeValue,{'class':'programme'});
+
 };
 
 var gotDelRecorded = function(req) {
@@ -95,6 +109,17 @@ var gotDelRecorded = function(req) {
         alert("Error: " + error[0].firstChild.nodeValue + errMsg);
     }
 };
+
+var gotSpace = function(req) {
+    var error = req.responseXML.getElementsByTagName('error');
+    if(error.length != 0) {
+        alert("Error: " + error[0].firstChild.nodeValue + errMsg);
+    }
+    var avail = req.responseXML.getElementsByTagName('available')[0];
+    avail = parseInt(avail.firstChild.nodeValue) / (1024*1024);
+    avail = Math.round(avail);
+    $('boxSpace').firstChild.nodeValue = " -- Available Disk Space: " + avail + "GB";
+}
 // Error handling for listing request
 var fetchFailed = function (err) {
     alert("Error: " + err + errMsg);

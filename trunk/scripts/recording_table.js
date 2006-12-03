@@ -12,7 +12,7 @@ function formRecordingTable() {
 		formed_row.push(zapTimeToDate(row.getElementsByTagName('stop')[0].firstChild.nodeValue).toLocaleString());
 		formed_row.push(row.getElementsByTagName('channel')[0].firstChild.nodeValue);
 		formed_row.push(INPUT({'type':'checkbox','value':progID}));
-		return TR({'id':progID},map(partial(TD,null), formed_row));	
+		return TR({'id':"recording:" + progID},map(partial(TD,null), formed_row));	
 	}
 	
 	var new_table = TABLE({'id':'recording','class':'tblRecord'},

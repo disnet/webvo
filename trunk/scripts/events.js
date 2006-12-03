@@ -36,7 +36,7 @@ var prog_click = function(e) {
 	
 	// Create the close and record buttons
 	var btnClose = INPUT({'id':'btnClose','class':'button', 'type':'button','value':'x'},null);
-	var btnRecord = INPUT({'id':'btnRecord','class':'button', 'type':'submit','value':'record'}, null);
+	var btnRecord = INPUT({'id':'btnRecord','class':'button', 'type':'submit','value':'Record'}, null);
 	
 	var elProgramme = e.src(); // Clicked programme TD
 	
@@ -77,10 +77,19 @@ var prog_click = function(e) {
 	var boxStop = "Stop: " + mil2std(prog_stop.getHours() + ":" + stopMin);
 	
 	var boxMessage = (prog_desc != "") ? ("Description: " + prog_desc) : ("");
-	
-	
+
+    if(recording.find(prog_id) == true) {
+        var btnRemove = INPUT({'id':'btnRemove','class':'button', 'type':'button','value':'Remove','name':prog_id},null);
+        connect(btnRemove,'onclick',btnRemove_click);
+        var boxContent = DIV({'id':'boxContent'},
+            [[boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID],btnRecord,btnRemove]);
+    }
+    else {
+        var boxContent = DIV({'id':'boxContent'},
+            [[boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID],btnRecord]);
+    }
 	var box = DIV({'id':'mnuRecord'},
-		[btnClose, [boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID], btnRecord]);
+		[btnClose, boxContent]);
 	
 	// Positon box approx. box width to the right if at edge of screen
 	var boxWidth = 250; 	// CBB: Hard coded because no easy way of finding dynamically
@@ -103,13 +112,10 @@ var btnRecord_click = function(e) {
     // Setup loading box
 	var prog_id = $('prog_id').firstChild.nodeValue;
 	
-	setElementPosition('mnuAddStatus',elementPosition('mnuRecord'));
-	setElementDimensions('mnuAddStatus',elementDimensions('mnuRecord'));
-	$('mnuAddStatus').innerHTML = "Adding Show...";
+	setElementPosition('mnuRecord',elementPosition('mnuRecord'));
+	setElementDimensions('mnuRecord',elementDimensions('mnuRecord'));
+	$('boxContent').innerHTML = "Adding Show...";
 	
-	makeInvisible('mnuRecord');
-	makeVisible('mnuAddStatus');
-    
     // Initiate request
 	var ad = doSimpleXMLHttpRequest('ruby/add_recording.py', {'prog_id':prog_id});
     ad.addCallbacks(gotAdd,fetchFailed);
@@ -173,6 +179,7 @@ var btnRecorded_click = function(e) {
 var btnListing_click = function(e) {
 	makeInvisible('recordingContent');
 	makeVisible('listingContent');
+    makeInvisible('recordedContent');
 };
 
 var btnRemoveRecording_click = function(e) {
@@ -186,7 +193,7 @@ var btnRemoveRecording_click = function(e) {
 			removeIDs.push(chkBox[i].value);
 		}
 	}
-	map(function(id) { removeElement(id);}, removeIDs);
+	map(function(id) { removeElement("recording:" + id);}, removeIDs);
 };
 
 var btnDeleteRecorded_click = function(e) {
@@ -200,5 +207,14 @@ var btnDeleteRecorded_click = function(e) {
 			removeIDs.push(chkBox[i].value);
 		}
 	}
-	map(function(id) { removeElement(id);}, removeIDs);
+	map(function(id) { removeElement("recorded:" + id);}, removeIDs);
+};
+
+// Delete button on the listing table
+// Removes a recording show
+var btnRemove_click = function(e) {
+    var show = e.src().getAttribute('name');    
+    var del = doSimpleXMLHttpRequest('ruby/delete_recording.py',{'prog_id':show});
+    del.addCallbacks(gotDelRecording,fetchFailed);
+    makeInvisible('mnuRecord');
 };
