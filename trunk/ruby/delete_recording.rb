@@ -68,7 +68,7 @@ end
   #Check if dates are valid
   error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
   error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31")
-  
+  xmlNode = " "
   have_errored = false
 #connect to database
   begin
@@ -134,6 +134,8 @@ end
       puts "<error>Programme not in Programme #{prog_id}</error>\n"
       have_errored = true
     else
+      xmlNode_query = dbh.query("SELECT xmlNode FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
+      xmlNode = xmlNode_query.fetchrow
       #if there is an entry, delete it
       if reced_result == nil:
         dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
@@ -141,10 +143,14 @@ end
     end  
   end
   if have_errored == false:
-    puts "<success>#{prog_id}</success>"
+    puts "<success>"
+    puts "<prog_id>#{prog_id}</prog_id>"
+    xmlNode = xmlNode.gsub("_*_","'")
+    puts "#{xmlNode}"
+    puts "</success>"
   end
 #closing down standard out
   STDOUT.close()
-
+  STDIN.close()
 #call record.rb
   system("ruby record.rb &")
