@@ -125,7 +125,7 @@ def format_date(current_date)
 end
 #main--------------------------------------------------------------------------
 #checks for 1 argument
-  error_if_not_equal(ARGV.length(),1, "Needs two arguments")
+  error_if_not_equal(ARGV.length(),1, "Needs one argument")
   
 #get argument
   prog_id = ARGV[0]
@@ -227,13 +227,15 @@ end
     end
   else
     #check and make sure that the programme isn't already there
-    presults = dbh.query("SELECT * FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
-    rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='chan_id}' AND start = '#{start}')")
+    presults = dbh.query("SELECT title FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{start}')")
+    rresults = dbh.query("SELECT channelID FROM Recording WHERE (channelID ='chan_id}' AND start = '#{start}')")
     
-    if presults.fetch_row != nil:
-      dbh.close()
-      error_if_not_equal(false, true, "show already added")
-    end
+    p_curr_title = presults.fetch_row
+    rresult = rresults.fetch_row
+    #if presults.fetch_row != nil:
+    #  dbh.close()
+    #  error_if_not_equal(false, true, "show already added")
+    #end
    
     #check to see if there is a programme during the same time.
     allpresults = dbh.query("SELECT start, stop, channelID, title FROM Programme ORDER BY start")
@@ -266,23 +268,28 @@ end
         
       end
     end
-    
-    #look up channel number to include in xmlNode
-    channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
-    channel_num = channel_info.fetch_row
-    if channel_num == nil:
-      dbh.close()
-      error_if_not_equal(true, false, "channel from requested show not in database")
-    end
+    #if the show isn't already in programme
+    if p_curr_title == nil:
+      #then form data to send to database
 
-    xmlNode = form_node(start, stop, title, channel_num, chan_id, desc).to_s
-    #send information to programme's table 
-      #change data a bit to get it not to error when put in the database
-    xmlNode.gsub!(/["'"]/, "_*_")
-    xmlNode.gsub!("&", "&#38;")
-    title = title.gsub(/[" "]/,"_")
-    dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
-    if rresults.fetch_row == nil:
+      #look up channel number to include in xmlNode
+      channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
+      channel_num = channel_info.fetch_row
+      if channel_num == nil:
+        dbh.close()
+        error_if_not_equal(true, false, "channel from requested show not in database")
+      end
+
+      xmlNode = form_node(start, stop, title, channel_num, chan_id, desc).to_s
+      #send information to programme's table 
+        #change data a bit to get it not to error when put in the database
+      xmlNode.gsub!(/["'"]/, "_*_")
+      xmlNode.gsub!("&", "&#38;")
+      title = title.gsub(/[" "]/,"_")
+      dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
+    end
+    #if it isn't in the recording table add it!
+    if rresult == nil:
       #send information to recording table
       dbh.query("INSERT INTO Recording (channelID, start) VALUES ('#{chan_id}', '#{start}')")
     end

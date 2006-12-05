@@ -78,7 +78,7 @@ var prog_click = function(e) {
 	
 	var boxMessage = (prog_desc != "") ? ("Description: " + prog_desc) : ("");
 
-    if(recording.find(prog_id) == true) {
+    if(recording.find(prog_id) != -1) {
         var btnRemove = INPUT({'id':'btnRemove','class':'button', 'type':'button','value':'Remove','name':prog_id},null);
         connect(btnRemove,'onclick',btnRemove_click);
         var boxContent = DIV({'id':'boxContent'},
@@ -108,6 +108,10 @@ var prog_click = function(e) {
 // Send a record request and display a wait box when record button is clicked
 var btnRecord_click = function(e) {	
 	makeVisible('boxLoading');
+    // don't allow the user to click anywhere else
+    forEach(schedule.progTDs, function(el) { 
+        disconnectAll(el,'onclick');
+    });
 	
     // Setup loading box
 	var prog_id = $('prog_id').firstChild.nodeValue;
@@ -117,6 +121,7 @@ var btnRecord_click = function(e) {
 	$('boxContent').innerHTML = "Adding Show...";
 	
     // Initiate request
+    log('btnRecord_click: get add_recording');
 	var ad = doSimpleXMLHttpRequest('ruby/add_recording.py', {'prog_id':prog_id});
     ad.addCallbacks(gotAdd,fetchFailed);
 }
@@ -162,7 +167,7 @@ var btnRecording_click = function(e) {
 	makeInvisible('recordedContent');
 	
 	defRecording = doSimpleXMLHttpRequest('ruby/form_recording.rb');
-	defRecording.addCallbacks(gotRecording,fetchFailed);		
+	defRecording.addCallbacks(gotRecordingFromScheduled,fetchFailed);		
 };
 
 // Stub for displaying the recording table
@@ -197,23 +202,31 @@ var btnRemoveRecording_click = function(e) {
 };
 
 var btnDeleteRecorded_click = function(e) {
-	var chkBox = $('recorded').getElementsByTagName('input');
-	var recArray = [];
-	var removeIDs = [];
-	for(var i = 0; i < chkBox.length; i++) {
-		if(chkBox[i].checked == true) {
-			recArray.push(doSimpleXMLHttpRequest('ruby/delete_recorded.py',{'prog_id':chkBox[i].value}));
-			recArray[recArray.length - 1].addCallbacks(gotDelRecorded,fetchFailed);
-			removeIDs.push(chkBox[i].value);
-		}
-	}
-	map(function(id) { removeElement("recorded:" + id);}, removeIDs);
+    if(confirm("Are you sure you want to delete this show from the hard drive?")) {
+        var chkBox = $('recorded').getElementsByTagName('input');
+        var recArray = [];
+        var removeIDs = [];
+        for(var i = 0; i < chkBox.length; i++) {
+            if(chkBox[i].checked == true) {
+                recArray.push(doSimpleXMLHttpRequest('ruby/delete_recorded.py',{'prog_id':chkBox[i].value}));
+                recArray[recArray.length - 1].addCallbacks(gotDelRecorded,fetchFailed);
+                removeIDs.push(chkBox[i].value);
+            }
+        }
+        map(function(id) { removeElement("recorded:" + id);}, removeIDs);
+    }
 };
 
 // Delete button on the listing table
 // Removes a recording show
 var btnRemove_click = function(e) {
     var show = e.src().getAttribute('name');    
+    makeVisible('boxLoading');
+
+    forEach(schedule.progTDs, function(el) {
+        disconnectAll(el,'onclick'); 
+    });
+    log('btnRemove_click: get delete_recording');
     var del = doSimpleXMLHttpRequest('ruby/delete_recording.py',{'prog_id':show});
     del.addCallbacks(gotDelRecording,fetchFailed);
     makeInvisible('mnuRecord');

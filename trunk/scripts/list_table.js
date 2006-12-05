@@ -25,6 +25,7 @@ var formListingTable = function () {
     // Fill  <rows> Object() by pushing programmes into their associated channel slot
     forEach(xml_programmes, function(el) { schedule.rows[el.getAttribute('channel')].push(el); });
 
+    schedule.progTDs = [];        // empty the TD array
 	// create the listing table
     var new_table = TABLE({'id':'schedule','class':'schedule'},
 		THEAD({'style':'width:100%'}, 
@@ -105,7 +106,7 @@ programme_row_display = function(row) {
 		
 		var isRecording = recording.find(progID); 
 		var colSpan = show_length * schedule.slotsPerHour;  
-		if(isRecording) {
+		if(isRecording != -1) {
 			var prog_td = TD({'id':progID,'class':'recordingProgramme','colSpan':colSpan},prog_title); // colSpan *not* colspan -- I HATE IE!!!
 		}
 		else {
@@ -122,7 +123,8 @@ programme_row_display = function(row) {
 		connect(prog_td,'onmouseout',prog_mouseOut);
 		connect(prog_td,'onclick',prog_click);
 		
-		// insert the formed programme TDs into the TD array
+		// insert the formed programme TDs into the TD array and global var
+        schedule.progTDs.push(progID);
         programme_tds.push(prog_td); 
     }
 	

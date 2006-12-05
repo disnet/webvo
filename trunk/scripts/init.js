@@ -31,12 +31,13 @@ schedule.numHours = 3;              // number of hours the schedule will display
 schedule.startDate = null;			// first day that we have programme information on
 schedule.stopDate = null;			// last day that we have programme information on
 schedule.slotsPerHour = 60;
+schedule.progTDs = [];
 
 var recording = Object();			// Object for recording programmes
 recording.programmes = null;		// To store array of programme elements
 
 recording.find = function (progID) {//  
-	if(recording.programmes == null) {return false;}
+	if(recording.programmes == null) {return -1;}
 	
 	var ch = null;
 	var st = null;
@@ -44,10 +45,10 @@ recording.find = function (progID) {//
 		ch = recording.programmes[i].getElementsByTagName('channelID')[0].firstChild.nodeValue;
 		st = recording.programmes[i].getElementsByTagName('start')[0].firstChild.nodeValue;
 		if( progID == ch + st) {
-			return true;
+			return i;
 		}
 	}
-	return false;	
+	return -1;	
 };
 
 var recorded = Object();

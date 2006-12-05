@@ -86,35 +86,44 @@ end
     rresults = dbh.query("SELECT * FROM Recording WHERE (channelID ='#{chan_id}' AND start = '#{date_time}')")
     reced_results = dbh.query("SELECT * FROM Recorded WHERE (channelID ='#{chan_id}' AND start = '#{date_time}')")
     
-#if not there error
+#Get the results from queries
     rresult = rresults.fetch_row
     presult = presults.fetch_row
     reced_result = reced_results.fetch_row
+
     if(rresult == nil)
-      puts "<error>Programme not in Recording</error>\n"
+      puts "<error>Programme not in Recording #{prog_id}</error>\n"
       have_errored = true
     else
+	#check to see if process is running
 	#check if it has a PID
-      pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}' AND PID)")
+      pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
       #if it does kill the process
       pid_info = pids.fetch_row
       if pid_info != nil:
         CAT_PID = pid_info #need PID number
-        readme = IO.popen("ps #{CAT_PID}")
+        readme = IO.popen("ps -o pid #{CAT_PID}")
         sleep (0.5)
         temp = readme.gets
         pid = readme.gets
-        if pid != "NULL"
+
+        cat_readme = IO.popen("ps -o cmd #{CAT_PID}")
+        sleep (0.5)
+        temp = cat_readme.gets
+        cat = cat_readme.gets
+	
+	readme.close
+	cat_readme.close
+        if pid != nil && cat == "cat":
           commandSent = system("kill #{CAT_PID}")
-        end
-        if presult != nil:
-          rec_dir = Dir.new(SHOW_DIR)
-          rec_array = rec_dir.entries
-          
-          channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
-          channel_num = channel_info.fetch_row
-          show_info = presult.to_s + "-" + date_time + channel_num
-          dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
+ 	
+	  if (presult != nil && reced_result == nil):
+         # 
+            channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
+            channel_num = channel_info.fetch_row
+            show_info = presult.to_s + "-" + date_time + channel_num.to_s
+            dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chan_id}', '#{date_time}', '#{show_info}')")
+	  end
         end
       end
      #delete the entry from Recording
@@ -122,17 +131,17 @@ end
     end
     #See if there is an entry for programme
     if(presult == nil)
-      puts "<error>Programme not in Programme</error>\n"
+      puts "<error>Programme not in Programme #{prog_id}</error>\n"
       have_errored = true
     else
       #if there is an entry, delete it
-      if reced_result != nil:
+      if reced_result == nil:
         dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
       end
     end  
   end
   if have_errored == false:
-    puts "<success>prog_id</success>"
+    puts "<success>#{prog_id}</success>"
   end
 #closing down standard out
   STDOUT.close()

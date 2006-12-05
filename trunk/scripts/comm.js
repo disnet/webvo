@@ -36,6 +36,7 @@ var gotProgrammes = function(req) {
 
 // Make sure there was not error when adding a show
 var gotAdd = function(req) {
+    log('gotAdd');
 	xmldoc = req.responseXML;
 
 	var error = xmldoc.getElementsByTagName('error');
@@ -43,24 +44,49 @@ var gotAdd = function(req) {
 	
 	if(error.length != 0 ) {
 		$('boxContent').innerHTML = error[0].firstChild.nodeValue;
+        forEach(schedule.progTDs, function (el) {
+            connect(el,'onclick',prog_click);
+    });
+
 	}
 	else if(success.length != 0) {
 		var progID = success[0].firstChild.nodeValue;
-		updateNodeAttributes(progID,{'class':'recordingProgramme'});    // change the style of the programe TD
-		makeInvisible('mnuRecord');
-	}
+
+        var d = doSimpleXMLHttpRequest('ruby/form_recording.rb');
+        d.addCallbacks(gotRecordingFromListing,fetchFailed);
+       
+        updateNodeAttributes(progID,{'class':'recordingProgramme'});    // change the style of the programe TD
+        
+    }
 	else {
 		alert('Error: ' + req.responseText + errMsg);
-	}
+        forEach(schedule.progTDs, function (el) {
+            connect(el,'onclick',prog_click);
+        });
 
-    var d = doSimpleXMLHttpRequest('ruby/form_recording.rb');
-    d.addCallbacks(gotRecording,fetchFailed);
+	}
+    
 
 	makeInvisible('boxLoading'); 
 };
 
+var gotRecordingFromScheduled = function(req) {
+    gotRecording(req);
+
+    formRecordingTable();
+};
+var gotRecordingFromListing = function(req) {
+    gotRecording(req);
+
+    forEach(schedule.progTDs, function (el) {
+        connect(el,'onclick',prog_click);
+    });
+    makeInvisible('mnuRecord');
+
+};
 // got list of shows that will be recorded
 var gotRecording = function(req) {
+    log('gotRecording');
 	recording.programmes = req.responseXML.getElementsByTagName('programme');
     var error = req.responseXML.getElementsByTagName('error');
 
@@ -78,7 +104,6 @@ var gotRecording = function(req) {
             
         }
     });
-	formRecordingTable();
 };
 
 var gotRecorded = function(req) {
@@ -94,13 +119,25 @@ var gotRecorded = function(req) {
 };
 
 var gotDelRecording = function(req) {
+    log('gotDelRecording');
     var error = req.responseXML.getElementsByTagName('error');
+    var success = req.responseXML.getElementsByTagName('success');
+
     var progID = req.responseXML.getElementsByTagName('success')[0];
+    forEach(schedule.progTDs, function(el) {
+        connect(el,'onclick',prog_click);
+    });
     if(error.length != 0) {
         alert("Error: " + error[0].firstChild.nodeValue + errMsg);
     }
-    updateNodeAttributes(progID.firstChild.nodeValue,{'class':'programme'});
-
+    else if(success.length != 0) {
+        makeInvisible('boxLoading');
+        recording.programmes.splice(recording.find(progID.firstChild.nodeValue),1);   //remove programme from recording table
+        updateNodeAttributes(progID.firstChild.nodeValue,{'class':'programme'});
+    }
+    else {
+        alert("Error: " + req.responseText);
+    }
 };
 
 var gotDelRecorded = function(req) {
@@ -122,5 +159,5 @@ var gotSpace = function(req) {
 }
 // Error handling for listing request
 var fetchFailed = function (err) {
-    alert("Error: " + err + errMsg);
+    alert("Fetch Failed: " + err + errMsg);
 };

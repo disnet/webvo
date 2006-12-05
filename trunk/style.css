@@ -68,7 +68,7 @@ table.schedule td{
 }
 
 .tblRecord td {
-	background-color: #408040 ;
+	background-color: #999999;
 	border:1px solid black;
 }
 
@@ -81,6 +81,10 @@ table.schedule td{
 table.tblRecord  {
 	width: 100%;
 	text-align:left;
+}
+#boxSpace {
+    text-align:right;
+    width:100%;
 }
 #recordingContent {
 	width:100%;
@@ -127,6 +131,10 @@ table.tblRecord  {
 }
 #btnRecord {
 	float: right;
+}
+#btnRemove {
+    float: right;
+    margin-right:2px;
 }
 .button {
 	border:1px solid black;

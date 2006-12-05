@@ -50,7 +50,7 @@ end
 #main------------------------------------------------------------
 puts "Content-Type: text/xml\n\n"
 puts "<?xml version='1.0' encoding='ISO-8859-1'?>"
-
+puts "<tv>"
 #checks for 1 argument
   error_if_not_equal(ARGV.length(),1, "Needs one argument")
   
@@ -154,6 +154,7 @@ puts "<?xml version='1.0' encoding='ISO-8859-1'?>"
 #all done
      puts "<success>Removed from hard drive</success>"
   end
+  puts "</tv>"
   hold.close()
 #close stdout
   STDOUT.close

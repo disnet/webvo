@@ -148,26 +148,23 @@ else
      else
        #return PID of closest upcoming show
        row = dbh.query("SELECT PID FROM Recording ORDER BY start LIMIT 1")
-       #return command type of closest upcoming show
-       cmdname = dbh.query("SELECT CMD FROM Recording ORDER BY start LIMIT 1")
        initialpid = row.fetch_row
-       initialcmd = cmdname.fetch_row
-
-       #if process running is not most recent show OR
-       #the commands are the same
-       if initialpid.nil? || cmd == initialcmd
+       row = dbh.query("SELECT CMD FROM Recording ORDER BY start LIMIT 1")
+       cmd = row.fetch_row
+       #if process running is not most recent show 
+       if initialpid.nil? == false or cmd == cmdcheck
          log << "\nCurrent process does not contain most recent show\n"
 	 commandSent = system("kill #{INIT_PID}")
        #update database
-         dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{INIT_PID}")
-         dbh.query("UPDATE Recording SET CMD = "" WHERE PID = #{INIT_PID}")
+         dbh.query("UPDATE Recording SET PID = '0' WHERE PID = '#{INIT_PID}'")
+         dbh.query("UPDATE Recording SET CMD = '' WHERE PID = '#{INIT_PID}'")
        
        #otherwise leave it alone, wait for it to finish
        else
-       log <<  "\nMost current show already recording, please wait until finished\n"
-       dbh.close()
-       log.close()
-       exit
+         log <<  "\nMost current show already recording, please wait until finished\n"
+         dbh.close()
+         log.close()
+         exit
        end 
      end
   end   
@@ -287,7 +284,6 @@ end
 #locate PID for process
     sleep (1)
     CAT_PID = findProcessNum("cat")
-    log << CAT_PID
 
 #send CAT_PID and command name to database (need to reopen database)
     dbh = databaseconnect()
