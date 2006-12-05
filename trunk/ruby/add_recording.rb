@@ -125,10 +125,12 @@ def format_date(current_date)
 end
 #main--------------------------------------------------------------------------
 #checks for 1 argument
-  error_if_not_equal(ARGV.length(),1, "Needs one argument")
+  error_if_not_equal(ARGV.length(),1, "Needs one argument")#2, "Needs two argument")
   
 #get argument
   prog_id = ARGV[0]
+  #pipe_num = ARGV[1].to_i
+  #to_fe = IO.open(pipe_num, "w")
   
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 
@@ -299,5 +301,6 @@ end
   puts "<success>#{prog_id}</success>"
   
   STDOUT.close
+  STDIN.close
   #call record.rb
   system("ruby record.rb &")
