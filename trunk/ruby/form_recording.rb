@@ -84,6 +84,9 @@ end
   end
   #write up end of parent
   puts "\n</tv>" 
+  
+  STDOUT.close
+  STDIN.close
 
 
 
