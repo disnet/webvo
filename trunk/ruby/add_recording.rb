@@ -298,7 +298,11 @@ end
     #close the database
     dbh.close()
   end
-  puts "<success>#{prog_id}</success>"
+  puts "<success>"
+  puts "<prog_id>#{prog_id}<prog_id>"
+  xmlNode = xmlNode.gsub!("_*_","'")
+  puts "#{xmlNode}"
+  puts "</success>"
   
   STDOUT.close
   STDIN.close
