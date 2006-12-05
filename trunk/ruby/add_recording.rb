@@ -300,7 +300,7 @@ end
   end
   puts "<success>#{prog_id}</success>"
   
-  STDOUT.close
-  STDIN.close
+  #STDOUT.close
+  #STDIN.close
   #call record.rb
   system("ruby record.rb &")
