@@ -7,7 +7,7 @@ require "mysql"
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
-DBNAME = "WebVo"
+DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 VIDEO_PATH = "/home/public_html/webvo/movies/"
 LENGTH_OF_DATE_TIME = 14
