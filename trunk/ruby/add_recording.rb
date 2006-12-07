@@ -29,7 +29,7 @@ require "mysql"       #allows for communication with the mysql database
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
-DBNAME = "WebVo"
+DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 
 PROG_ID = "prog_id"
@@ -161,7 +161,7 @@ end
 #These all filled with ' ' just incase they are not filled below
   start = ' '
   stop = ' '
-  xmlNode = ' '
+  xmlNode = "<oops></oops>"
   title = ' '
   desc = ' '
   
@@ -183,7 +183,7 @@ end
       #make sure that stop is after current date time
       today = format_date(DateTime.now)
       itoday = today.to_i
-      error_if_not_equal(itoday < stop.to_i, true, "today is #{today} and your requested show ends in the past at #{stop}")
+      error_if_not_equal(itoday < stop.to_i, true, "today is #{DateTime.now.to_s} and your requested show ends in the past at #{stop}")
       error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
       c = e.child
       
@@ -234,13 +234,9 @@ end
     
     p_curr_title = presults.fetch_row
     rresult = rresults.fetch_row
-    #if presults.fetch_row != nil:
-    #  dbh.close()
-    #  error_if_not_equal(false, true, "show already added")
-    #end
    
     #check to see if there is a programme during the same time.
-    allpresults = dbh.query("SELECT start, stop, channelID, title FROM Programme ORDER BY start")
+    allpresults = dbh.query("SELECT start, stop, channelID, title, xmlNode FROM Programme ORDER BY start")
     
     #loop through the results and check if they are during the same time
     allpresults.each_hash do |row|
@@ -267,7 +263,7 @@ end
           error_if_not_equal(true, false, "Requested show occurs during: " + title_with_spaces)
           
         end
-        
+        xmlNode = row["xmlNode"]
       end
     end
     #if the show isn't already in programme
@@ -279,7 +275,7 @@ end
       channel_num = channel_info.fetch_row
       if channel_num == nil:
         dbh.close()
-        error_if_not_equal(true, false, "channel from requested show not in database")
+        error_if_not_equal(true, false, "channel not found, please contact system administrator")
       end
 
       xmlNode = form_node(start, stop, title, channel_num, chan_id, desc).to_s
@@ -287,6 +283,7 @@ end
         #change data a bit to get it not to error when put in the database
       xmlNode.gsub!(/["'"]/, "_*_")
       xmlNode.gsub!("&", "&#38;")
+      title.gsub!("'", " ")
       title = title.gsub(/[" "]/,"_")
       dbh.query("INSERT INTO Programme (channelID, start, stop, title, xmlNode) VALUES ('#{chan_id}', '#{start}','#{stop}','#{title}','#{xmlNode}')")
     end
@@ -300,7 +297,7 @@ end
   end
   puts "<success>"
   puts "<prog_id>#{prog_id}</prog_id>"
-  xmlNode = xmlNode.gsub("_*_","'")
+  xmlNode.gsub!("_*_","'")
   puts "#{xmlNode}"
   puts "</success>"
   
