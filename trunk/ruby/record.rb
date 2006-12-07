@@ -10,7 +10,7 @@ require "mysql"
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
-DBNAME = "WebVo"
+DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 VIDEO_PATH = "/home/public_html/webvo/movies/"
 
@@ -100,10 +100,10 @@ if __FILE__ == $0
 
 #connect to the mysql server
 begin
-  log = File.open("logfile.txt","a")
   dbh = databaseconnect()
 #if get an error (can't connect)
 rescue MysqlError => e
+  log = File.open("logfile.txt","a")
   log << "Error code: #{e.errno}\n"
   log << "Error message: #{e.error}\n"
   log << "Unable to connect to database\n"
@@ -120,6 +120,7 @@ else
   showcheck = dbh.query("SELECT Start FROM Recording ORDER BY Start")  
   noshowcheck = showcheck.fetch_row
   if noshowcheck == nil
+    log = File.open("logfile.txt","a")
     log << "No shows to record"
     dbh.close()
     log.close()
@@ -130,19 +131,24 @@ else
   pidrow = dbh.query("SELECT PID FROM Recording WHERE PID!=0")
   pidres = pidrow.fetch_row
   #if there is no pid continue normally
-  if pidres.nil?
+  log = File.open("logfile.txt","a")
+  if !pidres.nil?
      log << "\nNo PIDs found\n"
+     log.close()
      
   #if there is one, need to locate and end process
   else
      INIT_PID = pidres
      log <<  "\nPID found: #{INIT_PID}"
+     log.close()
      pid = findProcNum(INIT_PID)
      cmd = findProcCat(INIT_PID)
      #if not found as actually running,remove from database
      if pid.nil?
+       log = File.open("logfile.txt","a")
        log << "\nProcess not actually running\n"
-       dbh.query("UPDATE Recording SET PID = 0 WHERE PID = #{INIT_PID}")
+       log.close()
+       dbh.query("UPDATE Recording SET PID = '' WHERE PID = #{INIT_PID}")
 
      #if is found to be running, need to confirm that isn't most recent program or a random process that happens to have the same PID number
      else
@@ -153,7 +159,6 @@ else
        cmd = row.fetch_row
        #if process running is not most recent show 
        if initialpid.nil? == false or cmd == cmdcheck
-         log << "\nCurrent process does not contain most recent show\n"
 	 commandSent = system("kill #{INIT_PID}")
        #update database
          dbh.query("UPDATE Recording SET PID = '0' WHERE PID = '#{INIT_PID}'")
@@ -161,6 +166,7 @@ else
        
        #otherwise leave it alone, wait for it to finish
        else
+         log = File.open("logfile.txt","a")
          log <<  "\nMost current show already recording, please wait until finished\n"
          dbh.close()
          log.close()
@@ -184,7 +190,6 @@ end
   channelrow = lastshowchannel.fetch_row
   stoprow = lastshowstop.fetch_row
   title = lastshowtitle.fetch_row
-  log <<  "\nThe show to be recorded, #{title}, is on channel #{channelrow}, starts at #{startrow} and ends at #{stoprow}.\n"
   
 #initialize values of show  
   showStartDate = format_to_Ruby("#{startrow}")
@@ -203,6 +208,7 @@ end
 
 #if the show started already and is over
   if diffstop < 0
+    log = File.open("logfile.txt","a")
     log << "\nSorry, the time has passed for this show\n"
     dbh = databaseconnect()
     dbh.query("DELETE FROM Recording WHERE start = #{startrow}")
@@ -229,15 +235,15 @@ end
 #send CAT_PID and command to database (need to reopen database)
     dbh = databaseconnect()
     dbh.query("UPDATE Recording SET PID = #{PROC_PID.to_i} WHERE Start = #{startrow[0]}")
-    log << "PID saved to database\n"
     dbh.query("UPDATE Recording SET CMD = 'ruby record.rb' WHERE Start = #{startrow[0]}")
-    log << "Command name saved to database\n"
 
 #close the database
     dbh.close()
 
 #go to sleep
+    log = File.open("logfile.txt","a")
     log << "The show will start in #{hours.to_i} hours, #{minutes.to_i} minutes and #{seconds.to_i} seconds.\n"
+    log.close()
     sleep (sleeptime)
   end
 
@@ -264,23 +270,26 @@ end
 #tune the card to the correct channel
     commandSent = system("ivtv-tune -c #{show.channel}")
     if commandSent != true
+      log = File.open("logfile.txt","a")
+      log << DateTime.now
       log << "\nChannel set failed\n"
       log.close()
       exit
     end
   
 #start the recording
-
+    log = File.open("logfile.txt","a")
     log << "\nRecording channel #{show.channel} from #{show.starttime} to #{show.stoptime}.\n"
-    log << "Beginning recording \n"
+    log.close() 
     commandSent = system("cat /dev/video0 > #{VIDEO_PATH}#{show.showID}.mpg &")
     if commandSent != true
+     log = File.open("logfile.txt","a")
      log << DateTime.now 
      log << "\nRecording failed to start\n"
      log.close()
-      exit 
+     exit 
     end
-
+    
 #locate PID for process
     sleep (1)
     CAT_PID = findProcessNum("cat")
@@ -288,9 +297,7 @@ end
 #send CAT_PID and command name to database (need to reopen database)
     dbh = databaseconnect()
     dbh.query("UPDATE Recording SET PID = #{CAT_PID.to_i} WHERE Start = #{startrow[0]}")
-    log << "\nPID saved to database\n"
     dbh.query("UPDATE Recording SET CMD = 'cat' WHERE Start = #{startrow[0]}")
-    log << "Command name saved to database\n"
 
 #move the show from the recording list to recorded list
     #get the channel ID
@@ -302,31 +309,27 @@ end
     namecheck = res.fetch_row
     #if it doesn't and no key exists for that show already, insert into record, otherwise leave it alone
     if namecheck == nil && duperecord.nil?
-     log << "\nMoving show: #{show.showID} to recorded list\n"
      dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{title}-#{startrow}#{channelrow}')")
-    else
-     log << "\nShow name already saved to database"
     end
     dbh.close()
 
 #sleep for length of the show
+   log = File.open("logfile.txt","a")
    log << "\nGoing to sleep for the show: #{showlength}\n" 
    log.close()
    sleep (showlength)
 
 #stop the recording
-    log = File.open("logfile.txt","a")
     commandSent = system("kill #{CAT_PID}")
-    log << "\nRecording done!\n"
 
 #remove PID from recording
     dbh = databaseconnect()
-    log << "\nRemoving show from recording list\n"
     dbh.query("DELETE FROM Recording WHERE PID = #{CAT_PID}")
 #close the database
     dbh.close()
 
 #start next recording check
+    log = File.open("logfile.txt","a")
     log << DateTime.now 
     log << "\nLocating next show to record\n"
     log.close()

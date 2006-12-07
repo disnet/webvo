@@ -25,7 +25,7 @@ require "mysql"
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
-DBNAME = "WebVo"
+DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 
 PROG_ID = "prog_id"
@@ -99,11 +99,16 @@ end
 	#check if it has a PID
       pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
       #if it does kill the process
-      pid_info = pids.fetch_row
-      if pid_info != nil:
+      pid_info = nil
+      pids.each_hash do |row|
+	if row != nil && row != "0":
+	  pid_info = row
+        end
+      end
+      if !(pid_info == nil || pid_info == '0'):
         CAT_PID = pid_info #need PID number
         readme = IO.popen("ps -o pid #{CAT_PID}")
-        sleep (0.5)
+        sleep (0.2)
         temp = readme.gets
         pid = readme.gets
 
@@ -135,7 +140,7 @@ end
       have_errored = true
     else
       xmlNode_query = dbh.query("SELECT xmlNode FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
-      xmlNode = xmlNode_query.fetchrow
+      xmlNode = xmlNode_query.fetch_row.to_s
       #if there is an entry, delete it
       if reced_result == nil:
         dbh.query("DELETE FROM Programme WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
@@ -146,7 +151,7 @@ end
     puts "<success>"
     puts "<prog_id>#{prog_id}</prog_id>"
     xmlNode = xmlNode.gsub("_*_","'")
-    puts "#{xmlNode}"
+    puts xmlNode
     puts "</success>"
   end
 #closing down standard out

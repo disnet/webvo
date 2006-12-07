@@ -27,7 +27,7 @@ require "mysql"
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
-DBNAME = "WebVo"
+DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 
 LENGTH_OF_DATE_TIME = 14

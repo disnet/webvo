@@ -27,7 +27,7 @@ require "mysql"
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
-DBNAME = "WebVo"
+DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 
 PROG_ID = "prog_id"
