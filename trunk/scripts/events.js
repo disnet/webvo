@@ -82,7 +82,7 @@ var prog_click = function(e) {
         var btnRemove = INPUT({'id':'btnRemove','class':'button', 'type':'button','value':'Remove','name':prog_id},null);
         connect(btnRemove,'onclick',btnRemove_click);
         var boxContent = DIV({'id':'boxContent'},
-            [[boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID],btnRecord,btnRemove]);
+            [[boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID],btnRemove]);
     }
     else {
         var boxContent = DIV({'id':'boxContent'},
@@ -109,9 +109,9 @@ var prog_click = function(e) {
 var btnRecord_click = function(e) {	
 	makeVisible('boxLoading');
     // don't allow the user to click anywhere else
-    forEach(schedule.progTDs, function(el) { 
-        disconnectAll(el,'onclick');
-    });
+    //forEach(schedule.progTDs, function(el) { 
+     //   disconnectAll(el,'onclick');
+    //});
 	
     // Setup loading box
 	var prog_id = $('prog_id').firstChild.nodeValue;
@@ -121,7 +121,6 @@ var btnRecord_click = function(e) {
 	$('boxContent').innerHTML = "Adding Show...";
 	
     // Initiate request
-    log('btnRecord_click: get add_recording');
 	var ad = doSimpleXMLHttpRequest('ruby/add_recording.py', {'prog_id':prog_id});
     ad.addCallbacks(gotAdd,fetchFailed);
 }
@@ -140,6 +139,14 @@ var btnLoad_click = function(e) {
 	date.setMinutes(0);
 	date.setSeconds(0);
 
+    // Check to see if we are at the end of our schedule
+    var lastDay = new Date($('selDate').options[$('selDate').options.length - 1].value); // grabs the very last day
+    lastDay.setHours(23 - (schedule.numHours - 1));   // move the end time back the length of the display schedule
+
+    if (date > lastDay) { // if selected date is after the last <numHours> of the schedule
+        date = lastDay;
+    }
+    
     // initialize the time header
     schedule.timesHeader = [];
 	headDate = new Date(date);
@@ -148,11 +155,13 @@ var btnLoad_click = function(e) {
         schedule.timesHeader.push( mil2std(headDate.getHours().toString() + ":30"));
 		headDate.setHours(headDate.getHours() + 1);       
     }
-	
+   
+    
+    
     // find what date/time we want
-	schedule.start = date;
-	schedule.stop = new Date(date);
-	schedule.stop.setHours(date.getHours() + schedule.numHours);
+    schedule.start = date;
+    schedule.stop = new Date(date);
+    schedule.stop.setHours(date.getHours() + schedule.numHours);
 	
     // send the request
     var d = doSimpleXMLHttpRequest('ruby/form_listing.rb',
@@ -223,10 +232,9 @@ var btnRemove_click = function(e) {
     var show = e.src().getAttribute('name');    
     makeVisible('boxLoading');
 
-    forEach(schedule.progTDs, function(el) {
-        disconnectAll(el,'onclick'); 
-    });
-    log('btnRemove_click: get delete_recording');
+    //forEach(schedule.progTDs, function(el) {
+     //   disconnectAll(el,'onclick'); 
+   // });
     var del = doSimpleXMLHttpRequest('ruby/delete_recording.py',{'prog_id':show});
     del.addCallbacks(gotDelRecording,fetchFailed);
     makeInvisible('mnuRecord');

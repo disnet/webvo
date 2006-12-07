@@ -98,6 +98,7 @@ end
 	#check to see if process is running
 	#check if it has a PID
       pids = dbh.query("SELECT PID From Recording WHERE (channelID = '#{chan_id}' AND start = '#{date_time}')")
+      cat_pids = dbh.query("SELECT cat_pid From Recording WHERE (channelID ='#{chan_id}' AND start = '#{date_time}')")
       #if it does kill the process
       pid_info = nil
       pids.each_hash do |row|
@@ -105,25 +106,45 @@ end
 	  pid_info = row
         end
       end
-      if !(pid_info == nil || pid_info == '0'):
-        CAT_PID = pid_info #need PID number
-        readme = IO.popen("ps -o pid #{CAT_PID}")
+      cat_info = nil
+      cat_pids.each_hash do |row|
+	if row != nil && row != "0":
+	  cat_info = row
+        end
+      end
+      if !(pid_info == nil || pid_info == '0'):        readme = IO.popen("ps -o pid #{cat_info}")
         sleep (0.2)
         temp = readme.gets
-        pid = readme.gets
-
-        cat_readme = IO.popen("ps -o cmd #{CAT_PID}")
-        sleep (0.5)
-        temp = cat_readme.gets
-        cat = cat_readme.gets
-	
+        cat_pid = readme.gets
 	readme.close
+
+        cat_readme = IO.popen("ps -o cmd #{cat_info}")
+        sleep (0.2)
+        temp = cat_readme.gets
+        cat_cmd = cat_readme.gets
 	cat_readme.close
-        if pid != nil && cat == "cat":
-          commandSent = system("kill #{CAT_PID}")
- 	
+
+        CAT_PID = cat_info #need PID number
+        readme = IO.popen("ps -o pid #{pid_info}")
+        sleep (0.2)
+        temp = readme.gets
+        ruby_pid = readme.gets
+	readme.close
+
+        cmd_readme = IO.popen("ps -o cmd #{pid_info}")
+        sleep (0.2)
+        temp = cmd_readme.gets
+        ruby_cmd = cmd_readme.gets
+	cmd_readme.close
+
+
+        if cat_pid != nil && cat_cmd == "cat":
+          commandSent = system("kill #{cat_pid}")
+ 	  if ruby_pid != nil && ruby_cmd == "ruby":
+	    commandSent = system("kill #{ruby_pid}")
+	  end
 	  if (presult != nil && reced_result == nil):
-         # 
+          
             channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
             channel_num = channel_info.fetch_row
             show_info = presult.to_s + "-" + date_time + channel_num.to_s

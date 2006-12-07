@@ -60,7 +60,7 @@ end
 
 #find the category name of the process
 def findProcCat(procNum)
-  readme = IO.popen("ps -p #{procNum} -o cmd")
+  readme = IO.popen("ps -o cmd #{procNum}")
   sleep (1)
   temp = readme.gets
   cmd = readme.gets
@@ -128,43 +128,63 @@ else
   end
 
   #return the last PID (if there is one)
-  pidrow = dbh.query("SELECT PID FROM Recording WHERE PID!=0")
+  pidrow = dbh.query("SELECT PID FROM Recording WHERE PID!=''")
   pidres = pidrow.fetch_row
+  #keep track of cat process
+  catrow = dbh.query("SELECT cat_pid FROM Recording WHERE cat_pid!=''")
+  catres = catrow.fetch_row
   #if there is no pid continue normally
   log = File.open("logfile.txt","a")
-  if !pidres.nil?
+  if pidres.nil? && catres.nil?
      log << "\nNo PIDs found\n"
      log.close()
      
   #if there is one, need to locate and end process
   else
      INIT_PID = pidres
-     log <<  "\nPID found: #{INIT_PID}"
+     log <<  "\nPID found: #{INIT_PID} #{catres}"
      log.close()
-     pid = findProcNum(INIT_PID)
-     cmd = findProcCat(INIT_PID)
-     #if not found as actually running,remove from database
+  #retrieve pid numbers from process scheduler   
+     if !pidres.nil? #if send nil, will return all
+      pid = findProcNum(INIT_PID)
+      puts pid
+      cmd = findProcCat(INIT_PID)
+     end 
+
+     catcheck = findProcNum(catres)     
+  #if not found as actually running,remove from database
+     dbh = databaseconnect()
+     if catcheck.nil?
+       dbh.query("UPDATE Recording SET cat_pid = '' WHERE cat_pid = '#{catres}'") 
+     end
+
      if pid.nil?
        log = File.open("logfile.txt","a")
        log << "\nProcess not actually running\n"
        log.close()
-       dbh.query("UPDATE Recording SET PID = '' WHERE PID = #{INIT_PID}")
+       dbh.query("UPDATE Recording SET PID = '' WHERE PID = '#{INIT_PID}'")
+       dbh.query("UPDATE Recording SET CMD = '' WHERE PID = '#{INIT_PID}'")
 
      #if is found to be running, need to confirm that isn't most recent program or a random process that happens to have the same PID number
      else
        #return PID of closest upcoming show
        row = dbh.query("SELECT PID FROM Recording ORDER BY start LIMIT 1")
        initialpid = row.fetch_row
-       row = dbh.query("SELECT CMD FROM Recording ORDER BY start LIMIT 1")
-       cmd = row.fetch_row
+       row = dbh.query("SELECT cat_pid FROM Recording ORDER BY start LIMIT 1")
+       catpid = row.fetch_row
+       #if the cat process exists for the old show, kill it
+       if catpid != catres
+ 	 commandSent = system("kill #{catpid}")
+	 dbh.query("UPDATE Recording SET cat_pid = '' WHERE cat_pid = '#{catpid}'")
+       end
+
        #if process running is not most recent show 
-       if initialpid.nil? == false or cmd == cmdcheck
+       if initialpid.nil? == false and cmd == "ruby"
 	 commandSent = system("kill #{INIT_PID}")
        #update database
-         dbh.query("UPDATE Recording SET PID = '0' WHERE PID = '#{INIT_PID}'")
+         dbh.query("UPDATE Recording SET PID = '' WHERE PID = '#{INIT_PID}'")
          dbh.query("UPDATE Recording SET CMD = '' WHERE PID = '#{INIT_PID}'")
-       
-       #otherwise leave it alone, wait for it to finish
+        #otherwise leave it alone, wait for it to finish
        else
          log = File.open("logfile.txt","a")
          log <<  "\nMost current show already recording, please wait until finished\n"
@@ -242,7 +262,7 @@ end
 
 #go to sleep
     log = File.open("logfile.txt","a")
-    log << "The show will start in #{hours.to_i} hours, #{minutes.to_i} minutes and #{seconds.to_i} seconds.\n"
+     log << "The show will start in #{hours.to_i} hours, #{minutes.to_i} minutes and #{seconds.to_i} seconds.\n"
     log.close()
     sleep (sleeptime)
   end
@@ -296,8 +316,7 @@ end
 
 #send CAT_PID and command name to database (need to reopen database)
     dbh = databaseconnect()
-    dbh.query("UPDATE Recording SET PID = #{CAT_PID.to_i} WHERE Start = #{startrow[0]}")
-    dbh.query("UPDATE Recording SET CMD = 'cat' WHERE Start = #{startrow[0]}")
+    dbh.query("UPDATE Recording SET cat_pid = #{CAT_PID.to_i} WHERE Start = #{startrow[0]}")
 
 #move the show from the recording list to recorded list
     #get the channel ID
