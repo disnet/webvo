@@ -95,6 +95,48 @@ def calcTimeTo(date1,date2)
   return diffstopInS
 end
 
+#if a process exists kill it
+def killifrunning(pidres,dbcolumn)
+
+  #retrieve pid number and command name from process scheduler   
+     pid = findProcNum(pidres)
+     cmd = findProcCat(pidres)
+     
+     dbh = databaseconnect()
+
+  #if not found as actually running,remove from database
+     if pid == nil
+       log = File.open("logfile.txt","a")
+       log << "\nProcess not actually running\n"
+       log.close()
+       dbh.query("UPDATE Recording SET #{dbcolumn} = '' WHERE #{dbcolumn} = '#{pidres}'")
+       dbh.query("UPDATE Recording SET CMD = '' WHERE #{dbcolumn} = '#{pidres}'")
+       return 0
+     #if is found to be running, need to confirm that isn't most recent program or a random process that happens to have the same PID number
+     else
+       #return PID and command of closest upcoming show
+       row = dbh.query("SELECT #{dbcolumn} FROM Recording ORDER BY start LIMIT 1")
+       processNum = row.fetch_row[0]
+       row = dbh.query("SELECT CMD FROM Recording ORDER BY start LIMIT 1")
+       command = row.fetch_row
+
+       #if does return number and the commands are the same from both process scheduler and the database
+       if processNum.to_i == 0
+         puts "kill #{pidres}"
+	 commandSent = system("kill #{pidres}")
+       #update database
+         dbh.query("UPDATE Recording SET #{dbcolumn} = '' WHERE #{dbcolumn} = '#{pidres}'")
+         dbh.query("UPDATE Recording SET CMD = '' WHERE #{dbcolumn} = '#{pidres}'")
+       #indicate that it killed it
+         return 1
+        #otherwise leave it alone, wait for it to finish
+       else
+         return 2
+       end 
+       dbh.close()
+     end
+end
+
 #begin recording script
 if __FILE__ == $0
 
@@ -121,86 +163,50 @@ else
   noshowcheck = showcheck.fetch_row
   if noshowcheck == nil
     log = File.open("logfile.txt","a")
-    log << "No shows to record"
+    log << "No shows to record\n"
     dbh.close()
     log.close()
     exit
   end
 
   #return the last PID (if there is one)
-  pidrow = dbh.query("SELECT PID FROM Recording WHERE PID!=''")
+  pidrow = dbh.query("SELECT sleep_pid FROM Recording WHERE sleep_pid > 0")
   pidres = pidrow.fetch_row
-  #keep track of cat process
-  catrow = dbh.query("SELECT cat_pid FROM Recording WHERE cat_pid!=''")
-  catres = catrow.fetch_row
-  #if there is no pid continue normally
+
+#if there is no pid continue normally
   log = File.open("logfile.txt","a")
-  if pidres.nil? && catres.nil?
+  killed = 0
+  if pidres == nil || pidres[0].to_i == 0
+     log << DateTime.now
      log << "\nNo PIDs found\n"
      log.close()
-     
-  #if there is one, need to locate and end process
   else
-     INIT_PID = pidres
-     log <<  "\nPID found: #{INIT_PID} #{catres}"
-     log.close()
-  #retrieve pid numbers from process scheduler   
-     if !pidres.nil? #if send nil, will return all
-      pid = findProcNum(INIT_PID)
-      puts pid
-      cmd = findProcCat(INIT_PID)
-     end 
-
-     catcheck = findProcNum(catres)     
-  #if not found as actually running,remove from database
-     dbh = databaseconnect()
-     if catcheck.nil?
-       dbh.query("UPDATE Recording SET cat_pid = '' WHERE cat_pid = '#{catres}'") 
-     end
-
-     if pid.nil?
-       log = File.open("logfile.txt","a")
-       log << "\nProcess not actually running\n"
-       log.close()
-       dbh.query("UPDATE Recording SET PID = '' WHERE PID = '#{INIT_PID}'")
-       dbh.query("UPDATE Recording SET CMD = '' WHERE PID = '#{INIT_PID}'")
-
-     #if is found to be running, need to confirm that isn't most recent program or a random process that happens to have the same PID number
-     else
-       #return PID of closest upcoming show
-       row = dbh.query("SELECT PID FROM Recording ORDER BY start LIMIT 1")
-       initialpid = row.fetch_row
-       row = dbh.query("SELECT cat_pid FROM Recording ORDER BY start LIMIT 1")
-       catpid = row.fetch_row
-       #if the cat process exists for the old show, kill it
-       if catpid != catres
- 	 commandSent = system("kill #{catpid}")
-	 dbh.query("UPDATE Recording SET cat_pid = '' WHERE cat_pid = '#{catpid}'")
-       end
-
-       #if process running is not most recent show 
-       if initialpid.nil? == false and cmd == "ruby"
-	 commandSent = system("kill #{INIT_PID}")
-       #update database
-         dbh.query("UPDATE Recording SET PID = '' WHERE PID = '#{INIT_PID}'")
-         dbh.query("UPDATE Recording SET CMD = '' WHERE PID = '#{INIT_PID}'")
-        #otherwise leave it alone, wait for it to finish
-       else
-         log = File.open("logfile.txt","a")
-         log <<  "\nMost current show already recording, please wait until finished\n"
-         dbh.close()
-         log.close()
-         exit
-       end 
-     end
-  end   
+  #kill the sleep_pid if it exists
+      log << DateTime.now
+      log <<  "\nPID found: #{pidres}"
+      log.close()
+      killed = killifrunning(pidres[0],"sleep_pid")
+  end
+  
+  log = File.open("logfile.txt","a")
+  if killed == 2
+    log << "\nProcess not killed, wait for finish recording\n"
+    log.close()
+    exit
+   else if killed == 1
+    log << "\nProcess killed\n"
+    log.close()
+   else
+    log << "\nProcess not actually running\n"
+    log.close()
+   end
 end
 
 #parse info from database of last entry
   channelIDquery = "SELECT ChannelID FROM Recording ORDER BY Start LIMIT 1"
   lastshowstart = dbh.query("SELECT Start FROM Recording ORDER BY Start LIMIT 1")
   lastshowchannel = dbh.query("SELECT number FROM Channel WHERE ChannelID = (#{channelIDquery})")
-  lastshowstop = dbh.query("SELECT STOP FROM Programme WHERE(ChannelID=(#{channelIDquery})AND START=(SELECT Start FROM Recording ORDER BY Start LIMIT 1))")
+  lastshowstop = dbh.query("SELECT STOP FROM Programme WHERE(ChannelID=(#{channelIDquery}) AND START=(SELECT Start FROM Recording ORDER BY Start LIMIT 1))")
   lastshowtitle = dbh.query("SELECT Title FROM Programme WHERE (ChannelID=(#{channelIDquery})AND START=(SELECT Start FROM Recording ORDER BY Start LIMIT 1))")
 #done with DB for now
   dbh.close()
@@ -215,7 +221,7 @@ end
   showStartDate = format_to_Ruby("#{startrow}")
   showStopDate = format_to_Ruby("#{stoprow}")
   currDate = DateTime.now
-  show = RecordedShow.new("#{title}-#{startrow}#{channelrow}-0",channelrow,startrow,stoprow)
+  show = RecordedShow.new("#{title}-#{startrow}#{channelrow}",channelrow,startrow,stoprow)
 
 #calc if show has been missed
   diffstop = calcTimeTo(showStopDate,currDate)
@@ -249,20 +255,16 @@ end
     minutes = (sleeptime%3600)/60
     seconds = minutes%60
 
-#locate PID for process
-    PROC_PID = findProcessNum("ruby")
-
 #send CAT_PID and command to database (need to reopen database)
+    sleepProcNum = Process.pid
     dbh = databaseconnect()
-    dbh.query("UPDATE Recording SET PID = #{PROC_PID.to_i} WHERE Start = #{startrow[0]}")
-    dbh.query("UPDATE Recording SET CMD = 'ruby record.rb' WHERE Start = #{startrow[0]}")
-
-#close the database
+    dbh.query("UPDATE Recording SET sleep_pid = #{sleepProcNum} WHERE Start = #{startrow}")
+    dbh.query("UPDATE Recording SET CMD = 'ruby' WHERE Start = #{startrow}") 
     dbh.close()
-
+    
 #go to sleep
     log = File.open("logfile.txt","a")
-     log << "The show will start in #{hours.to_i} hours, #{minutes.to_i} minutes and #{seconds.to_i} seconds.\n"
+    log << "The show will start in #{hours.to_i} hours, #{minutes.to_i} minutes and #{seconds.to_i} seconds.\n"
     log.close()
     sleep (sleeptime)
   end
@@ -272,51 +274,56 @@ end
     dbh = databaseconnect()
     duperes = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{title}-#{startrow}#{channelrow}'")
     duperecord = duperes.fetch_row
+    lastchar = 0
 #if does return a result, change the final digit
-    if !duperecord.nil?
-       lastcharnum = show.showID.length
-#get the final number (need to take into account .mpg)
-       lastchar = show.showID[lastcharnum-1]
+    if !duperecord.nil? 
 #increment to next number
-       while findname(show.showID) != nil
-       lastchar += 1
-#reinsert into title string
-       show.showID[lastcharnum-1] = lastchar
+       while findname(show.showID + '-' + lastchar.to_s) != nil
+         lastchar += 1
        end
     end
+    show.showID << '-' << lastchar.to_s
     dbh.close()
 
 #if here, begin recording immediately  
 #tune the card to the correct channel
-    commandSent = system("ivtv-tune -c #{show.channel}")
-    if commandSent != true
+    commandSent = IO.popen("ivtv-tune -c #{show.channel}")
+    output = commandSent.gets
+    hold = output.index("Signal Detected")
+    if hold == nil
       log = File.open("logfile.txt","a")
       log << DateTime.now
-      log << "\nChannel set failed\n"
+      log << "\nChannel set failed: #{show.channel}\n"
       log.close()
-      exit
+#      exit
     end
   
 #start the recording
     log = File.open("logfile.txt","a")
     log << "\nRecording channel #{show.channel} from #{show.starttime} to #{show.stoptime}.\n"
     log.close() 
-    commandSent = system("cat /dev/video0 > #{VIDEO_PATH}#{show.showID}.mpg &")
-    if commandSent != true
-     log = File.open("logfile.txt","a")
-     log << DateTime.now 
-     log << "\nRecording failed to start\n"
-     log.close()
-     exit 
+    #check and make sure a cat process is not already running
+    dbh = databaseconnect()
+    temp = dbh.query("SELECT cat_pid FROM Recording WHERE cat_pid > 0")
+    catFound = temp.fetch_row
+    #if it is, exit
+    if catFound != nil 
+       hold = findProcessNum(catFound[0])
+       if hold == nil
+        log = File.open("logfile.txt","a")
+        log << "\nCat already running\n"
+        log.close()
+        exit
+       end
     end
     
-#locate PID for process
-    sleep (1)
-    CAT_PID = findProcessNum("cat")
-
+    catProcNum = fork do
+       exec("cat /dev/video0 > #{VIDEO_PATH}#{show.showID}.mpg")
+    end
+    
 #send CAT_PID and command name to database (need to reopen database)
     dbh = databaseconnect()
-    dbh.query("UPDATE Recording SET cat_pid = #{CAT_PID.to_i} WHERE Start = #{startrow[0]}")
+    dbh.query("UPDATE Recording SET cat_pid = '#{catProcNum}' WHERE Start = '#{startrow}'")
 
 #move the show from the recording list to recorded list
     #get the channel ID
@@ -330,20 +337,24 @@ end
     if namecheck == nil && duperecord.nil?
      dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{title}-#{startrow}#{channelrow}')")
     end
-    dbh.close()
 
 #sleep for length of the show
    log = File.open("logfile.txt","a")
    log << "\nGoing to sleep for the show: #{showlength}\n" 
    log.close()
+   sleepProcNum = Process.pid
+   dbh.query("UPDATE Recording SET sleep_pid = #{sleepProcNum} WHERE Start = #{startrow}")
+   dbh.query("UPDATE Recording SET CMD = 'ruby' WHERE Start = #{startrow}") 
+
+   dbh.close()
    sleep (showlength)
 
 #stop the recording
-    commandSent = system("kill #{CAT_PID}")
+    commandSent = system("kill #{catProcNUm}")
 
 #remove PID from recording
     dbh = databaseconnect()
-    dbh.query("DELETE FROM Recording WHERE PID = #{CAT_PID}")
+    dbh.query("DELETE FROM Recording WHERE cat_pid = #{catProcNum}")
 #close the database
     dbh.close()
 
@@ -353,4 +364,6 @@ end
     log << "\nLocating next show to record\n"
     log.close()
     commandSent = system("ruby record.rb &")
+    exit
+  end
 end

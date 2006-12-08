@@ -18,7 +18,7 @@ function formRecordingTable() {
 	var new_table = TABLE({'id':'recording','class':'tblRecord'},
 		THEAD({'style':'width:100%'},
 			TR({'class':'tblRecordHead'},
-				map(partial(TD,{'class':'tblRecord'}), ['Title','Description','Start','End','Channel','Delete']))),
+				map(partial(TD,{'class':'tblRecord'}), ['Title','Description','Start','End','Channel','Remove']))),
         TBODY({'style':'width:100%'},
 			map(disp_row,recording.programmes)));
 	swapDOM('recording',new_table);

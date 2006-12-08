@@ -183,8 +183,13 @@ end
       #make sure that stop is after current date time
       today = format_date(DateTime.now)
       itoday = today.to_i
-      error_if_not_equal(itoday < stop.to_i, true, "today is #{DateTime.now.to_s} and your requested show ends in the past at #{stop}")
-      error_if_not_equal(e.child?, true, "programme to add doesn't have needed information")
+      current = DateTime.now
+      current_min = current.min.to_s
+      if current_min.length == 1:
+	current_min = '0'+current_min
+      end
+      error_if_not_equal(itoday < stop.to_i, true, "today is #{current.month}-#{current.day}-#{current.year} #{current.hour}:#{current_min.to_s} and your requested show ends in the past at #{stop[4..5].to_i}-#{stop[6..7].to_i}-#{stop[0..3].to_i} #{stop[8..9].to_i}:#{stop[10..11]}.  Please record only shows that are airing currently or in the future.")
+      error_if_not_equal(e.child?, true, "program to add doesn't have needed information, please contact your system administrator")
       c = e.child
       
       keep_looping = true #varible to do a do-while
@@ -303,5 +308,6 @@ end
   
   STDOUT.close
   STDIN.close
+  STERR.close
   #call record.rb
   system("ruby record.rb &")

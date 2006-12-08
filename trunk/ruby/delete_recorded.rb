@@ -158,6 +158,8 @@ puts "<tv>"
   hold.close()
 #close stdout
   STDOUT.close
+  STDIN.close
+  STDERR.close
 #call record.rb
   system ("ruby record.rb &")
   exit
