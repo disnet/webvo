@@ -28,7 +28,6 @@ def databaseconnect()
     return dbh
   end
 end
-
 #Error handler
 def error_if_not_equal(value, standard, error_string)
   if value != standard:
@@ -78,13 +77,11 @@ puts "<tv>"
      puts "<error>Show does not exist</error>"
      dbh.close()
      exit
-  else
-     showname << "-0"
   end
     
 #check the hard drive for the show to be deleted
-  check = "#{VIDEO_PATH}#{showname}.mpg"
-  onHD = IO.popen("ls #{check}")
+  check = "#{VIDEO_PATH}#{showname}"
+  onHD = IO.popen("ls #{check}-0.mpg")
   test = onHD.gets
   onHD.close()
 
@@ -98,17 +95,14 @@ puts "<tv>"
      puts "<success>Show located</success>"
 
 #check in Recording to see if still recording one of the fragments
-     schedcheck = dbh.query("SELECT PID FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
+     schedcheck = dbh.query("SELECT cat_pid FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
      cmdcheck = dbh.query("SELECT CMD FROM Recording WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')")
      sched = schedcheck.fetch_row
      cmd = cmdcheck.fetch_row
 
 #if is still recording, need to kill process (if it exists) and remove from Recording
      if sched != nil
-        comd = findProcCat(sched)
-        if comd == cmdcheck
-          commandSent = system ("kill #[schedcheck}")
-        end
+        commandSent = system ("kill #[sched}")
      end
 
 #remove from recording now that checked to make sure no longer running
@@ -125,8 +119,8 @@ puts "<tv>"
 #remove from hard drive (need to locate all fragments as well)
 
 #get the fragment number from the name
-     lastchar = showname[showname.length-1]
-     hold = IO.popen("ls #{check}")
+     lastchar = 0
+     hold = IO.popen("ls #{check}-#{lastchar}.mpg")
      checkforfrags = hold.gets
 
 #check for more fragments
@@ -134,16 +128,13 @@ puts "<tv>"
      while (!checkforfrags.nil?)
      
      #remove first fragment
-       system("rm #{check}")
+       system("rm -f #{check}-#{lastchar}.mpg")
        puts "<success>#{check} has been removed</success>"
 
      #increment the fragment number
        lastchar += 1
-     #reinsert into title string
-        showname[showname.length-1] = lastchar
-        check = "#{VIDEO_PATH}#{showname}.mpg"
      #see if the show exists
-        hold = IO.popen("ls #{check}")
+        hold = IO.popen("ls #{check}-#{lastchar}.mpg")
         checkforfrags = hold.gets
      #if it doesn't, get out of loop
         if checkforfrags.nil?

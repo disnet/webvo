@@ -308,6 +308,6 @@ end
   
   STDOUT.close
   STDIN.close
-  STERR.close
+  STDERR.close
   #call record.rb
   system("ruby record.rb &")

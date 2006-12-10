@@ -73,7 +73,7 @@ rescue MysqlError => e
     rec_dir = Dir.new(SHOW_DIR)
     Dir.chdir(SHOW_DIR)
     rec_array = rec_dir.entries
-    rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded")  
+    rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded ORDER BY start")  
     
     #file may be there but need to compare with title in programme
       rec_info.each_hash do |recorded|
