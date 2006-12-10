@@ -374,11 +374,13 @@ end
 
 #stop the recording
    log = File.open("logfile.txt","a")
-   log << "\nGoing to kill the show\n" 
+   log << "\nGoing to kill the show: #{catProcNum}\n" 
    log.close()    
-    commandSent = system("kill #{catProcNUm}")
+    commandSent = IO.popen("kill #{catProcNum}")
+   hold = commandSent.gets
+   commandSent.close()
    log = File.open("logfile.txt","a")
-   log << "\nKilled the show\n" 
+   log << "\nKilled the show:  #{hold}\n" 
    log.close()
 
 #remove PID from recording
