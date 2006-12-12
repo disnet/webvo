@@ -30,11 +30,13 @@ require 'xml/libxml'
 SERVERNAME = "localhost"
 USERNAME = "root"
 USERPASS = "csc4150"
-DBNAME = "WebVo"
+DBNAME = "WebVoFast"
 TABLENAME = "Recording"
+PATH = "/home/public_html/webvo/ruby/"
+
 
 #opening/creating log file
-logfile = File.new("logfile.txt", "a")
+logfile = File.new("getLog.txt", "w")
 
 #make sure xmltv.exe in current directory
 #cur_dir_entries=Dir.entries(Dir.getwd)
@@ -49,7 +51,7 @@ xmltv_ran = false
 
 if xmltv_pres == true then 
   before_run_time = Time.new
-  xmltv_ran = system( "tv_grab_na_dd --output info.xml")
+  xmltv_ran = system( "tv_grab_na_dd --output " + PATH + "info.xml")
 end
 after_run_time = Time.new
 if xmltv_ran == true then
@@ -69,7 +71,7 @@ logfile << "\n\n"
 logfile.close()
 
 #populating channels in database
-  xmldoc = XML::Document.file("info.xml")
+  xmldoc = XML::Document.file(PATH + "info.xml")
 
   #connect to database
   begin
