@@ -21,7 +21,8 @@ The IVTV drivers can be found at [http://ivtvdriver.org/index.php/Main_Page]
 ||libxml-ruby 0.3.8.4||
 ||ruby-mysql 2.7||
 
-Checkout the webvo source code from Google web hosting to the Apache web folder (ie. /var/www/htdocs). Instructions to check out the code from Google are available at http://code.google.com/p/webvo/source. 
+Once all the dependencies have been installed, checkout the webvo source code from Google web hosting to the Apache web folder (ie. /var/www/htdocs). Instructions to check out the code from Google are available at http://code.google.com/p/webvo/source. 
 
 Create the database by running the WebVo.sql file.
 
+You should now be setup! Point your browser to http://<your server name>/default.rb
