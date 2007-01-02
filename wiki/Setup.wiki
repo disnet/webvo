@@ -25,4 +25,4 @@ Once all the dependencies have been installed, checkout the webvo source code fr
 
 Create the database by running the WebVo.sql file.
 
-You should now be setup! Point your browser to [http://<your server name>/default.rb]
+You should now be setup! Point your browser to http://servername/default.rb
