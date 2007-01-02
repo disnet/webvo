@@ -25,4 +25,3 @@ Checkout the webvo source code from Google web hosting to the Apache web folder 
 
 Create the database by running the WebVo.sql file.
 
-
