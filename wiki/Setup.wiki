@@ -1,3 +1,5 @@
+#summary Setup instructions for webvo
+
 = Introduction =
 
 Welcome to webvo, the online television show recorder and manager!  Thank you for trying out our project.  You have chosen a system that will allow you view a TV listing schedule, click on a show and have it record, as well as manage the shows you have recorded.
@@ -19,8 +21,9 @@ The IVTV drivers can be found at [http://ivtvdriver.org/index.php/Main_Page]
 ||libxml-ruby 0.3.8.4||
 ||ruby-mysql 2.7||
 
-Once all the dependencies have been installed, checkout the webvo source code from Google web hosting to the Apache web folder (ie. /var/www/htdocs). Instructions to check out the code from Google are available at http://code.google.com/p/webvo/source. 
+Once all the dependencies have been installed, download the webvo source code from http://webvo.googlecode.com/files/webvo.tar.gz and unzip it into the Apache web folder (default is /var/www/htdocs).
 
 Create the database by running the WebVo.sql file.
 
 You should now be setup! Point your browser to http://servername/default.rb
+
