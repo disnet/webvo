@@ -20,10 +20,10 @@ The IVTV drivers can be found at [http://ivtvdriver.org/index.php/Main_Page]
 ||ruby 1.8||
 ||libxml-ruby 0.3.8.4||
 ||ruby-mysql 2.7||
+||xmltv [apt-get package in ubuntu/debian]||
 
 Once all the dependencies have been installed, download the webvo source code from http://webvo.googlecode.com/files/webvo.tar.gz and unzip it into the Apache web folder (default is /var/www/htdocs).
 
 Create the database by running the WebVo.sql file.
 
 You should now be setup! Point your browser to http://servername/default.rb
-
