@@ -66,7 +66,7 @@ function form_table_body(rows) {
 // INPUT: <row> array of xml elements -- first element is channel, rest are associated programmes
 // RETURNS: DOM TR with channel and associated programmes
 // KNOWN BUG: This will not work correctly if there is nothing being aired for a given time slot
-programme_row_display = function(row) {
+var programme_row_display = function(row) {
     var channelID = row[0].getAttribute('id');
     var channel_name = row[0].getElementsByTagName('display-name')[0].firstChild.nodeValue;
 

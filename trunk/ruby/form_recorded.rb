@@ -33,6 +33,7 @@ TABLENAME = "Recording"
 LENGTH_OF_DATE_TIME = 14
 
 SHOW_DIR = "/home/public_html/webvo/movies"
+SHOW_RELATIVE_ADDRESS = "movies/"
 
 def error_if_not_equal(value, standard, error_string)
   if value != standard:
@@ -41,9 +42,11 @@ def error_if_not_equal(value, standard, error_string)
   end
 end
 
-def add_size_to_xml_Node(size, xmlNode)
+def add_size_path_to_xml_Node(size,path,frag_num, xmlNode)
   xmlNode.gsub!("</programme>\n"," ")
   xmlNode << "\t<size>" + size.to_s + "</size>\n"
+  xmlNode << "\t<path>" + path.to_s + "</path>\n"
+  xmlNode << "\t<fragNum>" + frag_num.to_s + "</fragNum>\n"
   xmlNode << "</programme>\n"
   return xmlNode
 end
@@ -94,7 +97,7 @@ rescue MysqlError => e
           end
           programme = programmes.fetch_row
           if programme != nil:
-            puts add_size_to_xml_Node(f_size.to_i, programme.to_s.gsub("_*_","'"))
+            puts add_size_path_to_xml_Node(f_size.to_i, SHOW_RELATIVE_ADDRESS + "#{show_name}-0.mpg", frag_num, programme.to_s.gsub("_*_","'"))
           end
         else
           #duplicate in db or programme file not in directory either way entry should be deleted

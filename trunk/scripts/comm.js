@@ -148,6 +148,7 @@ var gotSpace = function(req) {
     avail = Math.round(avail);
     $('boxSpace').firstChild.nodeValue = " -- Available Disk Space: " + avail + "GB";
 }
+
 // Error handling for listing request
 var fetchFailed = function (err) {
     alert("Fetch Failed: " + err + errMsg);

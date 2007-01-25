@@ -239,3 +239,4 @@ var btnRemove_click = function(e) {
     del.addCallbacks(gotDelRecording,fetchFailed);
     makeInvisible('mnuRecord');
 };
+

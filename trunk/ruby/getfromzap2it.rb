@@ -36,7 +36,7 @@ PATH = "/home/public_html/webvo/ruby/"
 
 
 #opening/creating log file
-logfile = File.new("getLog.txt", "w")
+#logfile = File.new("getLog.txt", "w")
 
 #make sure xmltv.exe in current directory
 #cur_dir_entries=Dir.entries(Dir.getwd)
@@ -49,26 +49,26 @@ before_run_time = Time.new
 after_run_time = Time.new
 xmltv_ran = false
 
-if xmltv_pres == true then 
+if xmltv_pres == true then
   before_run_time = Time.new
-  xmltv_ran = system( "tv_grab_na_dd --output " + PATH + "info.xml")
+  xmltv_ran = system( "/usr/bin/tv_grab_na_dd --output " + PATH + "info.xml")
 end
 after_run_time = Time.new
 if xmltv_ran == true then
-  logfile << "Download Started " << before_run_time << "\n"
-  logfile <<"Download Finished" << after_run_time<< "\n"
+  #logfile << "Download Started " << before_run_time << "\n"
+  #logfile <<"Download Finished" << after_run_time<< "\n"
 
 else
-  logfile << "xmltv.exe failed to run at " << after_run_time << "\n" 
+  #logfile << "xmltv.exe failed to run at " << after_run_time << "\n" 
   
   if xmltv_pres == false then
-    logfile << "xmltv.exe not current directory\n"
+    #logfile << "xmltv.exe not current directory\n"
   end
   
 end
 
-logfile << "\n\n"
-logfile.close()
+#logfile << "\n\n"
+#logfile.close()
 
 #populating channels in database
   xmldoc = XML::Document.file(PATH + "info.xml")
