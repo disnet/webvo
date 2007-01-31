@@ -118,12 +118,7 @@ function initFormTime() {
 	}
 
     var now = new Date().getHours();
-    if (now > 18) {                     // if the current time is after 6pm
-        $('selTime').value = now;
-    }
-    else {                         
-        $('selTime').value = 18;	// default to 6pm
-    }
+    $('selTime').value = now;
 	
 	connect('btnLoad','onclick',btnLoad_click);
 	makeInvisible('boxLoading');
