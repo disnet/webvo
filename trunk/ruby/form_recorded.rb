@@ -35,6 +35,9 @@ LENGTH_OF_DATE_TIME = 14
 SHOW_DIR = "/home/public_html/webvo/movies"
 SHOW_RELATIVE_ADDRESS = "movies/"
 
+
+#SUPPORTED_ENCODING_SCHEMES= [".mpg", ".avi"]
+
 def error_if_not_equal(value, standard, error_string)
   if value != standard:
     puts "<error>Error " + error_string +"</error>"
@@ -87,8 +90,29 @@ rescue MysqlError => e
         #look up programme that matches start date and channelID to later compare with title
         programmes = dbh.query("SELECT xmlNode FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
         
+        #To support multiple encoding schemes, will list all of the files.
+        #SUPPORTED_ENCODING_SCHEMES.each do |type|
+        #  if rec_array.include?(show_name + "-0"+type) :
+            
+        #    f_size = File.size("#{show_name}-0#{type}")
+        #    frag_num = 1
+        #    while rec_array.include?(show_name + "-" + frag_num.to_s + type) == true
+        #      f_size = f_size + File.size("#{show_name}-#{frag_num.to_s}#{type}")
+        #      frag_num = frag_num + 1
+        #    end
+        #    programme = programmes.fetch_row
+        #    if programme != nil:
+        #      puts add_size_path_to_xml_Node(f_size.to_i, SHOW_RELATIVE_ADDRESS + "#{show_name}-0"+type, frag_num, programme.to_s.gsub("_*_","'"))
+        #    end
+        #  else
+            #duplicate in db or programme file not in directory either way entry should be deleted
+            #dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
+            #dbh.query("DELETE FROM Recorded WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
+        #  end
+        #end
         
-        if rec_array.include?(show_name + "-0"+".mpg"):
+        if rec_array.include?(show_name + "-0"+".mpg") :
+          
           f_size = File.size("#{show_name}-0.mpg")
           frag_num = 1
           while rec_array.include?(show_name + "-" + frag_num.to_s + ".mpg") == true
