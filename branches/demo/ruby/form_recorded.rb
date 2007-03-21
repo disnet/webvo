@@ -1,135 +1,103 @@
-#!/usr/local/bin/ruby
-################################################################################
-#WebVo: Web-based PVR
-#Copyright (C) 2006 Molly Jo Bault, Tim Disney, Daryl Siu
-
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
-
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-################################################################################
-#form_recording.rb
-#takes a programmeid from the front end and adds it to the database
-
-require 'cgi'
-require 'date'
-require "mysql"
-
-SERVERNAME = "localhost"
-USERNAME = "root"
-USERPASS = "csc4150"
-DBNAME = "WebVoFast"
-TABLENAME = "Recording"
-
-LENGTH_OF_DATE_TIME = 14
-
-SHOW_DIR = "/home/public_html/webvo/movies"
-SHOW_RELATIVE_ADDRESS = "movies/"
-
-
-#SUPPORTED_ENCODING_SCHEMES= [".mpg", ".avi"]
-
-def error_if_not_equal(value, standard, error_string)
-  if value != standard:
-    puts "<error>Error " + error_string +"</error>"
-    exit
-  end
-end
-
-def add_size_path_to_xml_Node(size,path,frag_num, xmlNode)
-  xmlNode.gsub!("</programme>\n"," ")
-  xmlNode << "\t<size>" + size.to_s + "</size>\n"
-  xmlNode << "\t<path>" + path.to_s + "</path>\n"
-  xmlNode << "\t<fragNum>" + frag_num.to_s + "</fragNum>\n"
-  xmlNode << "</programme>\n"
-  return xmlNode
-end
-
-#main ------------------------------------------------------------------------------------
-  puts "Content-Type: text/xml\n\n" 
-  cgi = CGI.new     # The CGI object is how we get the arguments 
-  #manually return header and parent beginning
-  puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
-
-
-#connect to database
-begin
-dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
-#  if gets an error (can't connect)
-rescue MysqlError => e
-      error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
-    if dbh.nil? == false
-      #close the database
-      dbh.close() 
-    end
-  else
-    #look up information in directory where recorded shows are being saved
-    
-    #for each check against record.rb's pattern
-    f_size = 0
-    rec_dir = Dir.new(SHOW_DIR)
-    Dir.chdir(SHOW_DIR)
-    rec_array = rec_dir.entries
-    rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded ORDER BY start")  
-    
-    #file may be there but need to compare with title in programme
-      rec_info.each_hash do |recorded|
-        chan_id = recorded["channelID"]
-        start = recorded["start"]
-        show_name = recorded["ShowName"]
-        
-        #look up programme that matches start date and channelID to later compare with title
-        programmes = dbh.query("SELECT xmlNode FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
-        
-        #To support multiple encoding schemes, will list all of the files.
-        #SUPPORTED_ENCODING_SCHEMES.each do |type|
-        #  if rec_array.include?(show_name + "-0"+type) :
-            
-        #    f_size = File.size("#{show_name}-0#{type}")
-        #    frag_num = 1
-        #    while rec_array.include?(show_name + "-" + frag_num.to_s + type) == true
-        #      f_size = f_size + File.size("#{show_name}-#{frag_num.to_s}#{type}")
-        #      frag_num = frag_num + 1
-        #    end
-        #    programme = programmes.fetch_row
-        #    if programme != nil:
-        #      puts add_size_path_to_xml_Node(f_size.to_i, SHOW_RELATIVE_ADDRESS + "#{show_name}-0"+type, frag_num, programme.to_s.gsub("_*_","'"))
-        #    end
-        #  else
-            #duplicate in db or programme file not in directory either way entry should be deleted
-            #dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-            #dbh.query("DELETE FROM Recorded WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-        #  end
-        #end
-        
-        if rec_array.include?(show_name + "-0"+".mpg") :
-          
-          f_size = File.size("#{show_name}-0.mpg")
-          frag_num = 1
-          while rec_array.include?(show_name + "-" + frag_num.to_s + ".mpg") == true
-            f_size = f_size + File.size("#{show_name}-#{frag_num.to_s}.mpg")
-            frag_num = frag_num + 1
-          end
-          programme = programmes.fetch_row
-          if programme != nil:
-            puts add_size_path_to_xml_Node(f_size.to_i, SHOW_RELATIVE_ADDRESS + "#{show_name}-0.mpg", frag_num, programme.to_s.gsub("_*_","'"))
-          end
-        else
-          #duplicate in db or programme file not in directory either way entry should be deleted
-          #dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-          #dbh.query("DELETE FROM Recorded WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-        end
-        
-      end
-    dbh.close()
-  end
-  puts "</tv>"
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
+<tv source-info-url="http://labs.zap2it.com/" source-info-name="TMS Data Direct Service" generator-info-name="XMLTV" generator-info-url="http://www.xmltv.org/">
+<programme>
+	<title>Battlestar Galactica</title>
+	<desc>Galactica's medical team struggles to curb an epidemic triggered by Sagitarron refugees.</desc>
+	<start>20070211220000</start>
+	<stop>20070211230000</stop>
+	<channel>59</channel>
+	<channelID>I24533.labs.zap2it.com</channelID>
+ 	<size>3826311168</size>
+	<path>movies/Battlestar_Galactica-2007021122000059-0.mpg</path>
+	<fragNum>1</fragNum>
+</programme>
+<programme>
+	<title>The Office</title>
+	<desc>Ryan invites Michael to be a guest speaker at his business school; Dwight battles a bat that is loose in the office; Pam invites co-workers to her first art show.</desc>
+	<start>20070215203000</start>
+	<stop>20070215210000</stop>
+	<channel>5</channel>
+	<channelID>I10518.labs.zap2it.com</channelID>
+ 	<size>1963966464</size>
+	<path>movies/The_Office-200702152030005-0.mpg</path>
+	<fragNum>1</fragNum>
+</programme>
+<programme>
+	<title>Battlestar Galactica</title>
+	<desc>A pair of crew members are trapped outside in an airlock.</desc>
+	<start>20070218220000</start>
+	<stop>20070218230000</stop>
+	<channel>59</channel>
+	<channelID>I24533.labs.zap2it.com</channelID>
+ 	<size>3928981504</size>
+	<path>movies/Battlestar_Galactica-2007021822000059-0.mpg</path>
+	<fragNum>1</fragNum>
+</programme>
+<programme>
+	<title>The Office</title>
+	<desc>Michael and Jan make their relationship public during a party; Jim meets Karen's ex; the staff goes to happy hour for drinks.</desc>
+	<start>20070222203000</start>
+	<stop>20070222210000</stop>
+	<channel>5</channel>
+	<channelID>I10518.labs.zap2it.com</channelID>
+ 	<size>1964273664</size>
+	<path>movies/The_Office-200702222030005-0.mpg</path>
+	<fragNum>1</fragNum>
+</programme>
+<programme>
+	<title>Battlestar Galactica</title>
+	<desc>Chief Tyrol's labor leader persuades him to defy Adama and become the rallying point for a strike.</desc>
+	<start>20070225220000</start>
+	<stop>20070225230000</stop>
+	<channel>59</channel>
+	<channelID>I24533.labs.zap2it.com</channelID>
+ 	<size>3928633344</size>
+	<path>movies/Battlestar_Galactica-2007022522000059-0.mpg</path>
+	<fragNum>1</fragNum>
+</programme>
+<programme>
+	<title>The Office</title>
+	<desc>Michael strives to keep the staff's spirit up after learning of the Scranton branch shutting down; people envision how their lives will change.</desc>
+	<start>20070301203000</start>
+	<stop>20070301210000</stop>
+	<channel>5</channel>
+	<channelID>I10518.labs.zap2it.com</channelID>
+ 	<size>1964392448</size>
+	<path>movies/The_Office-200703012030005-0.mpg</path>
+	<fragNum>1</fragNum>
+</programme>
+<programme>
+	<title>Battlestar Galactica</title>
+	<desc>Kara Thrace is on the edge of a nervous breakdown as she battles the emotional fallout from her captivity on New Caprica.</desc>
+	<start>20070304220000</start>
+	<stop>20070304230000</stop>
+	<channel>59</channel>
+	<channelID>I24533.labs.zap2it.com</channelID>
+ 	<size>3928788992</size>
+	<path>movies/Battlestar_Galactica-2007030422000059-0.mpg</path>
+	<fragNum>1</fragNum>
+</programme>
+<programme>
+	<title>The Office</title>
+	<desc>Jim and Pam are reunited when the Scranton and Stamford branches of the company are merged.</desc>
+	<start>20070308203000</start>
+	<stop>20070308210000</stop>
+	<channel>5</channel>
+	<channelID>I10518.labs.zap2it.com</channelID>
+ 	<size>1964429312</size>
+	<path>movies/The_Office-200703082030005-0.mpg</path>
+	<fragNum>1</fragNum>
+</programme>
+<programme>
+	<title>Battlestar Galactica</title>
+	<desc>As the trial of Gaius Baltar begins, testimony rivets the fleet's attention.</desc>
+	<start>20070318210100</start>
+	<stop>20070318220100</stop>
+	<channel>59</channel>
+	<channelID>I24533.labs.zap2it.com</channelID>
+ 	<size>3927953408</size>
+	<path>movies/Battlestar_Galactica-2007031821010059-0.mpg</path>
+	<fragNum>1</fragNum>
+</programme>
+</tv>

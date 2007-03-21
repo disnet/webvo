@@ -1,15 +1,11 @@
-#!/usr/bin/python
-import cgi,sys,os
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<tv>
+<success>chanID and datetime acquired</success>
+<success>Show located</success>
+<success>Removed from Recording</success>
+<success>Removed from Recorded</success>
+<success>Removed from Programme</success>
+<success>/home/public_html/webvo/movies/Government_Access-2007032110000021 has been removed</success>
+<success>Removed from hard drive</success>
+</tv>
 
-#print "Content-Type:text/xml\n\n"
-
-form = cgi.FieldStorage()
-if not form.has_key("prog_id"):
-    print "<error>must include programme ID</error>"
-    sys.exit()
-
-progID = form["prog_id"].value
-
-t = os.popen('ruby delete_recorded.rb ' + progID, 'r')
-
-print t.read()

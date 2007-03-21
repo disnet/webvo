@@ -1,15 +1,13 @@
-#!/usr/bin/python
-import cgi,sys,os
 
-print "Content-Type:text/xml\n\n"
+<success>
+<prog_id>I16976.labs.zap2it.com20070321130000</prog_id>
+<programme>
+	<title>Northwest News Today</title>
+	<desc> </desc>
+	<start>20070321130000</start>
+	<stop>20070321140000</stop>
+	<channel>2</channel>
+	<channelID>I16976.labs.zap2it.com</channelID>
+</programme>
+</success>
 
-form = cgi.FieldStorage()
-if not form.has_key("prog_id"):
-    print "<error>must include programme ID</error>"
-    sys.exit()
-
-progID = form["prog_id"].value
-
-t = os.popen('ruby delete_recording.rb ' + progID, 'r')
-
-print t.read()
