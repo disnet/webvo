@@ -150,5 +150,5 @@ var gotSpace = function(req) {
 }
 // Error handling for listing request
 var fetchFailed = function (err) {
-    alert("Fetch Failed: " + err + errMsg);
+    log("Fetch Failed: " + err + errMsg);
 };
