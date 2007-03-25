@@ -41,8 +41,18 @@ Install the IVTV firmware
 {{{
 DEBIAN_FRONTEND=gnome sudo apt-get install ivtv-firmware
 }}}
+Install the IVTV module. Note that these commands will need to be re-run if you install a new kernel.
+{{{
+~$ sudo m-a update,prepare
+~$ sudo m-a a-i ivtv
+~$ sudo depmod -a 
+~$ sudo modprobe ivtv
+}}}
+Add IVTV module to boot
+{{{
+sudo sh -c 'echo ivtv >>/etc/modules'
+}}}
 === 2. Apache ===
-
 
 
 
