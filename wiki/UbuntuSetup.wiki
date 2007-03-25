@@ -22,6 +22,7 @@ deb http://archive.ubuntu.com/ubuntu/ edgy-backports main restricted universe mu
 }}}
 Install the necessary packages
 {{{
+~$ sudo apt-get update
 ~$ sudo apt-get install ivtv-source devscripts ivtv-utils module-assistant mplayer
 }}}
 Add the following to /etc/apt/sources.list
@@ -35,6 +36,10 @@ Add the key to this repository
 Update your packages
 {{{
 ~$ sudo apt-get update
+}}}
+Install the IVTV firmware
+{{{
+DEBIAN_FRONTEND=gnome sudo apt-get install ivtv-firmware
 }}}
 === 2. Apache ===
 
