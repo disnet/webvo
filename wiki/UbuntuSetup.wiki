@@ -2,8 +2,51 @@
 
 = Introduction =
 
-This is a step by step guide to install webvo on a fresh install of Ubuntu 6.10. If you're using a different distro then concepts in this guide should be transferable, if not the exact commands. Some familiarity with Linux is assumed and will be useful if you run into any errors not foreseen in the document. If you run into any problems please post them in the discussion forum.
+This is a step by step guide to install webvo on a fully updated fresh install of Ubuntu 6.10. If you're using a different distro then concepts in this guide should be transferable, if not the exact commands. Some familiarity with Linux is assumed and will be useful if you run into any errors not foreseen in the document. If you run into any problems please post them in the discussion forum.
 
 = Prerequisites =
-...
+
+=== 1. IVTV Drivers ===
+Adapted from https://help.ubuntu.com/community/Install_IVTV_Edgy
+
+Make sure you have all the universe/metaverse repositories
+{{{
+~$ sudo gedit /etc/apt/sources.list
+}}}
+And add the following
+{{{
+deb http://archive.ubuntu.com/ubuntu/ edgy main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ edgy-updates main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu/ edgy-security main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ edgy-backports main restricted universe multiverse
+}}}
+Install the necessary packages
+{{{
+~$ sudo apt-get install ivtv-source devscripts ivtv-utils module-assistant mplayer
+}}}
+Add the following to /etc/apt/sources.list
+{{{
+deb http://dl.ivtvdriver.org/ubuntu edgy firmware
+}}}
+Add the key to this repository
+{{{
+~$ wget http://dl.ivtvdriver.org/ubuntu/80DF6D58.gpg -O- | sudo apt-key add -
+}}}
+Update your packages
+{{{
+~$ sudo apt-get update
+}}}
+=== 2. Apache ===
+
+
+
+
+
+
+
+
+
+
+
+
 
