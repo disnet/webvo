@@ -79,11 +79,15 @@ Install MySQL
 Add password for root
 {{{
 ~$ mysqladmin -u root password your-new-password
-~$ mysqladmin -h root@local-machine-name -u root -p password your-new-password
 ~$ sudo /etc/init.d/mysql restart
 }}}
+=== 4. Ruby ===
+Due to various issues with versions in the Ubuntu repository, we recommend that you don't use the repositories to install ruby. The problem will probably go away with Ubuntu 7.04 which should have up to date version of ruby-libxml (our problem child). So, if you're felling lucky and have a later version of Ubuntu (or another recent distro) try the repos, otherwise...
 
-
+Download and untar ruby
+{{{
+~$ wget ftp://ftp.ruby-lang.org/pub/ruby/ruby-1.8.6.tar.gz
+~$
 
 
 
