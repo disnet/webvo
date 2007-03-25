@@ -48,12 +48,40 @@ Install the IVTV module. Note that these commands will need to be re-run if you 
 ~$ sudo depmod -a 
 ~$ sudo modprobe ivtv
 }}}
-Add IVTV module to boot
+Add IVTV module to boot order
 {{{
 sudo sh -c 'echo ivtv >>/etc/modules'
 }}}
 === 2. Apache ===
+Install apache2
+{{{
+~$ sudo apt-get install apache2
+}}}
+Add python and ruby cgi handling to /etc/apache2/apache2.conf
 
+Uncomment the line
+{{{
+#AddHandler cgi-script .cgi
+}}}
+and change to 
+{{{
+AddHandler cgi-script .cgi .py .rb
+}}}
+Restart apache
+{{{
+~$ sudo /etc/init.d/apache2 restart
+}}}
+=== 3. MySQL ===
+Install MySQL
+{{{
+~$ sudo apt-get install mysql-server
+}}}
+Add password for root
+{{{
+~$ mysqladmin -u root password your-new-password
+~$ mysqladmin -h root@local-machine-name -u root -p password your-new-password
+~$ sudo /etc/init.d/mysql restart
+}}}
 
 
 
