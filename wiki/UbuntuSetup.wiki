@@ -1,0 +1,10 @@
+#summary Set by step guide to set up webvo on Ubuntu 6.10
+
+= Introduction =
+
+This is a step by step guide to install webvo on a fresh install of Ubuntu 6.10. If you're using a different distro the concepts in this guide should be transferable, if not the exact commands. Some familiarity with Linux is assumed and will be useful if you run into any errors not foreseen in the document. If you run into any problems please post them in the discussion forum.
+
+= Prerequisites =
+
+
+
