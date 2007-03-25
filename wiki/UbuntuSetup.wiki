@@ -24,6 +24,7 @@ Install the necessary packages
 {{{
 ~$ sudo apt-get update
 ~$ sudo apt-get install ivtv-source devscripts ivtv-utils module-assistant mplayer
+~$ sudo apt-get install build-essential
 }}}
 Add the following to /etc/apt/sources.list
 {{{
@@ -82,12 +83,29 @@ Add password for root
 ~$ sudo /etc/init.d/mysql restart
 }}}
 === 4. Ruby ===
-Due to various issues with versions in the Ubuntu repository, we recommend that you don't use the repositories to install ruby. The problem will probably go away with Ubuntu 7.04 which should have up to date version of ruby-libxml (our problem child). So, if you're felling lucky and have a later version of Ubuntu (or another recent distro) try the repos, otherwise...
+Due to various issues with versions in the Ubuntu repository, we recommend that you don't use the repositories to install ruby. The problem will probably go away with Ubuntu 7.04 which should have up to date versions of ruby-libxml (our problem child). So, if you're felling lucky and have a later version of Ubuntu (or another recent distro) try the repos, otherwise...
 
 Download and untar ruby
 {{{
 ~$ wget ftp://ftp.ruby-lang.org/pub/ruby/ruby-1.8.6.tar.gz
-~$
+~$ tar xvzf ruby-1.8.6.tar.gz
+}}}
+Configure and compile ruby
+{{{
+~$ cd ruby-1.8.6/
+~$ ./configure
+~$ make
+~$ sudo make install
+}}}
+Download and install ruby gems
+{{{
+~$ wget http://rubyforge.org/frs/download.php/17190/rubygems-0.9.2.tgz
+~$ tar xvzf rubygems-0.9.2.tgz
+~$ cd rubygems-0.9.2/
+~$ ./configure
+~$ make
+~$ sudo make install
+}}}
 
 
 
