@@ -20,7 +20,7 @@ The IVTV drivers can be found at [http://ivtvdriver.org/index.php/Main_Page]
 ||ruby 1.8||
 ||python 2.4||
 ||libxml-ruby 0.3.8.4||
-||ruby-mysql 2.7||
+||ruby-mysql 2.6||
 ||xmltv||
 
 Once all the dependencies have been installed, download the webvo source code from http://webvo.googlecode.com/files/webvo.tar.gz and unzip it into the Apache web folder (default is /var/www/htdocs).
