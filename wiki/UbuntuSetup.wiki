@@ -87,7 +87,7 @@ Due to various issues with versions in the Ubuntu repository, we recommend that 
 
 Install ruby rereqs
 {{{
-~$ sudo apt-get install zlibc zlib1g zlib1g-dev
+~$ sudo apt-get install zlibc zlib1g zlib1g-dev libmysqlclient15-dev
 }}}
 Download and untar ruby
 {{{
@@ -124,7 +124,17 @@ Install ruby-mysql
 ~$ cd ruby-mysql-0.2.6/
 ~$ sudo ruby setup.rb
 }}}
+=== 5. XMLTV ===
+Install xmltv
+{{{
+~$ sudo apt-get install xmltv
+}}}
+You will need to sign up for xml listings at http://labs.zap2it.com. Use certificate code: 'ZYZM-TE5O-SBUT'. 
 
+Configure xmltv. This is for North America. See the xmltv docs for configuring in other regions. You will need your zap2it username and password you just got.
+{{{
+~$ tv_grab_na_dd --configure
+}}}
 
 
 
