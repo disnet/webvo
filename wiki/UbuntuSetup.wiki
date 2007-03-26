@@ -121,8 +121,9 @@ Install ruby-mysql
 {{{
 ~$ wget http://www.tmtm.org/en/ruby/mysql/ruby-mysql-0.2.6.tar.gz
 ~$ tar xvzf ruby-mysql-0.2.6.tar.gz
+~$ cd ruby-mysql-0.2.6/
+~$ sudo ruby setup.rb
 }}}
-
 
 
 
