@@ -25,8 +25,4 @@ The IVTV drivers can be found at [http://ivtvdriver.org/index.php/Main_Page]
 
 Once all the dependencies have been installed, download the webvo source code from http://webvo.googlecode.com/files/webvo.tar.gz and unzip it into the Apache web folder (default is /var/www/htdocs).
 
-xmltv can be installed in Ubuntu/debian by "sudo apt-get install xmltv".
-
-Create the database by running the WebVo.sql file.
-
-You should now be setup! Point your browser to http://servername/default.rb
+For a step by step guide for installing webvo see UbuntuSetup. It is specific to Ubuntu 6.10 but it should give you a good idea of what to do for other distros.
