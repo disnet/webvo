@@ -77,9 +77,9 @@ Install MySQL
 {{{
 ~$ sudo apt-get install mysql-server
 }}}
-Add password for root
+Add password for root. For now it *must* be `csc4150`.
 {{{
-~$ mysqladmin -u root password your-new-password
+~$ mysqladmin -u root password csc4150
 ~$ sudo /etc/init.d/mysql restart
 }}}
 === 4. Ruby ===
@@ -119,10 +119,12 @@ Install libxml-ruby
 }}}
 Install ruby-mysql
 {{{
-~$ wget http://www.tmtm.org/en/ruby/mysql/ruby-mysql-0.2.6.tar.gz
-~$ tar xvzf ruby-mysql-0.2.6.tar.gz
-~$ cd ruby-mysql-0.2.6/
-~$ sudo ruby setup.rb
+~$ wget http://tmtm.org/downloads/mysql/ruby/mysql-ruby-2.7.3.tar.gz
+~$ tar xvzf ruby-mysql-2.7.3.tar.gz
+~$ cd ruby-mysql-2.7.3/
+~$ ruby extconf.rb
+~$ make
+~$ make install
 }}}
 === 5. XMLTV ===
 Install xmltv
@@ -138,16 +140,16 @@ Configure xmltv. This is for North America. See the xmltv docs for configuring i
 
 = Webvo Files =
 
-=== 1. Location ===
-(Optional) Configure apache to look outside of "/var/www". We're the directory where webvo's files will reside. If you want to put them in "/var/www" go ahead but we recommend that you put them in your home directory.
+=== 1.1 Location (default - home directory) ===
+Configure apache to look for the webvo directory. We recommend that you put them in your home directory but if you want to put them in `/var/www` skip ahead to _Location (alternate - apache default)_
 
-Create the public_html directory where <username> is your local user account
+Create the public_html directory where `<username>` is your local user account
 {{{
 ~$ sudo mkdir /home/public_html
 ~$ sudo chown <username>.<username>
 }}}
 
-Create the new file /etc/apache2/conf.d/alias and insert
+Create the new file `/etc/apache2/conf.d/alias` and insert
 {{{
 Alias /webvo /home/public_html/webvo/
 
@@ -158,6 +160,66 @@ Alias /webvo /home/public_html/webvo/
   Allow from all
 </Directory>
 }}}
+
+Restart apache
+{{{
+~$ sudo /etc/init.d/apache2 restart
+}}}
+
+=== 1.2 Location (alternative - apache default) ===
+Create webvo directory
+{{{
+~$ sudo mkdir /var/www/webvo
+~$ sudo chown <username>.<username> /var/www/webvo
+}}}
+where `<username>` is your local user account
+
+=== 2.1 Getting webvo (default - subversion) ===
+To get webvo you can either download a zip package or get the latest subversion release. We recommend using subversion since it will have the most recent bug fixes. If you want to download the zip package, skip to _2.2 (alternative zip package)_
+
+Install subversion
+{{{
+~$ sudo apt-get install subversion
+}}}
+Checkout webvo code. 
+{{{
+~$ cd /home/public_html/  [or /var/www]
+~$ svn checkout http://webvo.googlecode.com/svn/trunk/ webvo
+}}}
+
+=== 2.2 Getting webvo (alternative - zip package) ===
+Go to the download section of webvo google code and get the tar ball.
+
+Extract to the appropriate directory
+{{{
+~$ tar xvzf webvo.tar.gz /home/public_html/webvo/ [or /var/www]
+}}}
+
+=== 3 Configure database ===
+Create database and tables
+{{{
+~$ cd /home/public_html/webvo/
+~$ mysql -u root -p [will prompt for password, use csc4150]
+mysql> create database WebVoFast
+mysql> use WebVoFast
+mysql> source WebVo.sql
+}}}
+As you can see we are using the mysql root user. This is generally regarded as a *bad* idea and will be fixed soon. Until then don't install webvo on any production machines.
+
+=== 4. Setup ===
+{{{
+~$ cd /home/public_html/webvo/ruby/
+~$ ruby getfromzap2it.rb
+}}}
+
+= Misc =
+You will need to add executable permissions to the ruby files. Hopefully this will get fixed soon.
+{{{
+~$ cd <webvo directory>/ruby/
+~$ chmod a+x *
+}}}
+
+
 
 
 
