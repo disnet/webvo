@@ -139,7 +139,7 @@ Install xmltv
 }}}
 You will need to sign up for xml listings at http://labs.zap2it.com. Use certificate code: 'ZYZM-TE5O-SBUT'. 
 
-Configure xmltv. This is for North America. See the xmltv docs for configuring in other regions. You will need your zap2it username and password you just got.
+Configure xmltv. This is for North America. Currently webvo only grabs North American listings.  You will need your zap2it username and password you just got.
 {{{
 ~$ tv_grab_na_dd --configure
 }}}
@@ -235,4 +235,3 @@ Add task to grab the tv listing to your cron
 19 3 * * * /home/public_html/webvo/ruby/getfromzap2it.rb
 }}}
 Will run every day at 3:19AM. Change as you see fit.
-
