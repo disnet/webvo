@@ -9,8 +9,7 @@ function formRecordedTable() {
         var path = row.getElementsByTagName('path')[0].firstChild.nodeValue;
         var title = row.getElementsByTagName('title')[0].firstChild.nodeValue;
         
-        var pathAvi = path.substring(0,path.length-4) + '.avi'; //changed to point only to converted files FAILS if not converted yet
-		formed_row.push(A({'href': pathAvi},title));
+		formed_row.push(A({'href': path},title));
 		formed_row.push(row.getElementsByTagName('desc')[0].firstChild.nodeValue);
 		formed_row.push( zapTimeToDate(row.getElementsByTagName('start')[0].firstChild.nodeValue).toLocaleString());
 		formed_row.push(zapTimeToDate(row.getElementsByTagName('stop')[0].firstChild.nodeValue).toLocaleString());
