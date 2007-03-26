@@ -220,6 +220,5 @@ You will need to add executable permissions to the ruby files. Hopefully this wi
 }}}
 
 
-
-
+http://rubyforge.org/frs/download.php/15236/libxml-ruby-0.3.8.4.gem
 
