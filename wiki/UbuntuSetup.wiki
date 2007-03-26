@@ -136,7 +136,28 @@ Configure xmltv. This is for North America. See the xmltv docs for configuring i
 ~$ tv_grab_na_dd --configure
 }}}
 
+= Webvo Files =
 
+=== 1. Location ===
+(Optional) Configure apache to look outside of "/var/www". We're the directory where webvo's files will reside. If you want to put them in "/var/www" go ahead but we recommend that you put them in your home directory.
+
+Create the public_html directory where <username> is your local user account
+{{{
+~$ sudo mkdir /home/public_html
+~$ sudo chown <username>.<username>
+}}}
+
+Create the new file /etc/apache2/conf.d/alias and insert
+{{{
+Alias /webvo /home/public_html/webvo/
+
+<Directory /home/public_html/webvo/>
+  Options Indexes FollowSymLinks
+  AllowOverride All
+  Order allow,deny
+  Allow from all
+</Directory>
+}}}
 
 
 
