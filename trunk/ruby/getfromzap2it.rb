@@ -141,7 +141,7 @@ end
 	oldest_day = e["stop"][0..7].to_i
       end
     end
-    channel_xml << "\n<programme_date_range start='"+ oldest_day.to_s + "' stop='" + newest_day.to_s + "' </programme_date_range>\n"
+    channel_xml << "\n<programme_date_range start='"+ oldest_day.to_s + "' stop='" + newest_day.to_s + "'></programme_date_range>\n"
     channel_xml << "</tv>" 
     channel_xml.close()
  
