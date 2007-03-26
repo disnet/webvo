@@ -111,11 +111,17 @@ Download and install ruby gems
 Install libxml-ruby prereqs
 {{{
 ~$ sudo apt-get install libxml2-dev
+~$ gem install -r rake
 }}}
 Install libxml-ruby
 {{{
-~$ gem update
-~$ gem install -r libxml-ruby
+~$ wget http://rubyforge.org/frs/download.php/15237/libxml-ruby-0.3.8.4.tar.gz
+~$ tar xvzf libxml-ruby-0.3.8.4.tar.gz
+~$ cd libxml-ruby-0.3.8.3/
+~$ cd ext/xml
+~$ ruby extconf.rb 
+~$ make
+~$ make install
 }}}
 Install ruby-mysql
 {{{
@@ -154,7 +160,7 @@ Create the new file `/etc/apache2/conf.d/alias` and insert
 Alias /webvo /home/public_html/webvo/
 
 <Directory /home/public_html/webvo/>
-  Options Indexes FollowSymLinks
+  Options Indexes FollowSymLinks ExecCGI
   AllowOverride All
   Order allow,deny
   Allow from all
@@ -207,17 +213,26 @@ mysql> source WebVo.sql
 As you can see we are using the mysql root user. This is generally regarded as a *bad* idea and will be fixed soon. Until then don't install webvo on any production machines.
 
 === 4. Setup ===
+You will need to add executable permissions to the ruby files. Hopefully this will get fixed soon.
+{{{
+~$ cd /home/public_html/webvo/ruby/
+~$ chmod a+x *
+}}}
+
+Initialize the tv listings
 {{{
 ~$ cd /home/public_html/webvo/ruby/
 ~$ ruby getfromzap2it.rb
 }}}
 
+You're done! Point your browser to `http://localhost/webvo/default.rb` and sign in as `admin` with password `csc4150`. You can also us `http://localhost/webvo/listing.html` which has no login and thus no security. Not that a hard coded username and password is much security...but hey, this is a work in progress.
+
 = Misc =
-You will need to add executable permissions to the ruby files. Hopefully this will get fixed soon.
+Add task to grab the tv listing to your cron
 {{{
-~$ cd <webvo directory>/ruby/
-~$ chmod a+x *
+~$ crontab -e
+[add this to your crontab]
+19 3 * * * /home/public_html/webvo/ruby/getfromzap2it.rb
 }}}
+Will run every day at 3:19AM. Change as you see fit.
 
-
-http://rubyforge.org/frs/download.php/15237/libxml-ruby-0.3.8.4.tar.gz
