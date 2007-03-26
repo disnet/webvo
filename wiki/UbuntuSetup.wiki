@@ -85,6 +85,10 @@ Add password for root
 === 4. Ruby ===
 Due to various issues with versions in the Ubuntu repository, we recommend that you don't use the repositories to install ruby. The problem will probably go away with Ubuntu 7.04 which should have up to date versions of ruby-libxml (our problem child). So, if you're felling lucky and have a later version of Ubuntu (or another recent distro) try the repos, otherwise...
 
+Install ruby rereqs
+{{{
+~$ sudo apt-get install zlibc zlib1g zlib1g-dev
+}}}
 Download and untar ruby
 {{{
 ~$ wget ftp://ftp.ruby-lang.org/pub/ruby/ruby-1.8.6.tar.gz
@@ -102,12 +106,22 @@ Download and install ruby gems
 ~$ wget http://rubyforge.org/frs/download.php/17190/rubygems-0.9.2.tgz
 ~$ tar xvzf rubygems-0.9.2.tgz
 ~$ cd rubygems-0.9.2/
-~$ ./configure
-~$ make
-~$ sudo make install
+~$ sudo ruby setup.rb
 }}}
-
-
+Install libxml-ruby prereqs
+{{{
+~$ sudo apt-get install libxml2-dev
+}}}
+Install libxml-ruby
+{{{
+~$ gem update
+~$ gem install -r libxml-ruby
+}}}
+Install ruby-mysql
+{{{
+~$ wget http://www.tmtm.org/en/ruby/mysql/ruby-mysql-0.2.6.tar.gz
+~$ tar xvzf ruby-mysql-0.2.6.tar.gz
+}}}
 
 
 
