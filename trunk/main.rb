@@ -42,7 +42,6 @@ if cgi.has_key?('user') && cgi.has_key?('passwd'):
 		 <li id="btnListing"><a href="#" class="nav">TV Listing</a></li>
 		 <li id="btnRecording"><a href="#" class="nav">Scheduled</a></li>
 		 <li id="btnRecorded"><a href="#" class="nav">Recorded</a></li>
-		 <li><a href="#" class="nav">About</a></li>
 </ul></div>
 
 

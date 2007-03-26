@@ -160,15 +160,15 @@ ul.navbar li {
 display:inline;}
 
 a.nav:link, a.nav:visited {
-display:block; float:left; width:24%; padding:1.2em 0 1.2em 0; margin:0; 
+display:block; float:left; width:33%; padding:1.2em 0 1.2em 0; margin:0; 
 text-decoration:none; background-color:#999999; color:#FFFFFF;}
 
 a.nav:hover {
-display:block; float:left; width:24%; padding:1.2em 0 1.2em 0; margin:0; 
+display:block; float:left; width:33%; padding:1.2em 0 1.2em 0; margin:0; 
 text-decoration:none; background-color:#8CD749; color:#FFFFFF;}
 
 a.nav:active {
-display:block; float:left; width:24%; padding:1.2em 0 1.2em 0; margin:0; 
+display:block; float:left; width:34%; padding:1.2em 0 1.2em 0; margin:0; 
 text-decoration:none; background-color:#999999; color:#FFFFFF;}
 
 td.tvShow:hover {
