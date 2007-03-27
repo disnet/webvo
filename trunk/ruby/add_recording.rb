@@ -124,11 +124,18 @@ def format_date(current_date)
   return current_date.year.to_s + month + day + hour + min + sec
 end
 #main--------------------------------------------------------------------------
-#checks for 1 argument
-  error_if_not_equal(ARGV.length(),1, "Needs one argument")#2, "Needs two argument")
-  
+#checks for 1 or 2 arguments
+  if !(ARGV.length() = 1 || ARGV.length() = 2):
+	error_if_not_equal(0,1, "Needs one or two arguments")#2, "Needs two argument")
+  end
 #get argument
   prog_id = ARGV[0]
+  
+  force_end_after = false
+
+  if ARGV.length() = 2:
+	force_end_after = ARGV[1]
+  end
   #pipe_num = ARGV[1].to_i
   #to_fe = IO.open(pipe_num, "w")
   
@@ -254,7 +261,9 @@ end
       occurs_around = (qstart <= istart && qstop >= istop)
       
       #if programme to add is during a programme that is already in the database
-      if begins_before || ends_after || occurs_during || occurs_around:
+      if ends_after == true && force_end_after == true:
+	#move along
+      elsif begins_before || ends_after || occurs_during || occurs_around:
         schan_id = row["channelID"]
         #see if this programme is in recording, if so then error out
         show_in_recording = dbh.query("SELECT start FROM Recording WHERE (channelID ='#{schan_id}' AND start = '#{qstart.to_s}')")
