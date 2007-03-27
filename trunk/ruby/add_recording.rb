@@ -125,7 +125,7 @@ def format_date(current_date)
 end
 #main--------------------------------------------------------------------------
 #checks for 1 or 2 arguments
-  if !(ARGV.length() = 1 || ARGV.length() = 2):
+  if !(ARGV.length() == 1 || ARGV.length() == 2):
 	error_if_not_equal(0,1, "Needs one or two arguments")#2, "Needs two argument")
   end
 #get argument
@@ -133,7 +133,7 @@ end
   
   force_end_after = false
 
-  if ARGV.length() = 2:
+  if ARGV.length() == 2:
 	force_end_after = ARGV[1]
   end
   #pipe_num = ARGV[1].to_i
