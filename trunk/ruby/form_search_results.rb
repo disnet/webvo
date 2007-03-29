@@ -61,6 +61,7 @@ def form_node(start, stop, title, channel, channelID, desc)
   xmlNode << "\t<channel>" + channel.to_s + "</channel>\n"
   xmlNode << "\t<channelID>" + channelID.to_s + "</channelID>\n"
   xmlNode << "</programme>\n"
+  xmlNode.gsub!("&", "&#38;")
   return xmlNode
 end
 
