@@ -167,7 +167,7 @@ def search_show_subtitle( subtitle )
   start = ' '
   stop = ' '
   xmlNode = "<Error>No items match your search.</Error>"
-  title = ' '
+  subtitle = ' '
   desc = ' '
   phrase = ' '
   attribute = ' '
@@ -180,16 +180,16 @@ def search_show_subtitle( subtitle )
     #see if node has information
       c = e.child    #get first child of programme
       keep_looping = true #varible to do a do-while
-      matching_title = false # flag to see if the comparison is true
-      got_title = false # flag if the title has been found
+      matching_subtitle = false # flag to see if the comparison is true
+      got_subtitle = false # flag if the title has been found
       #checking the title
-      while keep_looping == true || got_title == false:
+      while keep_looping == true || got_subtitle == false:
         if c.name == "sub-title":
 	  #comparison here********************************************
           if (c.content.to_s.upcase.include? subtitle.to_s.upcase):
-            matching_title = true
+            matching_subtitle = true
           end
-          got_title = true
+          got_subtitle = true
         end  
         #if c.name == "desc":
         #  desc = c.content
@@ -202,7 +202,7 @@ def search_show_subtitle( subtitle )
       end
 
       #if it does
-      if matching_title == true:
+      if matching_subtitle == true:
 
         #get start
         start = e["start"][0..LENGTH_OF_DATE_TIME-1]
