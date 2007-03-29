@@ -25,7 +25,7 @@
 require 'cgi'
 require 'xml/libxml'  #allows for parsing the info.xml
 require 'date'        #allows for finding the current date
-require "mysql"       #allows for communication with the mysql database
+#require "mysql"       #allows for communication with the mysql database
 
 #constants
 SERVERNAME = "localhost"
@@ -99,7 +99,7 @@ def search_show_title( show_title )
       matching_title = false # flag to see if the comparison is true
       got_title = false # flag if the title has been found
       #checking the title
-      while keep_looping == true || got_title == false:
+      while keep_looping == true && got_title == false:
         if c.name == "title":
 	  #comparison here********************************************
           if (c.content.to_s.upcase.include? show_title.to_s.upcase):
@@ -130,7 +130,7 @@ def search_show_title( show_title )
         keep_looping = true #varible to do a do-while
         got_title = false # flag if the title has been found
         #getting child information
-        while (keep_looping == true || got_title == false):
+        while (keep_looping == true && got_title == false):
           #get title
 	  if c.name == "title":
 	    title = c.content
@@ -185,7 +185,7 @@ def search_show_subtitle( subtitle )
       matching_subtitle = false # flag to see if the comparison is true
       got_subtitle = false # flag if the title has been found
       #checking the title
-      while keep_looping == true || got_subtitle == false:
+      while keep_looping == true && got_subtitle == false:
         if c.name == "sub-title":
 	  #comparison here********************************************
           if (c.content.to_s.upcase.include? subtitle.to_s.upcase):
@@ -216,7 +216,7 @@ def search_show_subtitle( subtitle )
         keep_looping = true #varible to do a do-while
         got_title = false # flag if the title has been found
         #getting child information
-        while (keep_looping == true || got_title == false):
+        while (keep_looping == true && got_title == false):
           #get title
 	  if c.name == "title":
 	    title = c.content
