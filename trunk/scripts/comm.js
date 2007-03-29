@@ -8,7 +8,7 @@ var gotChannels_init = function(req) {
 
     var error = schedule.xmlChannels.getElementsByTagName('error');
     if(error.length != 0) { 
-        alert("Error: " + error[0].firstChild.nodeValue + errMsg);
+        alert("Error in getChannels: " + error[0].firstChild.nodeValue + errMsg);
         schedule.xmlChannels = null;
         return;     // If we get an error at this point no point in going on
     }
@@ -25,7 +25,7 @@ var gotProgrammes = function(req) {
 
    var error = schedule.xmlProgrammes.getElementsByTagName('error');
    if(error.length != 0) {
-       alert("Error: " + error[0].firstChild.nodeValue + errMsg);
+       alert("Error in gotProgrammes: " + error[0].firstChild.nodeValue + errMsg);
        schedule.xmlProgrammes = null;
        return;
     }
@@ -54,7 +54,7 @@ var gotAdd = function(req) {
         makeInvisible('mnuRecord');
     }
 	else {
-		alert('Error: ' + req.responseText + errMsg);
+		alert('Error in gotAdd: ' + req.responseText + errMsg);
         //forEach(schedule.progTDs, function (el) {
          //   connect(el,'onclick',prog_click);
         //});
@@ -83,7 +83,7 @@ var gotRecording = function(req) {
     var error = req.responseXML.getElementsByTagName('error');
 
     if(error.length != 0) {
-       alert('Error: ' + error[0].firstChild.nodeValue + errMsg);
+       alert('Error in gotRecording: ' + error[0].firstChild.nodeValue + errMsg);
        return;  // no point in going on
     }
 
@@ -103,7 +103,7 @@ var gotRecorded = function(req) {
     var error = req.responseXML.getElementsByTagName('error');
 
     if(error.length != 0) {
-        alert('Error: ' + error[0].firstChild.nodeValue + errMsg);
+        alert('Error in gotRecorded: ' + error[0].firstChild.nodeValue + errMsg);
     }
 
 	recorded.programmes = map(function(el) {return el;}, recorded.programmes); 	// convert nodelist to array
@@ -119,7 +119,7 @@ var gotDelRecording = function(req) {
     //    connect(el,'onclick',prog_click);
     //});
     if(error.length != 0) {
-        alert("Error: " + error[0].firstChild.nodeValue + errMsg);
+        alert("Error in gotDelRecording: " + error[0].firstChild.nodeValue + errMsg);
     }
     else if(success.length != 0) {
         makeInvisible('boxLoading');
@@ -127,21 +127,21 @@ var gotDelRecording = function(req) {
         updateNodeAttributes(progID.firstChild.nodeValue,{'class':'programme'});
     }
     else {
-        alert("Error: " + req.responseText);
+        alert("Error in gotDelRecording (not expected): " + req.responseText);
     }
 };
 
 var gotDelRecorded = function(req) {
     var error = req.responseXML.getElementsByTagName('error');
     if(error.length != 0) {
-        alert("Error: " + error[0].firstChild.nodeValue + errMsg);
+        alert("Error in gotDelRecorded: " + error[0].firstChild.nodeValue + errMsg);
     }
 };
 
 var gotSpace = function(req) {
     var error = req.responseXML.getElementsByTagName('error');
     if(error.length != 0) {
-        alert("Error: " + error[0].firstChild.nodeValue + errMsg);
+        alert("Error in gotSpace: " + error[0].firstChild.nodeValue + errMsg);
     }
     var avail = req.responseXML.getElementsByTagName('available')[0];
     avail = parseInt(avail.firstChild.nodeValue) / (1024*1024);
