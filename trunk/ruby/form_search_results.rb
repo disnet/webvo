@@ -114,7 +114,7 @@ def search_show_title( show_title )
           keep_looping = false
         end
       end
-      #
+
       #if it does
       if matching_title == true:
 
@@ -159,7 +159,88 @@ end
 
 #Search in show name
 def search_show_subtitle( subtitle )
-	
+    #get programme from info.xml
+  error_if_not_equal(file_available(XML_FILE_NAME), true, "Source .xml file not in directory")
+  xml = XML::Document.file(XML_FILE_NAME)
+
+  #These all filled with ' ' just incase they are not filled below
+  start = ' '
+  stop = ' '
+  xmlNode = "<Error>No items match your search.</Error>"
+  title = ' '
+  desc = ' '
+  phrase = ' '
+  attribute = ' '
+  channelID = ' '
+  found_match = false
+  
+  #getting information to put in xmlNode
+  #reforming node to look like
+  xml.find("programme").each do |e|
+    #see if node has information
+      c = e.child    #get first child of programme
+      keep_looping = true #varible to do a do-while
+      matching_title = false # flag to see if the comparison is true
+      got_title = false # flag if the title has been found
+      #checking the title
+      while keep_looping == true || got_title == false:
+        if c.name == "sub-title":
+	  #comparison here********************************************
+          if (c.content.to_s.upcase.include? subtitle.to_s.upcase):
+            matching_title = true
+          end
+          got_title = true
+        end  
+        #if c.name == "desc":
+        #  desc = c.content
+        #end 
+        if c.next?:
+            c = c.next
+        else
+          keep_looping = false
+        end
+      end
+
+      #if it does
+      if matching_title == true:
+
+        #get start
+        start = e["start"][0..LENGTH_OF_DATE_TIME-1]
+        #get stop        
+        stop = e["stop"][0..LENGTH_OF_DATE_TIME-1]
+        #get channel id
+        channelID = e["channel"]
+        c = e.child    #get first child of programme
+        keep_looping = true #varible to do a do-while
+        got_title = false # flag if the title has been found
+        #getting child information
+        while (keep_looping == true || got_title == false):
+          #get title
+	  if c.name == "title":
+	    title = c.content
+            got_title = true
+          end  
+          #get description
+          if c.name == "desc":
+            desc = c.content
+          end 
+          if c.next?:
+              c = c.next
+          else
+            keep_looping = false
+          end
+        end
+        
+        xmlNode = form_node(start, stop, title, look_up_channel( channelID ), channelID, desc)
+        puts xmlNode
+        found_match = true
+      end #matching title
+      #if not move to next element
+    end #end of each element
+    # if none found
+    if found_match == false:
+       error_if_not_equal( true, false, "Sorry, no programmes match your search")
+    end
 end
 
 #Search in description
