@@ -57,6 +57,7 @@ end
 
 #takes in information and forms it into a xmlNode for more information
 def form_node(start, stop, title, channel, channelID, desc)
+  puts "actually forming the node now"
   xmlNode = "<programme>\n"
   xmlNode << "\t<title>#{title}</title>\n"
   xmlNode << "\t<desc>#{desc}</desc>\n"
@@ -257,16 +258,19 @@ end
 def look_up_channel( chan_id )
  #look up channel number
   #connect to database
+  puts "look up the channel"
   begin
     dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
   #if gets an error (can't connect)
   rescue MysqlError => e
+      dbh.close()
       error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
     if dbh.nil? == false
       #close the database
       dbh.close() 
     end
   else
+    puts "connected to the database"
     channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
     channel_num = channel_info.fetch_row
     if channel_num == nil:
@@ -274,6 +278,7 @@ def look_up_channel( chan_id )
       error_if_not_equal(true, false, "channel not found, please contact system administrator")
     end
     dbh.close()
+    puts "done looking up the channel number"
   end
   return channel_num
 end
