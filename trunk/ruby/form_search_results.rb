@@ -47,8 +47,10 @@ SHOW_DIR = "/home/public_html/webvo/movies"
 def error_if_not_equal(value, standard, error_string)
   if value != standard:
     puts "<error>Error " + error_string +"</error>"
+    puts "\n</tv>" 
     STDOUT.close
     STDIN.close
+    STDERR.close
     exit
   end
 end
@@ -130,7 +132,7 @@ def search_show_title( show_title )
         keep_looping = true #varible to do a do-while
         got_title = false # flag if the title has been found
         #getting child information
-        while (keep_looping == true && got_title == false):
+        while keep_looping == true: #&& got_title == false):
           #get title
 	  if c.name == "title":
 	    title = c.content
@@ -216,7 +218,7 @@ def search_show_subtitle( subtitle )
         keep_looping = true #varible to do a do-while
         got_title = false # flag if the title has been found
         #getting child information
-        while (keep_looping == true && got_title == false):
+        while keep_looping == true: # && got_title == false):
           #get title
 	  if c.name == "title":
 	    title = c.content
@@ -289,3 +291,4 @@ end
 
   STDOUT.close
   STDIN.close
+  STDERR.close
