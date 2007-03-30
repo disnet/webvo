@@ -65,7 +65,7 @@ def form_node(start, stop, title, channel, channelID, desc)
   xmlNode << "\t<channel>" + channel.to_s + "</channel>\n"
   xmlNode << "\t<channelID>" + channelID.to_s + "</channelID>\n"
   xmlNode << "</programme>\n"
-  xmlNode.gsub!("&", "&#38;")
+  xmlNode=xmlNode.gsub("&", "&#38;")
   return xmlNode
 end
 
@@ -96,7 +96,6 @@ def search_show_title( show_title )
   #reforming node to look like
   xml.find("programme").each do |e|
     #see if node has information
-      puts "*"
       c = e.child    #get first child of programme
       keep_looping = true #varible to do a do-while
       matching_title = false # flag to see if the comparison is true
