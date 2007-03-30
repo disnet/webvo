@@ -106,7 +106,6 @@ def search_show_title( show_title )
 	  #comparison here********************************************
           if (c.content.to_s.upcase.include? show_title.to_s.upcase):
             matching_title = true
-            puts c.content
           end
           got_title = true
         end  
