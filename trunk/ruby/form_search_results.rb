@@ -25,7 +25,7 @@
 require 'cgi'
 require 'xml/libxml'  #allows for parsing the info.xml
 require 'date'        #allows for finding the current date
-#require "mysql"       #allows for communication with the mysql database
+require "mysql"       #allows for communication with the mysql database
 
 #constants
 SERVERNAME = "localhost"
@@ -57,7 +57,6 @@ end
 
 #takes in information and forms it into a xmlNode for more information
 def form_node(start, stop, title, channel, channelID, desc)
-  puts "actually forming the node now"
   xmlNode = "<programme>\n"
   xmlNode << "\t<title>#{title}</title>\n"
   xmlNode << "\t<desc>#{desc}</desc>\n"
@@ -124,7 +123,6 @@ def search_show_title( show_title )
 
       #if it does
       if matching_title == true:
-        puts "Matching_title == true"
         #get start
         start = e["start"][0..LENGTH_OF_DATE_TIME-1]
         #get stop        
@@ -151,9 +149,7 @@ def search_show_title( show_title )
             keep_looping = false
           end
         end
-        puts "starting to form the node"
         xmlNode = form_node(start, stop, title, look_up_channel( channelID ), channelID, desc)
-	puts "done forming the node"
         puts xmlNode
         found_match = true
       end #matching title
@@ -258,21 +254,17 @@ end
 def look_up_channel( chan_id )
  #look up channel number
   #connect to database
-  puts "look up the channel"
   begin
     dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
-    puts "did it get here?"
   #if gets an error (can't connect)
   rescue MysqlError => e
       dbh.close()
-      puts "Error connecting to database"
       error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
     if dbh.nil? == false
       #close the database
       dbh.close() 
     end
   else
-    puts "connected to the database"
     channel_info = dbh.query("SELECT number FROM Channel WHERE channelID ='#{chan_id}' LIMIT 1")
     channel_num = channel_info.fetch_row
     if channel_num == nil:
@@ -280,7 +272,6 @@ def look_up_channel( chan_id )
       error_if_not_equal(true, false, "channel not found, please contact system administrator")
     end
     dbh.close()
-    puts "done looking up the channel number"
   end
   return channel_num
 end
@@ -291,9 +282,7 @@ end
   puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
 
   if cgi.has_key?('search_string') && cgi.has_key?('title'):
-    puts "Starting to execute find title"
     search_show_title(cgi.params['search_string'][0])
-    puts "done executing find title"
   elsif cgi.has_key?('search_string') && cgi.has_key?('subtitle'):
     search_show_subtitle( cgi.params['search_string'][0] )
   end
