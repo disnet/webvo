@@ -151,14 +151,15 @@ def search_show_title( show_title )
           end
         end
         puts "starting to form the node"
-        xmlNode = form_node(start, stop, title, look_up_channel( channelID ), channelID, desc)   puts "done forming the node
+        xmlNode = form_node(start, stop, title, look_up_channel( channelID ), channelID, desc)
+	puts "done forming the node"
         puts xmlNode
         found_match = true
       end #matching title
       #if not move to next element
     end #end of each element
     # if none found
-    error_if_not_equal( found_match, true, "Sorry, no programmes match your search")
+    error_if_not_equal( found_match , true , "Sorry, no programmes match your search")
 
 end
 
@@ -243,9 +244,9 @@ def search_show_subtitle( subtitle )
       #if not move to next element
     end #end of each element
     # if none found
-    if found_match == false:
-       error_if_not_equal( true, false, "Sorry, no programmes match your search")
-    end
+
+    error_if_not_equal( found_match , true , "Sorry, no programmes match your search")
+
 end
 
 #Search in description
