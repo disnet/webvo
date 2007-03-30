@@ -264,6 +264,7 @@ def look_up_channel( chan_id )
   #if gets an error (can't connect)
   rescue MysqlError => e
       dbh.close()
+      puts "Error connecting to database"
       error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
     if dbh.nil? == false
       #close the database
