@@ -282,7 +282,9 @@ end
   puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
 
   if cgi.has_key?('search_string') && cgi.has_key?('title'):
+    puts "Starting to execute find title"
     search_show_title(cgi.params['search_string'][0])
+    puts "done executing find title"
   elsif cgi.has_key?('search_string') && cgi.has_key?('subtitle'):
     search_show_subtitle( cgi.params['search_string'][0] )
   end
