@@ -96,6 +96,7 @@ def search_show_title( show_title )
   #reforming node to look like
   xml.find("programme").each do |e|
     #see if node has information
+      puts "*"
       c = e.child    #get first child of programme
       keep_looping = true #varible to do a do-while
       matching_title = false # flag to see if the comparison is true
@@ -106,6 +107,7 @@ def search_show_title( show_title )
 	  #comparison here********************************************
           if (c.content.to_s.upcase.include? show_title.to_s.upcase):
             matching_title = true
+            puts c.content
           end
           got_title = true
         end  
