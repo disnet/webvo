@@ -123,7 +123,7 @@ def search_show_title( show_title )
 
       #if it does
       if matching_title == true:
-
+        puts "Matching_title == true"
         #get start
         start = e["start"][0..LENGTH_OF_DATE_TIME-1]
         #get stop        
@@ -150,17 +150,16 @@ def search_show_title( show_title )
             keep_looping = false
           end
         end
-        
-        xmlNode = form_node(start, stop, title, look_up_channel( channelID ), channelID, desc)
+        puts "starting to form the node"
+        xmlNode = form_node(start, stop, title, look_up_channel( channelID ), channelID, desc)   puts "done forming the node
         puts xmlNode
         found_match = true
       end #matching title
       #if not move to next element
     end #end of each element
     # if none found
-    if found_match == false:
-       error_if_not_equal( true, false, "Sorry, no programmes match your search")
-    end
+    error_if_not_equal( found_match, true, "Sorry, no programmes match your search")
+
 end
 
 #Search in show name
