@@ -261,6 +261,7 @@ def look_up_channel( chan_id )
   puts "look up the channel"
   begin
     dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
+    puts "did it get here?"
   #if gets an error (can't connect)
   rescue MysqlError => e
       dbh.close()
