@@ -219,7 +219,7 @@ You will need give the apache user write permission on the `movies` and `logs` d
 ~$ cd /home/public_html/webvo/
 ~$ chgrp www-data movies/
 ~$ chgrp www-data logs/
-~$ chmod g+w moveis/
+~$ chmod g+w movies/
 ~$ chmod g+w logs/
 }}}
 
