@@ -13,13 +13,20 @@ function obj2arr(obj) {
 }
 
 // Converts zap2it timestamp to a date object
+// expects input like:     20070330180000 +0000
+// parsed to look like:    2007-03-30 18:00:00Z +00:00
+// Output is a date object
+//We want the timezone to reflect the server
+//So, find the difference between the server localtime and the browser offset 
+//ASSUMPTION: zap2it data is always in UTC
 function zapTimeToDate(str_date) {
-    parsed_date = str_date.slice(0,4) + '-';
-    parsed_date += str_date.slice(4,6) + '-';
-    parsed_date += str_date.slice(6,8) + ' ';
-    parsed_date += str_date.slice(8,10) + ':';
-    parsed_date += str_date.slice(10,12) + ':';
-    parsed_date += str_date.slice(12);
+    parsed_date = str_date.slice(0,4) + '-';    //year
+    parsed_date += str_date.slice(4,6) + '-';   //month
+    parsed_date += str_date.slice(6,8) + ' ';   //day
+    parsed_date += str_date.slice(8,10) + ':';  //hour
+    parsed_date += str_date.slice(10,12) + ':'; //minitues
+    parsed_date += '00';                     //tack on the timezone
+
     return isoTimestamp(parsed_date);
 }
 
@@ -35,8 +42,7 @@ function dateToZapTime(date) {
 		zapTime += "0" + isoTime.slice(11,12);
 		zapTime += isoTime.slice(13,15);
 		zapTime += isoTime.slice(16,18);
-	}
-	else {
+	} else {
 		zapTime += isoTime.slice(11,13);	//hour
 		zapTime += isoTime.slice(14,16);	//miniute
     	zapTime += isoTime.slice(17,19);	//second

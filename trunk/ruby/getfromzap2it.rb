@@ -33,6 +33,7 @@ USERPASS = "csc4150"
 DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 PATH = "/home/public_html/webvo/ruby/"
+XMLTV_CONFIG = "../config/tv_grab_na_dd.conf"
 
 
 #opening/creating log file
@@ -40,35 +41,29 @@ PATH = "/home/public_html/webvo/ruby/"
 
 #make sure xmltv.exe in current directory
 #cur_dir_entries=Dir.entries(Dir.getwd)
-xmltv_pres = true
 
-#xmltv_pres = cur_dir_entries.include?("xmltv.exe")
 
 #Get xmltv data
 before_run_time = Time.new
 after_run_time = Time.new
-xmltv_ran = false
 
-if xmltv_pres == true then
-  before_run_time = Time.new
-  xmltv_ran = system( "/usr/bin/tv_grab_na_dd --output " + PATH + "info.xml")
-end
+f = File.open(XMLTV_CONFIG,'r')
+conf = f.read
+f.close
+
+#replace the default zap2it timezone with the local timezone
+zone = DateTime.now.zone
+conf = conf.gsub(/timezone: \+[0-9]*/,'timezone: ' + zone)
+
+puts conf
+f = File.open(XMLTV_CONFIG,'w')
+f.write(conf)
+f.close
+
+before_run_time = Time.new
+xmltv_ran = system( "/usr/bin/tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + PATH + "info.xml")
+
 after_run_time = Time.new
-if xmltv_ran == true then
-  #logfile << "Download Started " << before_run_time << "\n"
-  #logfile <<"Download Finished" << after_run_time<< "\n"
-
-else
-  #logfile << "xmltv.exe failed to run at " << after_run_time << "\n" 
-  
-  if xmltv_pres == false then
-    #logfile << "xmltv.exe not current directory\n"
-  end
-  
-end
-
-#logfile << "\n\n"
-#logfile.close()
 
 #populating channels in database
   xmldoc = XML::Document.file(PATH + "info.xml")

@@ -3,6 +3,7 @@
 #Delete the recording from the hard drive
 
 require "mysql"
+require "cgi"
 
 SERVERNAME = "localhost"
 USERNAME = "root"
@@ -51,10 +52,13 @@ puts "Content-Type: text/xml\n\n"
 puts "<?xml version='1.0' encoding='ISO-8859-1'?>"
 puts "<tv>"
 #checks for 1 argument
-  error_if_not_equal(ARGV.length(),1, "Needs one argument")
+#  error_if_not_equal(ARGV.length(),1, "Needs one argument")
   
 #get argument
-  prog_id = ARGV[0]
+#  prog_id = ARGV[0]
+
+  cgi = CGI.new
+  prog_id = cgi['prog_id'][0]
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
   date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]

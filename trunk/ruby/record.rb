@@ -44,7 +44,7 @@ def format_to_Ruby (xmlform_data)
    hour = xmlform_data[8..9].to_i
    minute = xmlform_data[10..11].to_i
    second = xmlform_data[12..13].to_i
-   result = DateTime.new(year,month,day,hour,minute,second,-0.3333333334,2361222)
+   result = DateTime.new(year,month,day,hour,minute,second,DateTime.now.offset)#,2361222)
    return result
 end
 
@@ -146,6 +146,7 @@ end
 
 #begin recording script
 if __FILE__ == $0
+logInfo('hiya')
 
 #connect to the mysql server
 begin

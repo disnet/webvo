@@ -24,6 +24,8 @@
 require 'xml/libxml'  #allows for parsing the info.xml
 require 'date'        #allows for finding the current date
 require "mysql"       #allows for communication with the mysql database
+require 'cgi'
+
 
 #constants
 SERVERNAME = "localhost"
@@ -125,17 +127,23 @@ def format_date(current_date)
 end
 #main--------------------------------------------------------------------------
 #checks for 1 or 2 arguments
-  if !(ARGV.length() == 1 || ARGV.length() == 2):
-	error_if_not_equal(0,1, "Needs one or two arguments")#2, "Needs two argument")
-  end
+#  if !(ARGV.length() == 1 || ARGV.length() == 2):
+#	error_if_not_equal(0,1, "Needs one or two arguments")#2, "Needs two argument")
+#  end
 #get argument
-  prog_id = ARGV[0]
-  
-  force_end_after = false
 
-  if ARGV.length() == 2:
-	force_end_after = ARGV[1]
-  end
+ #do this as cgi
+  puts "Content-Type: text/xml\n\n"
+  cgi = CGI.new
+  prog_id = cgi['prog_id'][0]  
+ 
+ #do this as command line
+ # prog_id = ARGV[0]
+ force_end_after = false
+
+ # if ARGV.length() == 2:
+#	force_end_after = ARGV[1]
+ # end
   #pipe_num = ARGV[1].to_i
   #to_fe = IO.open(pipe_num, "w")
   

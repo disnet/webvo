@@ -1,3 +1,4 @@
+#!/usr/local/bin/ruby
 ################################################################################
 #WebVo: Web-based PVR
 #Copyright (C) 2006 Molly Jo Bault, Tim Disney, Daryl Siu
@@ -21,6 +22,7 @@
 
 require 'date'
 require "mysql"
+require "cgi"
 
 SERVERNAME = "localhost"
 USERNAME = "root"
@@ -45,12 +47,14 @@ def error_if_not_equal(value, standard, error_string)
 end
 
 #main--------------------------------------------------------------------------
-
+ puts "Content-Type:text/xml\n\n"
 #checks for 1 argument
-  error_if_not_equal(ARGV.length(),1, "Needs 1 arguments")
+ # error_if_not_equal(ARGV.length(),1, "Needs 1 arguments")
   
 #get argument
-  prog_id = ARGV[0]
+ # prog_id = ARGV[0]
+  cgi = CGI.new
+  prog_id = cgi['prog_id'][0]
 
   error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 

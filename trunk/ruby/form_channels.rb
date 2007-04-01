@@ -95,6 +95,8 @@ else
     #newest_day = newest_date.to_i
     #new_date = newest_day.to_s
 
+    # We want to get the local timezone from the server to give to the browser frontend
+    puts "\n<timezone>#{DateTime.now.zone}</timezone>\n"
 
     puts "\n<programme_date_range start='"+ oldest_day.to_s + "' stop='" + newest_day.to_s + "'></programme_date_range>\n"
 

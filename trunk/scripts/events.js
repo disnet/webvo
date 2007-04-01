@@ -121,7 +121,7 @@ var btnRecord_click = function(e) {
 	$('boxContent').innerHTML = "Adding Show...";
 	
     // Initiate request
-	var ad = doSimpleXMLHttpRequest('ruby/add_recording.py', {'prog_id':prog_id});
+	var ad = doSimpleXMLHttpRequest('ruby/add_recording.rb', {'prog_id':prog_id});
     ad.addCallbacks(gotAdd,fetchFailed);
 }
 
@@ -202,7 +202,7 @@ var btnRemoveRecording_click = function(e) {
 	var removeIDs = [];
 	for(var i = 0; i < chkBox.length; i++) {
 		if(chkBox[i].checked == true) {
-			recArray.push(doSimpleXMLHttpRequest('ruby/delete_recording.py',{'prog_id':chkBox[i].value}));
+			recArray.push(doSimpleXMLHttpRequest('ruby/delete_recording.rb',{'prog_id':chkBox[i].value}));
 			recArray[recArray.length - 1].addCallbacks(gotDelRecording,fetchFailed);
 			removeIDs.push(chkBox[i].value);
 		}
@@ -217,7 +217,7 @@ var btnDeleteRecorded_click = function(e) {
         var removeIDs = [];
         for(var i = 0; i < chkBox.length; i++) {
             if(chkBox[i].checked == true) {
-                recArray.push(doSimpleXMLHttpRequest('ruby/delete_recorded.py',{'prog_id':chkBox[i].value}));
+                recArray.push(doSimpleXMLHttpRequest('ruby/delete_recorded.rb',{'prog_id':chkBox[i].value}));
                 recArray[recArray.length - 1].addCallbacks(gotDelRecorded,fetchFailed);
                 removeIDs.push(chkBox[i].value);
             }
@@ -235,7 +235,7 @@ var btnRemove_click = function(e) {
     //forEach(schedule.progTDs, function(el) {
      //   disconnectAll(el,'onclick'); 
    // });
-    var del = doSimpleXMLHttpRequest('ruby/delete_recording.py',{'prog_id':show});
+    var del = doSimpleXMLHttpRequest('ruby/delete_recording.rb',{'prog_id':show});
     del.addCallbacks(gotDelRecording,fetchFailed);
     makeInvisible('mnuRecord');
 };
