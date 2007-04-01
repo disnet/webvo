@@ -13,6 +13,7 @@ USERPASS = "csc4150"
 DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 VIDEO_PATH = "/home/public_html/webvo/movies/"
+LOG_PATH = "../logs/"
 
 #class to hold pertinent data for recording a show
 class RecordedShow
@@ -31,7 +32,7 @@ class RecordedShow
 end
 
 def logInfo(m)
-    log = File.open("logfile.txt","a")
+    log = File.open(LOG_PATH + "recordlog.txt","a")
     log << "(#{Time.now}) #{m}\n"
     log.close()
 end
@@ -146,7 +147,6 @@ end
 
 #begin recording script
 if __FILE__ == $0
-logInfo('hiya')
 
 #connect to the mysql server
 begin
