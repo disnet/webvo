@@ -139,9 +139,10 @@ Install xmltv
 }}}
 You will need to sign up for xml listings at http://labs.zap2it.com. Use certificate code: 'ZYZM-TE5O-SBUT'. 
 
-Configure xmltv. This is for North America. Currently webvo only grabs North American listings.  You will need your zap2it username and password you just got.
+Configure xmltv. This is for North America. Currently webvo only grabs North American listings.  You will need your zap2it username and password you just got. Leave the timezone as default (+0000).
 {{{
-~$ tv_grab_na_dd --configure
+~$ cd /home/public_html/webvo/config/
+~$ tv_grab_na_dd --configure --config-file tv_grab_na_dd.conf
 }}}
 
 = Webvo Files =
@@ -213,10 +214,13 @@ mysql> source WebVo.sql
 As you can see we are using the mysql root user. This is generally regarded as a *bad* idea and will be fixed soon. Until then don't install webvo on any production machines.
 
 === 4. Setup ===
-You will need to add executable permissions to the ruby files. Hopefully this will get fixed soon.
+You will need give the apache user write permission on the `movies` and `logs` directory
 {{{
-~$ cd /home/public_html/webvo/ruby/
-~$ chmod a+x *
+~$ cd /home/public_html/webvo/
+~$ chgrp www-data movies/
+~$ chgrp www-data logs/
+~$ chmod g+w moveis/
+~$ chmod g+w logs/
 }}}
 
 Initialize the tv listings
