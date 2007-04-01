@@ -55,7 +55,6 @@ f.close
 zone = DateTime.now.zone
 conf = conf.gsub(/timezone: \+[0-9]*/,'timezone: ' + zone)
 
-puts conf
 f = File.open(XMLTV_CONFIG,'w')
 f.write(conf)
 f.close
