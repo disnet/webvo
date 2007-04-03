@@ -13,7 +13,7 @@ USERPASS = "csc4150"
 DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 VIDEO_PATH = "/home/public_html/webvo/movies/"
-LOG_PATH = "../logs/"
+LOG_PATH = "/home/public_html/webvo/logs/"
 
 #class to hold pertinent data for recording a show
 class RecordedShow
@@ -289,8 +289,8 @@ end
       commandSent = IO.popen("whoami")
       output = commandSent.gets
       logInfo("Chanel is #{output}")
-    commandSent = system("perl ptune.pl -c #{show.channel}")
-#    commandSent = IO.popen("ivtv-tune -c #{show.channel}")
+#    commandSent = system("perl ptune.pl -c #{show.channel}")
+    commandSent = system("ivtv-tune -c #{show.channel}")
     
     if commandSent == false
       logInfo("(main)Failed to tune channel: #{show.channel}")
