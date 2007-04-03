@@ -33,7 +33,7 @@ USERPASS = "csc4150"
 DBNAME = "WebVoFast"
 TABLENAME = "Recording"
 PATH = "/home/public_html/webvo/ruby/"
-XMLTV_CONFIG = "../config/tv_grab_na_dd.conf"
+XMLTV_CONFIG = "/home/public_html/webvo/config/tv_grab_na_dd.conf"
 
 
 #opening/creating log file
@@ -60,7 +60,7 @@ f.write(conf)
 f.close
 
 before_run_time = Time.new
-xmltv_ran = system( "/usr/bin/tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + PATH + "info.xml")
+xmltv_ran = system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + PATH + "info.xml")
 
 after_run_time = Time.new
 
