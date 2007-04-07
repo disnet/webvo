@@ -334,9 +334,14 @@ end
   xmlNode.gsub!("_*_","'")
   puts "#{xmlNode}"
   puts "</success>"
-  
+
+
   STDOUT.close
   STDIN.close
-  STDERR.close
+ # STDERR.close
   #call record.rb
-  system("ruby record.rb &")
+  pid = fork do
+    exec('ruby record.rb')
+    exit
+  end
+

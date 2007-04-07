@@ -191,6 +191,6 @@ end
 #closing down standard out
   STDOUT.close()
   STDIN.close()
-  STDERR.close()
+  #STDERR.close()
 #call record.rb
   system("ruby record.rb &")

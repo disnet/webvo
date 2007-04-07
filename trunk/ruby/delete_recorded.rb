@@ -170,7 +170,7 @@ puts "<tv>"
 #close stdout
   STDOUT.close
   STDIN.close
-  STDERR.close
+  #STDERR.close
 #call record.rb
   system ("ruby record.rb &")
   exit
