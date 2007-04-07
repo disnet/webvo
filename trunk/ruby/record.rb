@@ -6,14 +6,33 @@
 require "date"
 require "mysql"
 
+f = File.new('/home/public_html/webvo/ruby/webvo.conf','r')
+conf = f.read
+f.close
 
-SERVERNAME = "localhost"
-USERNAME = "root"
-USERPASS = "csc4150"
-DBNAME = "WebVoFast"
-TABLENAME = "Recording"
-VIDEO_PATH = "/home/public_html/webvo/movies/"
-LOG_PATH = "/home/public_html/webvo/logs/"
+xml_file_name = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
+XML_FILE_NAME = xml_file_name[2]
+
+servername = conf.match(/(\s*SERVERNAME\s*)=\s*(.*)/)
+SERVERNAME = servername[2]
+
+username = conf.match(/(\s*USERNAME\s*)=\s*(.*)/)
+USERNAME = username[2]
+
+userpass = conf.match(/(\s*USERPASS\s*)=\s*(.*)/)
+USERPASS = userpass[2]
+
+dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
+DBNAME = dbname[2]
+
+tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
+TABLENAME = tablename[2]
+
+video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
+VIDEO_PATH = video_path[2]
+
+log_path = conf.match(/(\s*LOG_PATH\s*)=\s*(.*)/)
+LOG_PATH = log_path[2]
 
 #class to hold pertinent data for recording a show
 class RecordedShow
@@ -315,11 +334,14 @@ end
     end
     dbh.close()
     catProcNum = fork do
-        src = File.open("/dev/video0",'r')
-        vid = File.open("#{VIDEO_PATH}#{show.showID}.mpg",'w')
-        while (true) 
-          vid.write(src.read(4))
-        end
+       # src = File.open("/dev/video0",'r')
+       # vid = File.open("#{VIDEO_PATH}#{show.showID}.mpg",'w')
+       # while (true) 
+        #  vid.write(src.read(4))
+        #end
+
+        # show length is plus 60 secs to give padding so that main thread will for sure kill it
+        exec("ivtv-encoder -c #{show.channel} #{showlength+60} #{VIDEO_PATH}#{show.showID}.mpg")
 	exit
     end
     
