@@ -1,0 +1,14 @@
+#summary Keep track of the things we change for each commit
+
+Changes for 4/07/07
+  * all paths are now in `webvo.conf` in the ruby dir and all ruby files read from it
+  * ext3 specific freespace issue has been resolved
+  * created directories `config`, `data`, and `logs`
+  * `config` holds the xmltv config file when config file is created must use command ` tv_grab_na_dd --configure --config-file $WEBVO_PATH/config`
+    * this is also configurable with `webvo.conf`
+  * `data` holds `info.xml` and `xmltv.dtd`
+  * `logs` holds the `record.rb` logfile
+
+
+
+
