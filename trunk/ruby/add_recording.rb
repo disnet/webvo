@@ -53,6 +53,9 @@ DBNAME = dbname[2]
 tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
 TABLENAME = tablename[2]
 
+video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
+VIDEO_PATH = video_path[2]
+
 
 #Functions-----------------------------------------------------------------------
 #checks to see if the file is there
@@ -86,24 +89,18 @@ end
 def freespace()
   #runs UNIX free space command
   readme = IO.popen("df --type ext3")
-  sleep (0.5)
-  
-  #gets information from the 
-  header = readme.gets
-  header_arr = Array.new
-  header_arr = header.scan(/\w+/)
-  values = readme.gets
-  values_arr = Array.new
-  values_arr = values.scan(/\w+/)
-  if(header_arr.length == values_arr.length)
-    if(values_arr[header_arr.index("Available")].to_i > (50*10000)):
-      return true
+  space_raw = readme.read
+  readme.close
+
+  space_match = space_raw.match(/\s(\d+)\s+(\d+)\s+(\d+)/)
+  available = space_match[3]
+
+    # Not enough free space if we have less than 100 megs (avail is in kbytes)
+    if(available.to_i > 102400):
+        return true
     else
-      return false
+        return false
     end
-  end
-  readme.close()
-  return true
 end
 
 #this this takes the date and turns it into YYYYMMDDHHMMSS 
