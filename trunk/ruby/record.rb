@@ -6,7 +6,7 @@
 require "date"
 require "mysql"
 
-f = File.new('/home/public_html/webvo/ruby/webvo.conf','r')
+f = File.new('webvo.conf','r')
 conf = f.read
 f.close
 
