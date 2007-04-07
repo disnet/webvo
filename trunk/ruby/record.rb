@@ -302,20 +302,6 @@ end
     show.showID << '-' << lastchar.to_s
     dbh.close()
 
-#if here, begin recording immediately  
-#tune the card to the correct channel
-      logInfo("(main)Tunning...")
-      commandSent = IO.popen("whoami")
-      output = commandSent.gets
-      logInfo("Chanel is #{output}")
-#    commandSent = system("perl ptune.pl -c #{show.channel}")
-    commandSent = system("ivtv-tune -c #{show.channel}")
-    
-    if commandSent == false
-      logInfo("(main)Failed to tune channel: #{show.channel}")
-#      exit
-    end
-  
 #start the recording
     logInfo("(main)Recording channel #{show.channel} from #{show.starttime} to #{show.stoptime}")
     #check and make sure a cat process is not already running
@@ -334,15 +320,17 @@ end
     end
     dbh.close()
     catProcNum = fork do
-       # src = File.open("/dev/video0",'r')
-       # vid = File.open("#{VIDEO_PATH}#{show.showID}.mpg",'w')
-       # while (true) 
-        #  vid.write(src.read(4))
-        #end
+        system("ivtv-encoder -c #{show.channel} #{showlength} #{VIDEO_PATH}#{show.showID}.mpg")
 
-        # show length is plus 60 secs to give padding so that main thread will for sure kill it
-        exec("ivtv-encoder -c #{show.channel} #{showlength+60} #{VIDEO_PATH}#{show.showID}.mpg")
-	exit
+        #remove PID from recording
+        dbh = databaseconnect()
+        dbh.query("DELETE FROM Recording WHERE cat_pid = #{catProcNum}")
+        #close the database
+        dbh.close()
+
+        logInfo("(main)Locating next show to record")
+        system('ruby record.rb &')
+        exit
     end
     
 #send CAT_PID and command name to database (need to reopen database)
@@ -362,31 +350,5 @@ end
      dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{title}-#{startrow}#{channelrow}')")
     end
 
-#sleep for length of the show
-   logInfo("(main)Going to sleep for the show: #{showlength}") 
-   sleepProcNum = Process.pid
-   dbh.query("UPDATE Recording SET sleep_pid = #{sleepProcNum} WHERE Start = #{startrow}")
-   dbh.query("UPDATE Recording SET CMD = 'ruby' WHERE Start = #{startrow}") 
-
-   dbh.close()
-   sleep (showlength)
-
-#stop the recording
-   logInfo("(main)Going to kill the show: #{catProcNum}")
-   commandSent = IO.popen("kill #{catProcNum}")
-   hold = commandSent.gets
-   commandSent.close()
-   logInfo("Killed the show:  #{hold}") 
-
-#remove PID from recording
-    dbh = databaseconnect()
-    dbh.query("DELETE FROM Recording WHERE cat_pid = #{catProcNum}")
-#close the database
-    dbh.close()
-
-#start next recording check
-    logInfo("(main)Locating next show to record")
-    commandSent = system("ruby record.rb &")
-    exit
-  end
+    end
 end

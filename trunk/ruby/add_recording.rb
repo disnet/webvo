@@ -336,11 +336,11 @@ end
   puts "</success>"
 
 
-  STDOUT.close
-  STDIN.close
- # STDERR.close
   #call record.rb
   pid = fork do
+    STDIN.close
+    STDOUT.close
+    STDERR.close
     exec('ruby record.rb')
     exit
   end
