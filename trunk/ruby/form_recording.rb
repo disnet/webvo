@@ -24,15 +24,30 @@ require 'cgi'
 require 'date'
 require "mysql"
 
-SERVERNAME = "localhost"
-USERNAME = "root"
-USERPASS = "csc4150"
-DBNAME = "WebVoFast"
-TABLENAME = "Recording"
-
 PROG_ID = "prog_id"
 LENGTH_OF_DATE_TIME = 14
-XML_FILE_NAME = "info.xml"
+
+f = File.new('webvo.conf','r')
+conf = f.read
+f.close
+
+xml_file_name = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
+XML_FILE_NAME = xml_file_name[2]
+
+servername = conf.match(/(\s*SERVERNAME\s*)=\s*(.*)/)
+SERVERNAME = servername[2]
+
+username = conf.match(/(\s*USERNAME\s*)=\s*(.*)/)
+USERNAME = username[2]
+
+userpass = conf.match(/(\s*USERPASS\s*)=\s*(.*)/)
+USERPASS = userpass[2]
+
+dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
+DBNAME = dbname[2]
+
+tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
+TABLENAME = tablename[2]
 
 def file_available(file_name)
   cur_dir_entries=Dir.entries(Dir.getwd)

@@ -28,17 +28,30 @@ require 'date'        #allows for finding the current date
 require "mysql"       #allows for communication with the mysql database
 
 #constants
-SERVERNAME = "localhost"
-USERNAME = "root"
-USERPASS = "csc4150"
-DBNAME = "WebVoFast"
-TABLENAME = "Recording"
-
 PROG_ID = "prog_id"
 LENGTH_OF_DATE_TIME = 14
-XML_FILE_NAME = "info.xml"
-SHOW_DIR = "/home/public_html/webvo/movies"
 
+f = File.new('webvo.conf','r')
+conf = f.read
+f.close
+
+xml_file_name = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
+XML_FILE_NAME = xml_file_name[2]
+
+servername = conf.match(/(\s*SERVERNAME\s*)=\s*(.*)/)
+SERVERNAME = servername[2]
+
+username = conf.match(/(\s*USERNAME\s*)=\s*(.*)/)
+USERNAME = username[2]
+
+userpass = conf.match(/(\s*USERPASS\s*)=\s*(.*)/)
+USERPASS = userpass[2]
+
+dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
+DBNAME = dbname[2]
+
+tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
+TABLENAME = tablename[2]
 
 
 #-------------------------------------------------------------------------------

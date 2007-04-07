@@ -27,7 +27,13 @@ LENGTH_OF_TIME = 6
 LENGTH_OF_DATE_TIME = 14
 START = "start_date_time"
 STOP = "end_date_time"
-XML_FILE_NAME = 'info.xml'
+
+f = File.new('webvo.conf','r')
+conf = f.read
+f.close
+
+line = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
+XML_FILE_NAME = line[2]
 
 #Functions-------------------------------------------------------------------------------
 #make sure file available in current directory

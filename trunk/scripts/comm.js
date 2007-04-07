@@ -15,7 +15,6 @@ var gotChannels_init = function(req) {
     var xmlStartStop = req.responseXML.getElementsByTagName('programme_date_range')[0];
     schedule.startDate = xmlStartStop.getAttribute('start');
     schedule.stopDate = xmlStartStop.getAttribute('stop');
-    schedule.timezone = req.responseXML.getElementsByTagName('timezone')[0].firstChild.nodeValue;
 
     initFormTime(); // init the time selection boxes
 };

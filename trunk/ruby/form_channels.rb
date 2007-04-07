@@ -23,7 +23,14 @@ require 'cgi'
 require 'xml/libxml'
 require 'date'
 
-XML_FILE_NAME = 'info.xml'
+
+f = File.new('webvo.conf','r')
+conf = f.read
+f.close
+
+line = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
+XML_FILE_NAME = line[2]
+
 def file_available(file_name)
   cur_dir_entries=Dir.entries(Dir.getwd)
   return cur_dir_entries.include?(file_name)
@@ -58,8 +65,8 @@ end
 puts "Content-Type:text/xml\n\n"
 
 #parse xmldoc
-if file_available("channels.xml") == true:
-  channel_xml = File.open("channels.xml", "r")
+if file_available("channel.xml") == true:
+  channel_xml = File.open("channel.xml", "r")
   channel_xml.each_line{|line| puts line}
 else
   if file_available(XML_FILE_NAME) == false
@@ -94,9 +101,6 @@ else
     #newest_date = format_date(day_before)
     #newest_day = newest_date.to_i
     #new_date = newest_day.to_s
-
-    # We want to get the local timezone from the server to give to the browser frontend
-    puts "\n<timezone>#{DateTime.now.zone}</timezone>\n"
 
     puts "\n<programme_date_range start='"+ oldest_day.to_s + "' stop='" + newest_day.to_s + "'></programme_date_range>\n"
 

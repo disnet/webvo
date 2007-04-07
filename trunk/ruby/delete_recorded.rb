@@ -5,13 +5,29 @@
 require "mysql"
 require "cgi"
 
-SERVERNAME = "localhost"
-USERNAME = "root"
-USERPASS = "csc4150"
-DBNAME = "WebVoFast"
-TABLENAME = "Recording"
-VIDEO_PATH = "/home/public_html/webvo/movies/"
 LENGTH_OF_DATE_TIME = 14
+
+f = File.new('webvo.conf','r')
+conf = f.read
+f.close
+
+servername = conf.match(/(\s*SERVERNAME\s*)=\s*(.*)/)
+SERVERNAME = servername[2]
+
+username = conf.match(/(\s*USERNAME\s*)=\s*(.*)/)
+USERNAME = username[2]
+
+userpass = conf.match(/(\s*USERPASS\s*)=\s*(.*)/)
+USERPASS = userpass[2]
+
+dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
+DBNAME = dbname[2]
+
+tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
+TABLENAME = tablename[2]
+
+video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
+VIDEO_PATH = video_path[2]
 
 #connect to the database
 def databaseconnect()

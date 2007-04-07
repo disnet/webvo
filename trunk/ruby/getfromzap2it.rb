@@ -27,14 +27,30 @@ require 'date'
 require 'mysql'
 require 'xml/libxml'
 
-SERVERNAME = "localhost"
-USERNAME = "root"
-USERPASS = "csc4150"
-DBNAME = "WebVoFast"
-TABLENAME = "Recording"
-PATH = "/home/public_html/webvo/ruby/"
-XMLTV_CONFIG = "/home/public_html/webvo/config/tv_grab_na_dd.conf"
+f = File.new('webvo.conf','r')
+conf = f.read
+f.close
 
+xml_file_name = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
+XML_FILE_NAME = xml_file_name[2]
+
+xmltv_config = conf.match(/(\s*XMLTV_CONFIG\s*)=\s*(.*)/)
+XMLTV_CONFIG = xmltv_config[2]
+
+servername = conf.match(/(\s*SERVERNAME\s*)=\s*(.*)/)
+SERVERNAME = servername[2]
+
+username = conf.match(/(\s*USERNAME\s*)=\s*(.*)/)
+USERNAME = username[2]
+
+userpass = conf.match(/(\s*USERPASS\s*)=\s*(.*)/)
+USERPASS = userpass[2]
+
+dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
+DBNAME = dbname[2]
+
+tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
+TABLENAME = tablename[2]
 
 #opening/creating log file
 #logfile = File.new("getLog.txt", "w")
@@ -60,12 +76,12 @@ f.write(conf)
 f.close
 
 before_run_time = Time.new
-xmltv_ran = system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + PATH + "info.xml")
+xmltv_ran = system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME)
 
 after_run_time = Time.new
 
 #populating channels in database
-  xmldoc = XML::Document.file(PATH + "info.xml")
+  xmldoc = XML::Document.file(XML_FILE_NAME)
 
   #connect to database
   begin

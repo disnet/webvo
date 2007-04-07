@@ -22,24 +22,26 @@
 
 require "cgi"
 
+f = File.new('webvo.conf','r')
+conf = f.read
+f.close
+
+video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
+VIDEO_PATH = video_path[2]
+
   puts "Content-Type:text/xml\n\n"
 
   #runs UNIX free space command
-  readme = IO.popen("df --type ext3")
-  sleep (0.5)
+  readme = IO.popen("df #{VIDEO_PATH}")
+  space_raw = readme.read
+  readme.close 
   
   #gets information from the command line as to how much space is available
-  header = readme.gets
-  header_arr = Array.new
-  header_arr = header.scan(/\w+/)
-  values = readme.gets
-  values_arr = Array.new
-  values_arr = values.scan(/\w+/)
-  available = values_arr[header_arr.index("Available")].to_i
-  used = values_arr[header_arr.index("Used")].to_i
-  total = used+available
+  space_match = space_raw.match(/\s(\d+)\s+(\d+)\s+(\d+)/)
+  total = space_match[2]
+  available = space_match[3]
+
   puts "<tv>"
   puts "<available>" + available.to_s + "</available>"
   puts "<total>" + total.to_s + "</total>"
   puts "</tv>"
-  readme.close 

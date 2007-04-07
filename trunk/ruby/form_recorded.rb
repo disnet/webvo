@@ -24,17 +24,31 @@ require 'cgi'
 require 'date'
 require "mysql"
 
-SERVERNAME = "localhost"
-USERNAME = "root"
-USERPASS = "csc4150"
-DBNAME = "WebVoFast"
-TABLENAME = "Recording"
-
 LENGTH_OF_DATE_TIME = 14
 
-SHOW_DIR = "/home/public_html/webvo/movies"
 SHOW_RELATIVE_ADDRESS = "movies/"
 
+f = File.new('webvo.conf','r')
+conf = f.read
+f.close
+
+servername = conf.match(/(\s*SERVERNAME\s*)=\s*(.*)/)
+SERVERNAME = servername[2]
+
+username = conf.match(/(\s*USERNAME\s*)=\s*(.*)/)
+USERNAME = username[2]
+
+userpass = conf.match(/(\s*USERPASS\s*)=\s*(.*)/)
+USERPASS = userpass[2]
+
+dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
+DBNAME = dbname[2]
+
+tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
+TABLENAME = tablename[2]
+
+video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
+VIDEO_PATH = video_path[2]
 
 SUPPORTED_ENCODING_SCHEMES= [".mpg", ".avi"]
 
@@ -76,8 +90,8 @@ rescue MysqlError => e
     
     #for each check against record.rb's pattern
     f_size = 0
-    rec_dir = Dir.new(SHOW_DIR)
-    Dir.chdir(SHOW_DIR)
+    rec_dir = Dir.new(VIDEO_PATH)
+    Dir.chdir(VIDEO_PATH)
     rec_array = rec_dir.entries
     rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded ORDER BY start")  
     
