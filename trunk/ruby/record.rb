@@ -325,8 +325,8 @@ end
         logInfo("(fork) finished recording #{show.showID}")
         #remove PID from recording
         dbh = databaseconnect()
-        logInfo("(fork) deleting #{catProcNum} from the db")
-        dbh.query("DELETE FROM Recording WHERE cat_pid = #{catProcNum}")
+        logInfo("(fork) deleting #{Process.pid} from the db")
+        dbh.query("DELETE FROM Recording WHERE cat_pid = #{Process.pid}")
         #close the database
         dbh.close()
 
