@@ -312,7 +312,7 @@ end
     if catFound != nil 
        hold = findProcNum(catFound[0])
        if hold != nil
-        logInfo("(main)Cat already running")
+        logInfo("(#{Process.pid})Cat already running")
         exit
        else 
         dbh.query("UPDATE Recording SET cat_pid = '' WHERE cat_pid = '#{catFound}'")
@@ -320,10 +320,12 @@ end
     end
     dbh.close()
     catProcNum = fork do
+        logInfo("(fork)[#{Process.pid}] beginning to record #{show.showID}")
         system("ivtv-encoder -c #{show.channel} #{showlength} #{VIDEO_PATH}#{show.showID}.mpg")
-
+        logInfo("(fork) finished recording #{show.showID}")
         #remove PID from recording
         dbh = databaseconnect()
+        logInfo("(fork) deleting #{catProcNum} from the db")
         dbh.query("DELETE FROM Recording WHERE cat_pid = #{catProcNum}")
         #close the database
         dbh.close()
