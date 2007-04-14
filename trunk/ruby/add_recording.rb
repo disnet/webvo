@@ -335,13 +335,11 @@ end
   puts "#{xmlNode}"
   puts "</success>"
 
-
   #call record.rb
   pid = fork do
     STDIN.close
     STDOUT.close
     STDERR.close
     exec('ruby record.rb')
-    exit
   end
-
+  Process.wait
