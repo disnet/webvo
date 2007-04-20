@@ -27,7 +27,7 @@ require 'date'
 require 'mysql'
 require 'xml/libxml'
 
-f = File.new('webvo.conf','r')
+f = File.new('/home/public_html/webvo/ruby/webvo.conf','r')
 conf = f.read
 f.close
 
