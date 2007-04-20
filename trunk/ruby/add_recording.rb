@@ -340,6 +340,6 @@ end
     STDIN.close
     STDOUT.close
     STDERR.close
-    exec('ruby record.rb')
+    exec('record.rb')
   end
   Process.wait
