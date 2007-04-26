@@ -34,6 +34,9 @@ VIDEO_PATH = video_path[2]
 log_path = conf.match(/(\s*LOG_PATH\s*)=\s*(.*)/)
 LOG_PATH = log_path[2]
 
+encoder_bin = conf.match(/(\s*ENCODER_BIN\s*)=\s*(.*)/)
+ENCODER_BIN = encoder_bin[2]
+
 #class to hold pertinent data for recording a show
 class RecordedShow
   attr_accessor :channel
@@ -201,7 +204,7 @@ else
 #if there is no pid continue normally
   killed = 0
   if pidres == nil || pidres[0].to_i == 0
-     logInfo("(main)No PIDs found")
+#     logInfo("(main)No PIDs found")
   else
 #kill the sleep_pid if it exists
     logInfo("(main)PID found: #{pidres}")
@@ -209,18 +212,16 @@ else
   end
   
   if killed == 2
-    logInfo("(main)Process not killed, wait for finish recording")
+    logInfo("(main)Currently recording")
     exit
   else if killed == 1
-    logInfo("(main)Process killed")
+    logInfo("(main)Killed sleeping Process")
   else
-    logInfo("(main)Process not actually running")
+    logInfo("(main)Tried to kill...not running")
   end
 end
 
 #parse info from database of last entry
-  logInfo("(main)Begin DB Query")
-
   dbh = databaseconnect()
   channelIDquery = "SELECT channelID FROM Recording ORDER BY start LIMIT 1"
   lastshowstart = dbh.query("SELECT start FROM Recording ORDER BY start LIMIT 1")
@@ -241,8 +242,7 @@ end
   showStopDate = format_to_Ruby("#{stoprow}")
   currDate = DateTime.now
   show = RecordedShow.new("#{title}-#{startrow}#{channelrow}",channelrow,startrow,stoprow)
-  logInfo("(main)Initializing show title, date")
-  logInfo("(main)showID:#{show.showID}")
+  logInfo("(main)Show to record:#{show.showID}")
 #calc if show has been missed
   diffstop = calcTimeTo(showStopDate,currDate)
  
@@ -254,7 +254,7 @@ end
 
 #if the show started already and is over
   if diffstop < 0
-    logInfo("Sorry, the time has passed for this show")
+    logInfo("Show already over")
     dbh = databaseconnect()
     dbh.query("DELETE FROM Recording WHERE start = #{startrow}")
 
@@ -303,7 +303,6 @@ end
     dbh.close()
 
 #start the recording
-    logInfo("(main)Recording channel #{show.channel} from #{show.starttime} to #{show.stoptime}")
     #check and make sure a cat process is not already running
     dbh = databaseconnect()
     temp = dbh.query("SELECT cat_pid FROM Recording WHERE cat_pid > 0")
@@ -312,7 +311,7 @@ end
     if catFound != nil 
        hold = findProcNum(catFound[0])
        if hold != nil
-        logInfo("(#{Process.pid})Cat already running")
+        logInfo("(#{Process.pid})already recording")
         exit
        else 
         dbh.query("UPDATE Recording SET cat_pid = '' WHERE cat_pid = '#{catFound}'")
@@ -320,8 +319,9 @@ end
     end
     dbh.close()
     catProcNum = fork do
-        logInfo("(fork)[#{Process.pid}] beginning to record #{show.showID}")
-        system("ivtv-encoder -c #{show.channel} #{showlength} #{VIDEO_PATH}#{show.showID}.mpg")
+        logInfo("(fork)[#{Process.pid}] beginning to record #{show.showID} for #{showlength} seconds")
+        logInfo("#{ENCODER_BIN} -c #{show.channel} #{showlength} #{VIDEO_PATH}#{show.showID}.mpg")
+        system("#{ENCODER_BIN} -c #{show.channel} #{showlength} #{VIDEO_PATH}#{show.showID}.mpg")
         logInfo("(fork) finished recording #{show.showID}")
         #remove PID from recording
         dbh = databaseconnect()
