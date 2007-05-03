@@ -33,6 +33,7 @@ var prog_click = function(e) {
 	makeInvisible('mnuAddStatus');
 	
 	var mousePos = e.mouse().page;
+    var mousePosClient = e.mouse().client;
 	
 	// Create the close and record buttons
 	var btnClose = INPUT({'id':'btnClose','class':'button', 'type':'button','value':'x'},null);
@@ -91,23 +92,36 @@ var prog_click = function(e) {
 	var box = DIV({'id':'mnuRecord'},
 		[btnClose, boxContent]);
 	
-	// Positon box approx. box width to the right if at edge of screen
-	var boxWidth = 250; 	// CBB: Hard coded because no easy way of finding dynamically
-	if ( (boxWidth + mousePos.x) > elementDimensions('schedule').w) {
-		mousePos.x -= boxWidth;
-		setElementPosition(box,mousePos);
-	}
-	else {
-		setElementPosition(box,mousePos);
-	}
-
+	// Positon box box width to the right if at edge of screen and box height up if at bottom of screen
+    // This will also display as much of the box on screen if the sceen is very small
 	swapDOM('mnuRecord',box);
-	makeVisible($('mnuRecord'));
+    var boxWidth = elementDimensions('mnuRecord').w;
+    var boxHeight = elementDimensions('mnuRecord').h;
+    var viewport = getViewportDimensions();
+	if ( boxWidth + mousePosClient.x > elementDimensions('schedule').w + elementPosition('schedule').x ) {
+        if (mousePosClient.x - boxWidth < 0){
+            mousePos.x -= mousePosClient.x;
+            }
+        else {
+		    mousePos.x -= boxWidth;
+        }
+	}
+	if ( (boxHeight + mousePosClient.y) > viewport.h ) {
+        if (mousePosClient.y - boxHeight < 0){
+            mousePos.y -= mousePosClient.y;
+            }
+        else {
+	    	mousePos.y -= boxHeight;
+        }
+	}
+    setElementPosition(box,mousePos);
+	//swapDOM('mnuRecord',box);
 };
 
 // Send a record request and display a wait box when record button is clicked
 var btnRecord_click = function(e) {	
 	makeVisible('boxLoading');
+
     // don't allow the user to click anywhere else
     //forEach(schedule.progTDs, function(el) { 
      //   disconnectAll(el,'onclick');
@@ -194,6 +208,7 @@ var btnListing_click = function(e) {
 	makeInvisible('recordingContent');
 	makeVisible('listingContent');
     makeInvisible('recordedContent');
+    place_quick_nav(null);
 };
 
 var btnRemoveRecording_click = function(e) {
@@ -240,3 +255,76 @@ var btnRemove_click = function(e) {
     makeInvisible('mnuRecord');
 };
 
+var next_day = function(e) {
+    var selDate = $('selDate');
+    if (selDate.selectedIndex < selDate.length - 1) {
+        selDate.selectedIndex++;
+        btnLoad_click(e);
+    }
+};
+
+var next_hours = function(e) {
+    var selTime = $('selTime');
+    var newTimeIndex = (selTime.selectedIndex + 3) % selTime.length;
+    if (newTimeIndex < 3) {
+        var selDate = $('selDate');
+        if (selDate.selectedIndex < selDate.length - 1) {
+            selDate.selectedIndex++;
+        }
+        else {
+            return;
+        }
+    }
+    selTime.selectedIndex = newTimeIndex;
+    btnLoad_click(e);
+};
+
+var previous_day = function(e) {
+    var selDate = $('selDate');
+    if (selDate.selectedIndex > 0) {
+        selDate.selectedIndex--;
+        btnLoad_click(e);
+    }
+};
+
+var previous_hours = function(e) {
+    var selTime = $('selTime');
+    var newTimeIndex = (selTime.selectedIndex - 3);
+    if (newTimeIndex < 0) {
+        newTimeIndex += selTime.length;
+        var selDate = $('selDate');
+        if (selDate.selectedIndex > 0) {
+            selDate.selectedIndex--;
+        }
+        else {
+            newTimeIndex = selTime.selectedIndex;
+        }
+    }
+    selTime.selectedIndex = newTimeIndex;
+    btnLoad_click(e);
+};
+
+var place_quick_nav= function(e) {
+    var btnNextHours = INPUT({'id':'btnNext','class':'button', 'type':'button','value':'>'},null);
+    var btnPreviousHours = INPUT({'id':'btnPrevious','class':'button', 'type':'button','value':'<'},null);
+    var btnHours = INPUT({'id':'btnHours','class':'button', 'type':'button','value':'H'},null);
+    connect(btnNextHours, "onclick", next_hours); 
+    connect(btnPreviousHours, "onclick", previous_hours);
+    var hourButtons = DIV({'id':'hourButtons'},[btnPreviousHours, btnHours, btnNextHours]);
+    var btnNextDay = INPUT({'id':'btnNext','class':'button', 'type':'button','value':'>'},null);
+    var btnPreviousDay = INPUT({'id':'btnPrevious','class':'button', 'type':'button','value':'<'},null);
+    var btnDay= INPUT({'id':'btnHours','class':'button', 'type':'button','value':'D'},null);
+    connect(btnNextDay, "onclick", next_day); 
+    connect(btnPreviousDay, "onclick", previous_day);
+    var dayButtons = DIV({'id':'dayButtons'},[btnPreviousDay, btnDay, btnNextDay]);
+    var viewportPos = getViewportPosition();
+    // this is a semi-hack to deal with the edges, currently "ch" and the first channel number are covered with the boxes
+    var schedPos = elementPosition('schedule');
+	if ( viewportPos.y - schedPos.y - 6 < 0 ) {
+        viewportPos.y = schedPos.y + 6;
+    }
+    viewportPos.x = schedPos.x + 2;
+    var box = DIV({'id':'mnuQuicknav'},[hourButtons, dayButtons]);
+    setElementPosition(box,viewportPos);
+    swapDOM('mnuQuicknav',box);
+};
