@@ -32,6 +32,7 @@ var gotProgrammes = function(req) {
 	
 	// Create the table
    	formListingTable();
+    place_quick_nav(null);
 };
 
 // Make sure there was not error when adding a show

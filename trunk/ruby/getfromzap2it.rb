@@ -113,7 +113,7 @@ after_run_time = Time.new
     end
     xmldoc.find('channel').each do |e|	  
       channel_xml << e.copy(true).to_s
-      chan_id = e["id"].to_s
+      chan_id = e["id"].to_s
       chan_number = e.find_first('display-name').content.to_i
       #send to database
       #check if exists already
