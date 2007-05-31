@@ -42,8 +42,9 @@ recording.find = function (progID) {//
 	var ch = null;
 	var st = null;
 	for (var i = 0; i < recording.programmes.length; i++) {
-		ch = recording.programmes[i].getElementsByTagName('channelID')[0].firstChild.nodeValue;
-		st = recording.programmes[i].getElementsByTagName('start')[0].firstChild.nodeValue;
+		ch = recording.programmes[i].getAttribute('channel');
+        var prog_st = recording.programmes[i].getAttribute('start');
+		st = prog_st.slice(0, prog_st.length - 6);
 		if( progID == ch + st) {
 			return i;
 		}
@@ -70,7 +71,7 @@ function init() {
     var st = doSimpleXMLHttpRequest('ruby/form_space.rb');
     st.addCallbacks(gotSpace,fetchFailed);
 
-	defRecording = doSimpleXMLHttpRequest('ruby/form_recording.rb');
+	defRecording = doSimpleXMLHttpRequest('ruby/form_scheduled.rb');
 	defRecording.addCallbacks(gotRecording,fetchFailed);
 	
 	defRecorded = doSimpleXMLHttpRequest('ruby/form_recorded.rb');

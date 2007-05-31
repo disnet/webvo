@@ -189,7 +189,7 @@ var btnRecording_click = function(e) {
 	makeVisible('recordingContent');
 	makeInvisible('recordedContent');
 	
-	defRecording = doSimpleXMLHttpRequest('ruby/form_recording.rb');
+	defRecording = doSimpleXMLHttpRequest('ruby/form_scheduled.rb');
 	defRecording.addCallbacks(gotRecordingFromScheduled,fetchFailed);		
 };
 

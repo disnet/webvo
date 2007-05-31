@@ -17,20 +17,18 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ################################################################################
+#form_scheduled.rb
+#sends scheduled information to client
 
-require 'mysql'
+require "mysql"
 require 'util'
 
+PROG_ID = "prog_id"
+
+#main--------------------------------------------------------------------------
 puts XML_HEADER
-
-dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
-dbh.query("SELECT xmlNode FROM Channel").each { |chan|
-    puts chan
+databasequery("SELECT xmlNode from Programme JOIN Scheduled USING(channelID, start)").each {|prog|
+    puts prog
 }
-stop_day = dbh.query("SELECT DATE_FORMAT(stop,'#{DATE_FORMAT_STRING}') FROM Programme ORDER BY stop DESC LIMIT 1").fetch_row
-#start_day = Time.now.strftime(DATE_FORMAT_STRING)
-start_day = dbh.query("SELECT DATE_FORMAT(start,'#{DATE_FORMAT_STRING}') FROM Programme ORDER BY start ASC LIMIT 1").fetch_row
-puts "<programme_date_range start='"+ start_day.to_s + "' stop='" + stop_day.to_s + "'></programme_date_range>\n"
-
 puts XML_FOOTER
-dbh.close()
+exit

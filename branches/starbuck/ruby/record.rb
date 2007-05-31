@@ -1,41 +1,10 @@
 #!/usr/local/bin/ruby
 
 #Daryl Siu
-#Write to the recorder in Ruby
 
 require "date"
 require "mysql"
-
-f = File.new('webvo.conf','r')
-conf = f.read
-f.close
-
-xml_file_name = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
-XML_FILE_NAME = xml_file_name[2]
-
-servername = conf.match(/(\s*SERVERNAME\s*)=\s*(.*)/)
-SERVERNAME = servername[2]
-
-username = conf.match(/(\s*USERNAME\s*)=\s*(.*)/)
-USERNAME = username[2]
-
-userpass = conf.match(/(\s*USERPASS\s*)=\s*(.*)/)
-USERPASS = userpass[2]
-
-dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
-DBNAME = dbname[2]
-
-tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
-TABLENAME = tablename[2]
-
-video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
-VIDEO_PATH = video_path[2]
-
-log_path = conf.match(/(\s*LOG_PATH\s*)=\s*(.*)/)
-LOG_PATH = log_path[2]
-
-encoder_bin = conf.match(/(\s*ENCODER_BIN\s*)=\s*(.*)/)
-ENCODER_BIN = encoder_bin[2]
+require 'util'
 
 #class to hold pertinent data for recording a show
 class RecordedShow
@@ -75,16 +44,6 @@ end
 def databaseconnect()
   dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
   return dbh
-end
-
-#find the process number given process name
-def findProcessNum(procCat)
-  readme = IO.popen("ps -C #{procCat} -o pid")
-  sleep (1)
-  temp = readme.gets
-  pid = readme.gets
-  readme.close()
-  return pid
 end
 
 #find the category name of the process
@@ -136,8 +95,8 @@ def killifrunning(pidres,dbcolumn)
   #if not found as actually running,remove from database
      if pid == nil
        logInfo("Process not running")
-       dbh.query("UPDATE Recording SET #{dbcolumn} = '' WHERE #{dbcolumn} = '#{pidres}'")
-       dbh.query("UPDATE Recording SET CMD = '' WHERE #{dbcolumn} = '#{pidres}'")
+       dbh.query("UPDATE Scheduled SET #{dbcolumn} = '' WHERE #{dbcolumn} = '#{pidres}'")
+       #dbh.query("UPDATE Recording SET CMD = '' WHERE #{dbcolumn} = '#{pidres}'")
        dbh.close()
        return 0
      #if is found to be running, need to confirm that isn't most recent program or a random process that happens to have the same PID number
@@ -145,17 +104,17 @@ def killifrunning(pidres,dbcolumn)
        logInfo("Process running")
 
        #return PID and command of closest upcoming show
-       row = dbh.query("SELECT #{dbcolumn} FROM Recording ORDER BY start LIMIT 1")
+       row = dbh.query("SELECT #{dbcolumn} FROM Scheduled ORDER BY start LIMIT 1")
        processNum = row.fetch_row[0]
-       row = dbh.query("SELECT CMD FROM Recording ORDER BY start LIMIT 1")
-       command = row.fetch_row
+       #row = dbh.query("SELECT CMD FROM Recording ORDER BY start LIMIT 1")
+       #command = row.fetch_row
 
        #if does return number and the commands are the same from both process scheduler and the database
        if processNum.to_i == 0
          commandSent = system("kill #{pidres}")
        #update database
-         dbh.query("UPDATE Recording SET #{dbcolumn} = '' WHERE #{dbcolumn} = '#{pidres}'")
-         dbh.query("UPDATE Recording SET CMD = '' WHERE #{dbcolumn} = '#{pidres}'")
+         dbh.query("UPDATE Scheduled SET #{dbcolumn} = '' WHERE #{dbcolumn} = '#{pidres}'")
+         #dbh.query("UPDATE Recording SET CMD = '' WHERE #{dbcolumn} = '#{pidres}'")
        #indicate that it killed it
          dbh.close()
          return 1
@@ -166,9 +125,6 @@ def killifrunning(pidres,dbcolumn)
        end 
      end
 end
-
-#begin recording script
-if __FILE__ == $0
 
 #connect to the mysql server
 begin
@@ -187,7 +143,7 @@ rescue MysqlError => e
 else
   
   #make sure there are shows to record
-  showcheck = dbh.query("SELECT Start FROM Recording ORDER BY Start")  
+  showcheck = dbh.query("SELECT start FROM Scheduled ORDER BY start")  
   noshowcheck = showcheck.fetch_row
    logInfo("--------------------------------------------")
    logInfo("(main) Next show to record: #{noshowcheck}")
@@ -198,7 +154,7 @@ else
   end
 
   #return the last PID (if there is one)
-  pidrow = dbh.query("SELECT sleep_pid FROM Recording WHERE sleep_pid > 0")
+  pidrow = dbh.query("SELECT pid FROM Scheduled WHERE pid > 0")
   pidres = pidrow.fetch_row
     dbh.close()
 #if there is no pid continue normally
@@ -206,9 +162,9 @@ else
   if pidres == nil || pidres[0].to_i == 0
 #     logInfo("(main)No PIDs found")
   else
-#kill the sleep_pid if it exists
+#kill the pid if it exists
     logInfo("(main)PID found: #{pidres}")
-    killed = killifrunning(pidres[0],"sleep_pid")
+    killed = killifrunning(pidres[0],"pid")
   end
   
   if killed == 2
@@ -223,11 +179,11 @@ end
 
 #parse info from database of last entry
   dbh = databaseconnect()
-  channelIDquery = "SELECT channelID FROM Recording ORDER BY start LIMIT 1"
-  lastshowstart = dbh.query("SELECT start FROM Recording ORDER BY start LIMIT 1")
+  channelIDquery = "SELECT channelID FROM Scheduled ORDER BY start LIMIT 1"
+  lastshowstart = dbh.query("SELECT DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') FROM Scheduled ORDER BY start LIMIT 1")
   lastshowchannel = dbh.query("SELECT number FROM Channel WHERE channelID = (#{channelIDquery})")
-  lastshowstop = dbh.query("SELECT stop FROM Programme WHERE(channelID=(#{channelIDquery}) AND start=(SELECT start FROM Recording ORDER BY start LIMIT 1))")
-  lastshowtitle = dbh.query("SELECT title FROM Programme WHERE (channelID=(#{channelIDquery})AND start =(SELECT start FROM Recording ORDER BY start LIMIT 1))")
+  lastshowstop = dbh.query("SELECT DATE_FORMAT(stop, '#{DATE_TIME_FORMAT_XML}') FROM Programme WHERE(channelID=(#{channelIDquery}) AND start=(SELECT start FROM Scheduled ORDER BY start LIMIT 1))")
+  lastshowtitle = dbh.query("SELECT filename FROM Scheduled ORDER BY start LIMIT 1")
 #done with DB for now
   dbh.close()
 
@@ -235,13 +191,19 @@ end
   startrow = lastshowstart.fetch_row
   channelrow = lastshowchannel.fetch_row
   stoprow = lastshowstop.fetch_row
-  title = lastshowtitle.fetch_row
+  title = lastshowtitle.fetch_row[0]
   
 #initialize values of show  
   showStartDate = format_to_Ruby("#{startrow}")
   showStopDate = format_to_Ruby("#{stoprow}")
   currDate = DateTime.now
-  show = RecordedShow.new("#{title}-#{startrow}#{channelrow}",channelrow,startrow,stoprow)
+  # is '-' a good replacement for a '/' in the filename?
+  show = RecordedShow.new("#{title.gsub(/\//,'-')}",channelrow,startrow,stoprow)
+  #this quck hack makes it possible to have a ' in a filename (only because the title
+  #  is used in some sql queries.  A better fix would be using channelID and start.
+  #  Also, still need to deal with a "/" in the name
+  #  Currently double quotes in a name will not work due the way the encoder is called
+  title = Mysql.escape_string(title[0].to_s)
   logInfo("(main)Show to record:#{show.showID}")
 #calc if show has been missed
   diffstop = calcTimeTo(showStopDate,currDate)
@@ -256,8 +218,7 @@ end
   if diffstop < 0
     logInfo("Show already over")
     dbh = databaseconnect()
-    dbh.query("DELETE FROM Recording WHERE start = #{startrow}")
-
+    dbh.query("DELETE FROM Scheduled WHERE start = #{startrow}")
 
     dbh.close()
     commandSent = system("ruby record.rb &")
@@ -277,19 +238,20 @@ end
 #send CAT_PID and command to database (need to reopen database)
     sleepProcNum = Process.pid
     dbh = databaseconnect()
-    dbh.query("UPDATE Recording SET sleep_pid = #{sleepProcNum} WHERE Start = #{startrow}")
-    dbh.query("UPDATE Recording SET CMD = 'ruby' WHERE Start = #{startrow}") 
+    dbh.query("UPDATE Scheduled SET pid = #{sleepProcNum} WHERE Start = #{startrow}")
+    #dbh.query("UPDATE Scheduled SET CMD = 'ruby' WHERE Start = #{startrow}") 
     dbh.close()
     
 #go to sleep
     logInfo("(main)SLEEP:The show will start in #{hours.to_i} hours, #{minutes.to_i} minutes and #{seconds.to_i} seconds.")
     sleep (sleeptime)
+    databasequery("UPDATE Scheduled SET pid = NULL WHERE Start = #{startrow}")
   end
 
 #if the show exists, need to change the name to have a partII denotation
 #check recorded shows to see if show exists already
     dbh = databaseconnect()
-    duperes = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{title}-#{startrow}#{channelrow}'")
+    duperes = dbh.query("SELECT filename FROM Recorded WHERE filename = '#{title}'")
     duperecord = duperes.fetch_row
     lastchar = 0
 #if does return a result, change the final digit
@@ -305,28 +267,31 @@ end
 #start the recording
     #check and make sure a cat process is not already running
     dbh = databaseconnect()
-    temp = dbh.query("SELECT cat_pid FROM Recording WHERE cat_pid > 0")
+    temp = dbh.query("SELECT pid FROM Scheduled WHERE pid > 0")
     catFound = temp.fetch_row
     #if it is, exit
     if catFound != nil 
-       hold = findProcNum(catFound[0])
-       if hold != nil
-        logInfo("(#{Process.pid})already recording")
-        exit
-       else 
-        dbh.query("UPDATE Recording SET cat_pid = '' WHERE cat_pid = '#{catFound}'")
-       end
+        if Process.pid != catFound[0]
+            hold = findProcNum(catFound[0])
+            if hold != nil
+                logInfo("(#{Process.pid})already recording")
+                exit
+            else 
+                dbh.query("UPDATE Scheduled SET pid = '' WHERE pid = '#{catFound}'")
+            end
+        else
+            logInfo("Sleeping process is self")
+        end
     end
     dbh.close()
     catProcNum = fork do
         logInfo("(fork)[#{Process.pid}] beginning to record #{show.showID} for #{showlength} seconds")
-        logInfo("#{ENCODER_BIN} -c #{show.channel} #{showlength} #{VIDEO_PATH}#{show.showID}.mpg")
-        system("#{ENCODER_BIN} -c #{show.channel} #{showlength} #{VIDEO_PATH}#{show.showID}.mpg")
+        system("#{ENCODER_BIN} -c #{show.channel} #{showlength} \"#{VIDEO_PATH}#{show.showID}.mpg\"")
         logInfo("(fork) finished recording #{show.showID}")
         #remove PID from recording
         dbh = databaseconnect()
         logInfo("(fork) deleting #{Process.pid} from the db")
-        dbh.query("DELETE FROM Recording WHERE cat_pid = #{Process.pid}")
+        dbh.query("DELETE FROM Scheduled WHERE pid = #{Process.pid}")
         #close the database
         dbh.close()
 
@@ -337,7 +302,7 @@ end
     
 #send CAT_PID and command name to database (need to reopen database)
     dbh = databaseconnect()
-    dbh.query("UPDATE Recording SET cat_pid = '#{catProcNum}' WHERE Start = '#{startrow}'")
+    dbh.query("UPDATE Scheduled SET pid = '#{catProcNum}' WHERE start = '#{startrow}'")
 
 #move the show from the recording list to recorded list
     #get the channel ID
@@ -345,12 +310,10 @@ end
     chanID = transferquery.fetch_row
 
     #check the show name from Recorded to see if entry exists already
-    res = dbh.query("SELECT ShowName FROM Recorded WHERE ShowName = '#{title}-#{startrow}#{channelrow}'")
+    res = dbh.query("SELECT filename FROM Recorded WHERE filename = '#{title}'")
     namecheck = res.fetch_row
     #if it doesn't and no key exists for that show already, insert into record, otherwise leave it alone
     if namecheck == nil && duperecord.nil?
-     dbh.query("INSERT INTO Recorded (channelID,start,ShowName) VALUES ('#{chanID}', '#{startrow}', '#{title}-#{startrow}#{channelrow}')")
-    end
-
+     dbh.query("INSERT INTO Recorded (channelID,start,filename) VALUES ('#{chanID}', '#{startrow}', '#{title}')")
     end
 end

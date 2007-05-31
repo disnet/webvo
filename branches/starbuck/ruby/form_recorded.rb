@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/env ruby
 ################################################################################
 #WebVo: Web-based PVR
 #Copyright (C) 2006 Molly Jo Bault, Tim Disney, Daryl Siu
@@ -17,133 +17,55 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ################################################################################
-#form_recording.rb
-#takes a programmeid from the front end and adds it to the database
+#form_recorded.rb
+#returns a list of recorded (or partially recorded) shows
 
-require 'cgi'
 require 'date'
 require "mysql"
-
-LENGTH_OF_DATE_TIME = 14
+require 'util'
 
 SHOW_RELATIVE_ADDRESS = "movies/"
 
-f = File.new('webvo.conf','r')
-conf = f.read
-f.close
-
-servername = conf.match(/(\s*SERVERNAME\s*)=\s*(.*)/)
-SERVERNAME = servername[2]
-
-username = conf.match(/(\s*USERNAME\s*)=\s*(.*)/)
-USERNAME = username[2]
-
-userpass = conf.match(/(\s*USERPASS\s*)=\s*(.*)/)
-USERPASS = userpass[2]
-
-dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
-DBNAME = dbname[2]
-
-tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
-TABLENAME = tablename[2]
-
-video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
-VIDEO_PATH = video_path[2]
-
-SUPPORTED_ENCODING_SCHEMES= [".mpg", ".avi"]
-
-def error_if_not_equal(value, standard, error_string)
-  if value != standard:
-    puts "<error>Error " + error_string +"</error>"
-    exit
-  end
-end
-
-def add_size_path_to_xml_Node(size,path,frag_num, xmlNode)
-  xmlNode.gsub!("</programme>\n"," ")
-  xmlNode << "\t<size>" + size.to_s + "</size>\n"
-  xmlNode << "\t<path>" + path.to_s + "</path>\n"
-  xmlNode << "\t<fragNum>" + frag_num.to_s + "</fragNum>\n"
-  xmlNode << "</programme>\n"
-  return xmlNode
+def add_size_path_to_xml_Node(size,path,fragNum, xmlNode)
+  nodePart = "\t<size>" + size.to_s + "</size>\n"
+  nodePart << "\t<path>" + path.to_s + "</path>\n"
+  nodePart << "\t<fragNum>" + fragNum.to_s + "</fragNum>\n"
+  nodePart << "</programme>"
+  xmlNode.gsub!("</programme>", nodePart)
 end
 
 #main ------------------------------------------------------------------------------------
-  puts "Content-Type: text/xml\n\n" 
-  cgi = CGI.new     # The CGI object is how we get the arguments 
-  #manually return header and parent beginning
-  puts "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n<tv source-info-url=\"http://labs.zap2it.com/\" source-info-name=\"TMS Data Direct Service\" generator-info-name=\"XMLTV\" generator-info-url=\"http://www.xmltv.org/\">"
+puts XML_HEADER
 
+#look up information in directory where recorded shows are being saved
 
-#connect to database
-begin
-dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
-#  if gets an error (can't connect)
-rescue MysqlError => e
-      error_if_not_equal(false,true, "Error code: " + e.errno + " " + e.error + "\n")
-    if dbh.nil? == false
-      #close the database
-      dbh.close() 
-    end
-  else
-    #look up information in directory where recorded shows are being saved
-    
-    #for each check against record.rb's pattern
-    f_size = 0
-    rec_dir = Dir.new(VIDEO_PATH)
-    Dir.chdir(VIDEO_PATH)
-    rec_array = rec_dir.entries
-    rec_info = dbh.query("SELECT start, channelID, ShowName FROM Recorded ORDER BY start")  
-    
-    #file may be there but need to compare with title in programme
-      rec_info.each_hash do |recorded|
-        chan_id = recorded["channelID"]
-        start = recorded["start"]
-        show_name = recorded["ShowName"]
-        
-        #look up programme that matches start date and channelID to later compare with title
-        programmes = dbh.query("SELECT xmlNode FROM Programme WHERE (start = '#{start}' AND channelID = '#{chan_id}')")
-        
-        #To support multiple encoding schemes, will list all of the files.
-        SUPPORTED_ENCODING_SCHEMES.each do |type|
-          if rec_array.include?(show_name + "-0"+type) :
-            
+#for each check against record.rb's pattern
+f_size = 0
+file_list = Dir.new(VIDEO_PATH).entries
+Dir.chdir(VIDEO_PATH)
+rec_info = databasequery("SELECT filename, xmlNode FROM Recorded JOIN Programme USING (channelID, start) ORDER BY start")
+
+#file may be there but need to compare with title in programme
+rec_info.each_hash { |recorded|
+    show_name = recorded["filename"]
+    xmlNode = recorded["xmlNode"]
+
+    #To support multiple encoding schemes, will list all of the files.
+    SUPPORTED_ENCODING_SCHEMES.each do |type|
+        if file_list.include?(show_name + "-0"+type) :
+
             f_size = File.size("#{show_name}-0#{type}")
             frag_num = 1
-            while rec_array.include?(show_name + "-" + frag_num.to_s + type) == true
-              f_size = f_size + File.size("#{show_name}-#{frag_num.to_s}#{type}")
-              frag_num = frag_num + 1
+            while file_list.include?(show_name + "-" + frag_num.to_s + type) == true
+                f_size = f_size + File.size("#{show_name}-#{frag_num.to_s}#{type}")
+                frag_num = frag_num + 1
             end
-            programme = programmes.fetch_row
-            if programme != nil:
-              puts add_size_path_to_xml_Node(f_size.to_i, SHOW_RELATIVE_ADDRESS + "#{show_name}-0"+type, frag_num, programme.to_s.gsub("_*_","'"))
-            end
-          else
-            #duplicate in db or programme file not in directory either way entry should be deleted
-            #dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-            #dbh.query("DELETE FROM Recorded WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-          end
+            # need to check for characters other than "&" that mess up the xml, perhaps "<" and/or ">"
+            puts add_size_path_to_xml_Node(f_size.to_i, 
+                                           SHOW_RELATIVE_ADDRESS + "#{show_name.gsub(/&/,'&amp;')}-0"+type, 
+                                           frag_num, 
+                                           xmlNode)
         end
-        
-       # if rec_array.include?(show_name + "-0"+".mpg") :
-          
-       #   f_size = File.size("#{show_name}-0.mpg")
-       #   frag_num = 1
-       #   while rec_array.include?(show_name + "-" + frag_num.to_s + ".mpg") == true
-       #     f_size = f_size + File.size("#{show_name}-#{frag_num.to_s}.mpg")
-        #    frag_num = frag_num + 1
-       #   end
-       #   programme = programmes.fetch_row
-       #   if programme != nil:
-       #     puts add_size_path_to_xml_Node(f_size.to_i, SHOW_RELATIVE_ADDRESS + "#{show_name}-0.mpg", frag_num, programme.to_s.gsub("_*_","'"))
-       #   end
-       # else
-          #duplicate in db or programme file not in directory either way entry should be deleted
-          #dbh.query("DELETE FROM Programme WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-          #dbh.query("DELETE FROM Recorded WHERE (channelID=('#{chan_id}') AND start = '#{start}')")
-        #end
-        
-      end
-    dbh.close()
-  end
-  puts "</tv>"
+    end
+}
+puts XML_FOOTER
