@@ -89,7 +89,8 @@ filename = String.new
         filename += "#{namepart}_-_"
     end
 }
-filename = Mysql.escape_string(filename.gsub(/ /, "_").sub(/_-_$/, ""))
+# is '-' a good replacement for a '/' in the filename?
+filename = Mysql.escape_string(filename.gsub(/\//,'-').gsub(/ /, "_").sub(/_-_$/, ""))
 
 #todo: return a 'prog_id' (and xml?) for each overlaping show in an <error/>
 #   also include a priority value

@@ -191,17 +191,15 @@ end
   startrow = lastshowstart.fetch_row
   channelrow = lastshowchannel.fetch_row
   stoprow = lastshowstop.fetch_row
-  title = lastshowtitle.fetch_row[0]
+  title = lastshowtitle.fetch_row
   
 #initialize values of show  
   showStartDate = format_to_Ruby("#{startrow}")
   showStopDate = format_to_Ruby("#{stoprow}")
   currDate = DateTime.now
-  # is '-' a good replacement for a '/' in the filename?
-  show = RecordedShow.new("#{title.gsub(/\//,'-')}",channelrow,startrow,stoprow)
+  show = RecordedShow.new("#{title}",channelrow,startrow,stoprow)
   #this quck hack makes it possible to have a ' in a filename (only because the title
   #  is used in some sql queries.  A better fix would be using channelID and start.
-  #  Also, still need to deal with a "/" in the name
   #  Currently double quotes in a name will not work due the way the encoder is called
   title = Mysql.escape_string(title[0].to_s)
   logInfo("(main)Show to record:#{show.showID}")

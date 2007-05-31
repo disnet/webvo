@@ -117,7 +117,10 @@ xmldoc.find('channel').each { |e|
 
 xmldoc.find('programme').each { |programme|
     prog = Prog.new(programme)
-    querry = ("INSERT INTO Programme (channelID, start, stop, title, `sub-title`, description, episode, credits, category, xmlNode) VALUES(#{prog.chanID},#{prog.start},#{prog.stop},#{prog.title},#{prog.sub_title},#{prog.desc},#{prog.episode},#{prog.credits},#{prog.category},#{prog.xmlNode})")
-    dbh.query querry
+    query = ("SELECT channelID, start FROM Programme WHERE start = #{prog.start} and channelID = #{prog.chanID}")
+    if dbh.query(query).fetch_row.nil?
+        query = ("INSERT INTO Programme (channelID, start, stop, title, `sub-title`, description, episode, credits, category, xmlNode) VALUES(#{prog.chanID},#{prog.start},#{prog.stop},#{prog.title},#{prog.sub_title},#{prog.desc},#{prog.episode},#{prog.credits},#{prog.category},#{prog.xmlNode})")
+        dbh.query query
+    end
 }
 dbh.close()
