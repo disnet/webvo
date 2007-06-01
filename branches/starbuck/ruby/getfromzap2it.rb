@@ -38,6 +38,17 @@ f = File.open(XMLTV_CONFIG,'w')
 f.write(conf)
 f.close
 
+#this is a hack to make the nil? test work on tvbox, like it does on the Feisty image
+#this appears to work on the Feisty image
+class XML::Node::Set
+    def nil?
+        if self.length == 0
+            return true
+        end
+        false
+    end
+end
+
 # Class for programme sql entry formatting
 class Prog
     def initialize(xmlNode)
