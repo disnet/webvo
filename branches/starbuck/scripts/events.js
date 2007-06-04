@@ -186,18 +186,27 @@ var btnLoad_click = function(e) {
 // Stub for displaying the recording table
 var btnRecording_click = function(e) {
 	makeInvisible('listingContent');
-	makeVisible('recordingContent');
+    makeInvisible('searchContent');
 	makeInvisible('recordedContent');
-	
+	makeVisible('recordingContent');
+
 	defRecording = doSimpleXMLHttpRequest('ruby/form_scheduled.rb');
 	defRecording.addCallbacks(gotRecordingFromScheduled,fetchFailed);		
+};
+
+var btnSearch_click = function(e) {
+    makeInvisible('listingContent');
+    makeInvisible('recordedContent');
+    makeInvisible('recordingContent');
+    makeVisible('searchContent');
 };
 
 // Stub for displaying the recording table
 var btnRecorded_click = function(e) {
 	makeInvisible('listingContent');
-	makeVisible('recordedContent');
 	makeInvisible('recordingContent');
+    makeInvisible('searchContent');
+	makeVisible('recordedContent');
 	
 	defRecording = doSimpleXMLHttpRequest('ruby/form_recorded.rb');
 	defRecording.addCallbacks(gotRecorded,fetchFailed);		
@@ -206,6 +215,7 @@ var btnRecorded_click = function(e) {
 // Displays listing table
 var btnListing_click = function(e) {
 	makeInvisible('recordingContent');
+    makeInvisible('searchContent');
 	makeVisible('listingContent');
     makeInvisible('recordedContent');
     place_quick_nav(null);

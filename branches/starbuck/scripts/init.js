@@ -80,6 +80,7 @@ function init() {
     connect('btnListing','onclick',btnListing_click);
 	connect('btnRecording','onclick',btnRecording_click);
 	connect('btnRecorded','onclick',btnRecorded_click);
+    connect('btnSearch','onclick',btnSearch_click);
 	connect('btnRemoveRecording','onclick',btnRemoveRecording_click);
 	connect('btnDeleteRecorded','onclick',btnDeleteRecorded_click);
     connect(window,'onscroll',place_quick_nav);
