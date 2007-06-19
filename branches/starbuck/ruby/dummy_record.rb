@@ -13,6 +13,10 @@ if filename.nil?
     exit
 end
 
+filedex = File.new(filename+".index", 'w')
+filedex.puts "This is the #{filename} index file"
+filedex.close
+
 file = File.new(filename, 'w')
 file.puts "(#{Time.now}) started  channel: #{channel}, length: #{length}"
 sleep length 

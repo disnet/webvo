@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require "date"
+
 conf = File.read('webvo.conf')
 
 xml_file_name = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
@@ -88,5 +90,27 @@ def databasequery(query_str)
         dbh.close if dbh
     end
     return result
+end
+
+def hours_in (start, stop)
+    startTime = formatToRuby(start)
+    stopTime = formatToRuby(stop)
+    hours = []
+    hour = startTime - startTime.min * 60 - startTime.sec
+    while hour < stopTime
+        hours << hour.strftime(DATE_TIME_FORMAT_RUBY_XML)
+        hour += 60 * 60
+    end
+    return hours
+end
+
+def formatToRuby (xmlform_data)
+   year = xmlform_data[0..3].to_i
+   month = xmlform_data[4..5].to_i
+   day = xmlform_data[6..7].to_i
+   hour = xmlform_data[8..9].to_i
+   minute = xmlform_data[10..11].to_i
+   second = xmlform_data[12..13].to_i
+   Time.local(year,month,day,hour,minute,second)
 end
 

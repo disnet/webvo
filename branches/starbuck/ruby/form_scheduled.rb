@@ -23,9 +23,6 @@
 require "mysql"
 require 'util'
 
-PROG_ID = "prog_id"
-
-#main--------------------------------------------------------------------------
 puts XML_HEADER
 databasequery("SELECT xmlNode from Programme JOIN Scheduled USING(channelID, start)").each {|prog|
     puts prog

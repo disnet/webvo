@@ -78,6 +78,18 @@ CREATE TABLE `Scheduled` (
 -- --------------------------------------------------------
 
 -- 
+-- Table structure for table `Listing`
+-- 
+
+CREATE TABLE `Listing` (
+  `channelID` char(60) NOT NULL,
+  `start` datetime NOT NULL,
+  `showing` datetime NOT NULL,
+  PRIMARY KEY  (`channelID`,`start`,`showing` )
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- --------------------------------------------------------
+
+-- 
 -- Table structure for table `Recurrence`
 -- 
 

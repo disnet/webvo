@@ -64,16 +64,13 @@ error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31
 error_if_not_equal(end_date[6..7].to_i <= 31, true, "Ending day must be less than 31")
 
 before_query = Time.now
-#Get output the information into output
-dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
-dbh.query("SELECT xmlNode from Programme WHERE 
-          (start < #{end_date_time}) and
-          (stop > #{start_date_time})").each { |prog| puts prog }
+range = hours_in(start_date_time, end_date_time).join(",")
+query = "SELECT DISTINCT xmlNode from Programme JOIN Listing USING(channelID, start) WHERE showing in (#{range})"
+databasequery(query).each { |prog| puts prog[0] }
 after_query = Time.now
 LOG.debug("SQL query on start: #{start_date_time}  and stop: #{end_date_time}  took: " + (after_query - before_query).to_s)
 
 puts XML_FOOTER
-dbh.close()
   
 #checking to see if the user requested an unavailable timeframe
 #error_if_not_equal(start >= oldest_e, true, "Ran off begining of info.xml")

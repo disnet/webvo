@@ -21,7 +21,6 @@
 #SUMMARY: Imports information from zap2it.com by using
 #"xmltv-0.5.44-win32" a SOAP client from zap2it.com 
 
-require 'date'
 require 'mysql'
 require 'xml/libxml'
 require 'util'
@@ -60,8 +59,14 @@ class Prog
     def start
         Prog.sqlify @xmlNode["start"][0..13]
     end
+    def start_s
+        @xmlNode["start"][0..13]
+    end
     def stop
         Prog.sqlify @xmlNode["stop"][0..13]
+    end
+    def stop_s
+        @xmlNode["stop"][0..13]
     end
     def title
         Prog.sqlify @xmlNode.find('title').first.content
@@ -108,7 +113,7 @@ class Prog
     end
 end
 
-#system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME)
+system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME)
 
 xmldoc = XML::Document.file(XML_FILE_NAME)
 
@@ -125,13 +130,16 @@ xmldoc.find('channel').each { |e|
         dbh.query("INSERT INTO Channel (channelID, number, xmlNode) VALUES ('#{chan_id}', '#{chan_number}', '#{e}')")
     end
 }
-
 xmldoc.find('programme').each { |programme|
     prog = Prog.new(programme)
     query = ("SELECT channelID, start FROM Programme WHERE start = #{prog.start} and channelID = #{prog.chanID}")
     if dbh.query(query).fetch_row.nil?
         query = ("INSERT INTO Programme (channelID, start, stop, title, `sub-title`, description, episode, credits, category, xmlNode) VALUES(#{prog.chanID},#{prog.start},#{prog.stop},#{prog.title},#{prog.sub_title},#{prog.desc},#{prog.episode},#{prog.credits},#{prog.category},#{prog.xmlNode})")
         dbh.query query
+        hours_in(prog.start_s, prog.stop_s).each { |hour|
+            query = ("INSERT INTO Listing (channelID, start, showing) VALUES(#{prog.chanID},#{prog.start},'#{hour}')")
+            dbh.query query
+        }
     end
 }
 dbh.close()

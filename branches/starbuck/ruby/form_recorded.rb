@@ -26,9 +26,11 @@ require 'util'
 
 SHOW_RELATIVE_ADDRESS = "movies/"
 
-def add_size_path_to_xml_Node(size,path,fragNum, xmlNode)
+#this file needs some upkeep, perhaps we need to send the "path" back differently?
+def add_size_path_to_xml_Node(size,related_files,fragNum, xmlNode)
   nodePart = "\t<size>" + size.to_s + "</size>\n"
-  nodePart << "\t<path>" + path.to_s + "</path>\n"
+  #nodePart << "\t<path>" + related_files.to_s.gsub(/&/,'&amp;') + "</path>\n"
+  related_files.each { |file| nodePart << "\t<path>" + file.gsub(/&/,'&amp;') + "</path>" }
   nodePart << "\t<fragNum>" + fragNum.to_s + "</fragNum>\n"
   nodePart << "</programme>"
   xmlNode.gsub!("</programme>", nodePart)
@@ -41,31 +43,24 @@ puts XML_HEADER
 
 #for each check against record.rb's pattern
 f_size = 0
-file_list = Dir.new(VIDEO_PATH).entries
 Dir.chdir(VIDEO_PATH)
-rec_info = databasequery("SELECT filename, xmlNode FROM Recorded JOIN Programme USING (channelID, start) ORDER BY start")
-
-#file may be there but need to compare with title in programme
-rec_info.each_hash { |recorded|
+file_list = Dir["*"]
+databasequery("SELECT filename, xmlNode 
+              FROM Recorded JOIN Programme USING (channelID, start) 
+              ORDER BY start").each_hash { |recorded|
+    #file may be there but need to compare with title in programme
     show_name = recorded["filename"]
     xmlNode = recorded["xmlNode"]
 
-    #To support multiple encoding schemes, will list all of the files.
-    SUPPORTED_ENCODING_SCHEMES.each do |type|
-        if file_list.include?(show_name + "-0"+type) :
+    file_size = 0
+    files_with_name = file_list.grep(/#{Regexp.escape(show_name)}/)
+    files_with_name.each { |file|
+        file_size += File.size(file)
+    }
 
-            f_size = File.size("#{show_name}-0#{type}")
-            frag_num = 1
-            while file_list.include?(show_name + "-" + frag_num.to_s + type) == true
-                f_size = f_size + File.size("#{show_name}-#{frag_num.to_s}#{type}")
-                frag_num = frag_num + 1
-            end
-            # need to check for characters other than "&" that mess up the xml, perhaps "<" and/or ">"
-            puts add_size_path_to_xml_Node(f_size.to_i, 
-                                           SHOW_RELATIVE_ADDRESS + "#{show_name.gsub(/&/,'&amp;')}-0"+type, 
-                                           frag_num, 
-                                           xmlNode)
-        end
-    end
+    puts add_size_path_to_xml_Node(file_size.to_i, 
+                                   files_with_name,
+                                   files_with_name.length/2, 
+                                   xmlNode) if files_with_name.length > 0
 }
 puts XML_FOOTER

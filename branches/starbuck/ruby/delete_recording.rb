@@ -25,8 +25,6 @@ require "mysql"
 require "cgi"
 require "util"
 
-PROG_ID = "prog_id"
-
 puts "Content-Type:text/xml\n\n<tv>"
 cgi = CGI.new
 prog_id = cgi.params['prog_id'][0]

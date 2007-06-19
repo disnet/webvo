@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/env ruby
 ################################################################################
 #WebVo: Web-based PVR
 #Copyright (C) 2006 Molly Jo Bault, Tim Disney, Daryl Siu
@@ -23,8 +23,6 @@
 require 'mysql'
 require 'cgi'
 require 'util'
-
-PROG_ID = "prog_id"
 
 #Functions-----------------------------------------------------------------------
 
@@ -71,12 +69,13 @@ error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31
 
 error_if_not_equal(freespace(), true, "not enough room on server")
 
-show_row = databasequery("SELECT channelID, title, `sub-title`, episode, xmlNode, 
+show_row = databasequery("SELECT channelID, title, `sub-title`, episode, number, Programme.xmlNode,
                          DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
                          DATE_FORMAT(stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
                          DATE_FORMAT(start, '#{DATE_TIME_FORMAT_STRING}') as start_string, 
                          DATE_FORMAT(stop, '#{DATE_TIME_FORMAT_STRING}') as stop_string 
-                         FROM Programme WHERE channelID = '#{chan_id}' and start = #{start}").fetch_hash
+                         FROM Programme JOIN Channel USING(channelID)
+                         WHERE channelID = '#{chan_id}' and start = #{start}").fetch_hash
 now_time = Time.now
 now_xml = now_time.strftime(DATE_TIME_FORMAT_RUBY_XML)
 
@@ -84,7 +83,7 @@ error_if_not_equal(show_row.nil?, false, "requested show not in source listings"
 error_if_not_equal(now_xml.to_i < show_row['stop'].to_i, true, "today is #{now_time} and your requested show ends in the past at #{show_row['stop_string']}.  Please record only shows that are airing currently or in the future.")
 
 filename = String.new
-[show_row['title'],show_row['episode'],show_row['sub-title'],show_row['start_string']].each {|namepart|
+[show_row['title'],show_row['episode'],show_row['sub-title'],show_row['start_string'],show_row['number']].each {|namepart|
     if !namepart.nil?
         filename += "#{namepart}_-_"
     end
