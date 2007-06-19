@@ -27,7 +27,10 @@ require 'date'
 require 'mysql'
 require 'xml/libxml'
 
-f = File.new('/home/public_html/webvo/ruby/webvo.conf','r')
+# sets the working directory to the directory containing the script
+Dir.chdir($0.match(/(.*\/)/)[0])
+
+f = File.new('webvo.conf','r')
 conf = f.read
 f.close
 
