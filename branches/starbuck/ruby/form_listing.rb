@@ -65,6 +65,9 @@ error_if_not_equal(end_date[6..7].to_i <= 31, true, "Ending day must be less tha
 
 before_query = Time.now
 range = hours_in(start_date_time, end_date_time).join(",")
+# Is there a faster, better way to do this?
+query = "SELECT DISTINCT xmlNode from Channel JOIN Listing USING(channelID) WHERE showing in (#{range})"
+databasequery(query).each { |chan| puts chan[0]}
 query = "SELECT DISTINCT xmlNode from Programme JOIN Listing USING(channelID, start) WHERE showing in (#{range})"
 databasequery(query).each { |prog| puts prog[0] }
 after_query = Time.now

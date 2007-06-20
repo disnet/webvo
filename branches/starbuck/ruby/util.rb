@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-require "date"
-
 conf = File.read('webvo.conf')
 
 xml_file_name = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
