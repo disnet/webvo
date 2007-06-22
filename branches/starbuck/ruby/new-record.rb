@@ -27,6 +27,39 @@ LOG.level = Logger::DEBUG
 
 SLEEP_TIME = 1
 
+class Show
+    def initialize(show)
+        @show = show
+        @show_start = formatToRuby(show['start'])
+        @show_stop = formatToRuby(show['stop'])
+        @starts_in = calcSecUntil(@show_start,Time.now)
+        @stops_in = calcSecUntil(@show_stop,Time.now)
+        self.isTime
+    end
+    def [] (key)
+        @show[key]
+    end
+def isTime()
+    @show['isTime'] = false
+    return if @show.nil?
+    show_start = formatToRuby(@show['start'])
+    show_stop = formatToRuby(@show['stop'])
+    starts_in = calcSecUntil(show_start,Time.now)
+    stops_in = calcSecUntil(show_stop,Time.now)
+
+    LOG.debug("Show starts in: #{starts_in} seconds")
+    LOG.debug("Show stops in:  #{stops_in} seconds")
+
+    if (show_start < Time.now) and (show_stop > Time.now)
+        @show['isTime'] = true
+        @show['stops_in'] = stops_in
+        return
+    elsif show_stop < Time.now
+        unschedule(@show['channelID'], @show['start'])
+    end
+end
+end
+
 #calculate the difference between two given dates in seconds
 def calcSecUntil(date1,date2)
   date1.to_i - date2.to_i
@@ -44,27 +77,9 @@ def getNextShow()
     next_show = show_result
     return nil if next_show.nil?
     LOG.debug("The next show to record is #{next_show['filename']}")
+    next_show = Show.new(next_show)
+    puts next_show['isTime']
     return next_show
-end
-
-def isTime(show)
-    return false if show.nil?
-    show_start = formatToRuby(show['start'])
-    show_stop = formatToRuby(show['stop'])
-    starts_in = calcSecUntil(show_start,Time.now)
-    stops_in = calcSecUntil(show_stop,Time.now)
-
-    LOG.debug("Show starts in: #{starts_in} seconds")
-    LOG.debug("Show stops in:  #{stops_in} seconds")
-
-    if (show_start < Time.now) and (show_stop > Time.now)
-        return true
-    elsif show_stop < Time.now
-        unschedule(show['channelID'], show['start'])
-
-        # where should we deal with a show that is over and needs to be removed from Scheduled?
-        return false
-    end
 end
 
 #will this work if the db is already opened?
@@ -75,8 +90,8 @@ end
 
 while true
     next_show = getNextShow() 
-    if isTime(next_show)
-        LOG.debug("It is time to start recording...")
+    if (next_show['isTime'])
+        LOG.debug("It is time to start recording for #{next_show['stops_in']}")
     end
     # I think the sleep time should the number of seconds until the next minute
     # assuming we run every 60 sec, which makes sense, I doubt any shows start

@@ -21,9 +21,13 @@
 #SUMMARY: Imports information from zap2it.com by using
 #"xmltv-0.5.44-win32" a SOAP client from zap2it.com 
 
+# sets the working directory to the directory containing the script
+Dir.chdir($0.match(/(.*\/)/)[0])
+
 require 'mysql'
 require 'xml/libxml'
 require 'util'
+require 'date'
 
 f = File.open(XMLTV_CONFIG,'r')
 conf = f.read
