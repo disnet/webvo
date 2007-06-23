@@ -26,14 +26,14 @@ TABLENAME = tablename[2]
 video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
 VIDEO_PATH = video_path[2]
 
-log_path = conf.match(/(\s*LOG_PATH\s*)=\s*(.*)/)
-LOG_PATH = log_path[2]
+LOG_PATH = conf.match(/(\s*LOG_PATH\s*)=\s*(.*)/)[2]
 
-encoder_bin = conf.match(/(\s*ENCODER_BIN\s*)=\s*(.*)/)
-ENCODER_BIN = encoder_bin[2]
+ENCODER_BIN = conf.match(/(\s*ENCODER_BIN\s*)=\s*(.*)/)[2]
 
-config_path = conf.match(/(\s*CONFIG_PATH\s*)=\s*(.*)/)
-CONFIG_PATH = config_path[2]
+FILE_PART = conf.match(/(\s*FILE_PART\s*)=\s*(.*)/)[2]
+
+CONFIG_PATH = conf.match(/(\s*CONFIG_PATH\s*)=\s*(.*)/)[2]
+
 
 LENGTH_OF_DATE_TIME = 14
 

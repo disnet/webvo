@@ -25,39 +25,29 @@ require "util"
 LOG = Logger.new(STDOUT)
 LOG.level = Logger::DEBUG
 
-SLEEP_TIME = 1
+SLEEP_TIME = 5
 
 class Show
-    def initialize(show)
-        @show = show
-        @show_start = formatToRuby(show['start'])
-        @show_stop = formatToRuby(show['stop'])
-        @starts_in = calcSecUntil(@show_start,Time.now)
-        @stops_in = calcSecUntil(@show_stop,Time.now)
-        self.isTime
+    attr_reader :channel, :filename, :xmlNode, :channelID, :start_xml
+    def initialize(start, stop, channel, xmlNode, filename, channelID)
+        @start = formatToRuby(start)
+        @start_xml = start
+        @stop = formatToRuby(stop)
+        @channel = channel
+        @xmlNode = xmlNode
+        @filename = filename
+        @channelID = channelID
     end
-    def [] (key)
-        @show[key]
+    def starts_in
+        calcSecUntil(@start,Time.now)
     end
-def isTime()
-    @show['isTime'] = false
-    return if @show.nil?
-    show_start = formatToRuby(@show['start'])
-    show_stop = formatToRuby(@show['stop'])
-    starts_in = calcSecUntil(show_start,Time.now)
-    stops_in = calcSecUntil(show_stop,Time.now)
-
-    LOG.debug("Show starts in: #{starts_in} seconds")
-    LOG.debug("Show stops in:  #{stops_in} seconds")
-
-    if (show_start < Time.now) and (show_stop > Time.now)
-        @show['isTime'] = true
-        @show['stops_in'] = stops_in
-        return
-    elsif show_stop < Time.now
-        unschedule(@show['channelID'], @show['start'])
+    def stops_in
+        calcSecUntil(@stop,Time.now)
     end
-end
+    def showTimes()
+        LOG.debug("Show starts in: #{self.starts_in} seconds")
+        LOG.debug("Show stops in:  #{self.stops_in} seconds")
+    end
 end
 
 #calculate the difference between two given dates in seconds
@@ -65,42 +55,86 @@ def calcSecUntil(date1,date2)
   date1.to_i - date2.to_i
 end
 
-def getNextShow()
-    #this is a temp query, as it the final should deal with priority not be "limit 1"
-    show_result = databasequery("SELECT DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
-                                DATE_FORMAT(stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
-                                number AS 'channelNumber', 
-                                channelID, filename 
-                                FROM Scheduled JOIN Channel USING (channelID)
-                                ORDER BY start LIMIT 1").fetch_hash
-    #next_show = show_result.fetch_hash
-    next_show = show_result
-    return nil if next_show.nil?
-    LOG.debug("The next show to record is #{next_show['filename']}")
-    next_show = Show.new(next_show)
-    puts next_show['isTime']
-    return next_show
+def cleanScheduled
+    #todo: deal with padding?
+    databasequery "Delete FROM Scheduled WHERE stop < #{Time.now.strftime(DATE_TIME_FORMAT_RUBY_XML)}"
 end
 
-#will this work if the db is already opened?
-def unschedule(chan, start)
-    LOG.debug("Unscheduling #{chan} - #{start}")
-    databasequery("DELETE FROM Scheduled WHERE channelID = '#{chan}' AND start = '#{start}'")
+#return the show that should currently be recording
+def getNextShow()
+    #todo: implement priority checking
+    #todo: implement padding
+    #this query only grabs shows that should currently be recording
+    show_result = databasequery("SELECT DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
+                                DATE_FORMAT(s.stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
+                                number, filename, p.xmlNode as xmlNode, channelID
+                                FROM Scheduled s JOIN Channel USING (channelID)
+                                  JOIN Programme p USING(channelID, start)
+                                WHERE start <= #{Time.now.strftime(DATE_TIME_FORMAT_RUBY_XML)}
+                                AND s.stop > #{Time.now.strftime(DATE_TIME_FORMAT_RUBY_XML)}")
+    next_show = show_result.fetch_hash
+    return nil if next_show.nil?
+    #LOG.debug("The next show to record is #{next_show['filename']}")
+    #BTW, stop is not currently used
+    Show.new(next_show['start'], next_show['stop'], next_show['number'], next_show['xmlNode'], next_show['filename'], next_show['channelID'])
 end
+
+def placeInRecorded(show)
+    if databasequery("SELECT filename FROM Recorded WHERE channelID = '#{show.channelID}' and start = #{show.start_xml}").fetch_row.nil?
+    databasequery("INSERT INTO Recorded (channelID,start,filename) VALUES ('#{show.channelID}', '#{show.start_xml}', '#{Mysql.escape_string(show.filename)}')")
+    end
+end
+
+def recordShow(show)
+    LOG.debug("It is time to start recording #{show.filename} for #{show.stops_in} seconds")
+    file_num = Dir["*"].grep(/#{Regexp.escape(show.filename)}/).length/2
+    if file_num == 0
+        file_end = ""
+        File.new(show.filename+".xml", "w").puts show.xmlNode
+    else
+        file_end = FILE_PART + (file_num+1).to_s
+    end
+    LOG.debug("Recording #{show.filename}#{file_end}")
+    Thread.current["rec_pid"] = fork do 
+        exec("#{ENCODER_BIN} -c #{show.channel} #{show.stops_in} \"#{VIDEO_PATH}#{show.filename}#{file_end}.mpg\"")
+    end
+    Process.wait
+    LOG.debug("Finished #{show.filename}#{file_end}")
+    #todo: deal with file permissions?
+end
+
+def stopRecord(thread)
+    Process.kill("SIGKILL", thread['rec_pid'] )
+end
+
+recording = Hash.new
+Dir.chdir(VIDEO_PATH)
 
 while true
-    next_show = getNextShow() 
-    if (next_show['isTime'])
-        LOG.debug("It is time to start recording for #{next_show['stops_in']}")
+    next_show = getNextShow()
+    recording.delete_if { |filename, thread| !thread.alive? }
+    unless next_show.nil?
+        unless recording.has_key?(next_show.filename)
+            recording.each_value { |thread| stopRecord thread }
+            recording[next_show.filename] = Thread.new(next_show) { |show| recordShow(show) }
+            placeInRecorded(next_show)
+        end
+    else
+        recording.each_value { |thread| stopRecord thread }
     end
     # I think the sleep time should the number of seconds until the next minute
     # assuming we run every 60 sec, which makes sense, I doubt any shows start
     # on a fraction minute, and if they do, does it relaly matter? -dmh
-    sleep_time = (SLEEP_TIME - Time.now.sec)
-    # this next if is not needed if SLEEP_TIME is 60
-    if sleep_time < 0
-        sleep_time = SLEEP_TIME
-    end
+
+    cleanScheduled()
+
+    sleep_time = SLEEP_TIME - Time.now.sec
+    sleep_time = SLEEP_TIME if sleep_time <= 0
+    #usec not needed in final? (that would mean that we are only ever off by 1 sec)
+    #  as well as not having to force quit recording as much
+    sleep_time -= Time.now.usec/1000000.0
     LOG.debug("Will sleep for #{sleep_time} seconds")
     sleep(sleep_time)
+    # need to wake up any sleeping threads?-- grrr
+    #recording.each_value { |thread| thread.run if thread.alive? }
 end

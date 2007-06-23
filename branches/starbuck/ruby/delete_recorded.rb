@@ -6,17 +6,6 @@ require "mysql"
 require "cgi"
 require "util"
 
-#find the category name of the process
-def findProcCat(procNum)
-  readme = IO.popen("ps -p #{procNum} -o cmd")
-  sleep (1)
-  temp = readme.gets
-  cmd = readme.gets
-  readme.close()
-  return cmd
-end
-
-#main------------------------------------------------------------
 puts "Content-Type: text/xml\n\n"
 puts "<?xml version='1.0' encoding='ISO-8859-1'?>"
 puts "<tv>"

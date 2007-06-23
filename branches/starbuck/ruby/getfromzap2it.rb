@@ -27,14 +27,13 @@ Dir.chdir($0.match(/(.*\/)/)[0])
 require 'mysql'
 require 'xml/libxml'
 require 'util'
-require 'date'
 
 f = File.open(XMLTV_CONFIG,'r')
 conf = f.read
 f.close
 
 #replace the default zap2it timezone with the local timezone
-zone = DateTime.now.zone
+zone = Time.now.trftime("%z")
 conf = conf.gsub(/timezone: \+[0-9]*/,'timezone: ' + zone)
 
 f = File.open(XMLTV_CONFIG,'w')
