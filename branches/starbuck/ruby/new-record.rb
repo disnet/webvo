@@ -45,6 +45,7 @@ class Show
         calcSecUntil(@stop,Time.now)
     end
     def showTimes()
+        # starts_in is only used here, it has no use otherwise
         LOG.debug("Show starts in: #{self.starts_in} seconds")
         LOG.debug("Show stops in:  #{self.stops_in} seconds")
     end
@@ -75,7 +76,6 @@ def getNextShow()
     next_show = show_result.fetch_hash
     return nil if next_show.nil?
     #LOG.debug("The next show to record is #{next_show['filename']}")
-    #BTW, stop is not currently used
     Show.new(next_show['start'], next_show['stop'], next_show['number'], next_show['xmlNode'], next_show['filename'], next_show['channelID'])
 end
 
