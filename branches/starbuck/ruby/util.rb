@@ -20,9 +20,6 @@ USERPASS = userpass[2]
 dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
 DBNAME = dbname[2]
 
-tablename = conf.match(/(\s*TABLENAME\s*)=\s*(.*)/)
-TABLENAME = tablename[2]
-
 video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
 VIDEO_PATH = video_path[2]
 
