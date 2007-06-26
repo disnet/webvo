@@ -23,9 +23,9 @@ require "logger"
 require "util"
 
 LOG = Logger.new(STDOUT)
-LOG.level = Logger::DEBUG
+LOG.level = Logger::INFO
 
-SLEEP_TIME = 5
+SLEEP_TIME = 3
 
 class Show
     attr_reader :channel, :filename, :xmlNode, :channelID, :start_xml
@@ -94,12 +94,12 @@ def recordShow(show)
     else
         file_end = FILE_PART + (file_num+1).to_s
     end
-    LOG.debug("Recording #{show.filename}#{file_end}")
+    LOG.info("Recording #{show.filename}#{file_end}")
     Thread.current["rec_pid"] = fork do 
         exec("#{ENCODER_BIN} -c #{show.channel} #{show.stops_in} \"#{VIDEO_PATH}#{show.filename}#{file_end}.mpg\"")
     end
     Process.wait
-    LOG.debug("Finished #{show.filename}#{file_end}")
+    LOG.info("Finished #{show.filename}#{file_end}")
     #todo: deal with file permissions?
 end
 
