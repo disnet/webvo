@@ -21,27 +21,12 @@
 #returns the amount of space on the hard drive and how much is free
 
 require "cgi"
+require 'util'
+puts "Content-Type:text/xml\n\n"
 
-f = File.new('webvo.conf','r')
-conf = f.read
-f.close
+space = freespace
 
-video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
-VIDEO_PATH = video_path[2]
-
-  puts "Content-Type:text/xml\n\n"
-
-  #runs UNIX free space command
-  readme = IO.popen("df #{VIDEO_PATH}")
-  space_raw = readme.read
-  readme.close 
-  
-  #gets information from the command line as to how much space is available
-  space_match = space_raw.match(/\s(\d+)\s+(\d+)\s+(\d+)/)
-  total = space_match[2]
-  available = space_match[3]
-
-  puts "<tv>"
-  puts "<available>" + available.to_s + "</available>"
-  puts "<total>" + total.to_s + "</total>"
-  puts "</tv>"
+puts "<tv>"
+puts "<available>" + space['available'] + "</available>"
+puts "<total>" + space['total'] + "</total>"
+puts "</tv>"

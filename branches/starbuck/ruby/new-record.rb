@@ -39,21 +39,16 @@ class Show
         @channelID = channelID
     end
     def starts_in
-        calcSecUntil(@start,Time.now)
+        @start.to_i - Time.now.to_i
     end
     def stops_in
-        calcSecUntil(@stop,Time.now)
+        @stop.to_i - Time.now.to_i
     end
     def showTimes()
         # starts_in is only used here, it has no use otherwise
         LOG.debug("Show starts in: #{self.starts_in} seconds")
         LOG.debug("Show stops in:  #{self.stops_in} seconds")
     end
-end
-
-#calculate the difference between two given dates in seconds
-def calcSecUntil(date1,date2)
-  date1.to_i - date2.to_i
 end
 
 def cleanScheduled
@@ -81,7 +76,7 @@ end
 
 def placeInRecorded(show)
     if databasequery("SELECT filename FROM Recorded WHERE channelID = '#{show.channelID}' and start = #{show.start_xml}").fetch_row.nil?
-    databasequery("INSERT INTO Recorded (channelID,start,filename) VALUES ('#{show.channelID}', '#{show.start_xml}', '#{Mysql.escape_string(show.filename)}')")
+        databasequery("INSERT INTO Recorded (channelID,start,filename) VALUES ('#{show.channelID}', '#{show.start_xml}', '#{Mysql.escape_string(show.filename)}')")
     end
 end
 
@@ -100,7 +95,6 @@ def recordShow(show)
     end
     Process.wait
     LOG.info("Finished #{show.filename}#{file_end}")
-    #todo: deal with file permissions?
 end
 
 def stopRecord(thread)
@@ -131,10 +125,8 @@ while true
     sleep_time = SLEEP_TIME - Time.now.sec
     sleep_time = SLEEP_TIME if sleep_time <= 0
     #usec not needed in final? (that would mean that we are only ever off by 1 sec)
-    #  as well as not having to force quit recording as much
+    #  as well as not having to force quit recording when two shows are adjacent
     sleep_time -= Time.now.usec/1000000.0
     LOG.debug("Will sleep for #{sleep_time} seconds")
     sleep(sleep_time)
-    # need to wake up any sleeping threads?-- grrr
-    #recording.each_value { |thread| thread.run if thread.alive? }
 end

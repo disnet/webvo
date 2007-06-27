@@ -1,36 +1,24 @@
 #!/usr/bin/env ruby
 
-conf = File.read('webvo.conf')
+require "mysql"
 
-xml_file_name = conf.match(/(\s*XML_FILE_NAME\s*)=\s*(.*)/)
-XML_FILE_NAME = xml_file_name[2]
+constants = Hash.new
+File.read('webvo.conf').each { |line|
+    line_reg = line.match(/\s*(.*?)\s*=\s*(.*)/)
+    constants[line_reg[1]] = line_reg[2] unless line_reg.nil?
+}
 
-xmltv_config = conf.match(/(\s*XMLTV_CONFIG\s*)=\s*(.*)/)
-XMLTV_CONFIG = xmltv_config[2]
-
-servername = conf.match(/(\s*SERVERNAME\s*)=\s*(.*)/)
-SERVERNAME = servername[2]
-
-username = conf.match(/(\s*USERNAME\s*)=\s*(.*)/)
-USERNAME = username[2]
-
-userpass = conf.match(/(\s*USERPASS\s*)=\s*(.*)/)
-USERPASS = userpass[2]
-
-dbname = conf.match(/(\s*DBNAME\s*)=\s*(.*)/)
-DBNAME = dbname[2]
-
-video_path = conf.match(/(\s*VIDEO_PATH\s*)=\s*(.*)/)
-VIDEO_PATH = video_path[2]
-
-LOG_PATH = conf.match(/(\s*LOG_PATH\s*)=\s*(.*)/)[2]
-
-ENCODER_BIN = conf.match(/(\s*ENCODER_BIN\s*)=\s*(.*)/)[2]
-
-FILE_PART = conf.match(/(\s*FILE_PART\s*)=\s*(.*)/)[2]
-
-CONFIG_PATH = conf.match(/(\s*CONFIG_PATH\s*)=\s*(.*)/)[2]
-
+XML_FILE_NAME = constants[:XML_FILE_NAME.to_s]
+XMLTV_CONFIG = constants[:XMLTV_CONFIG.to_s]
+SERVERNAME = constants[:SERVERNAME.to_s]
+USERNAME = constants[:USERNAME.to_s]
+USERPASS = constants[:USERPASS.to_s]
+DBNAME = constants[:DBNAME.to_s]
+VIDEO_PATH = constants[:VIDEO_PATH.to_s]
+LOG_PATH = constants[:LOG_PATH.to_s]
+ENCODER_BIN = constants[:ENCODER_BIN.to_s]
+FILE_PART = constants[:FILE_PART.to_s]
+CONFIG_PATH = constants[:CONFIG_PATH.to_s]
 
 LENGTH_OF_DATE_TIME = 14
 
@@ -60,8 +48,6 @@ def databaseconnect()
         dbh = Mysql.real_connect(
             "#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
     rescue MysqlError => e
-        #log.error("Error code: #{e.errno}")
-        #log.error("Error message: #{e.error}")
         #log.error("Unable to connect to database. Error code: #{e.errno} Message: #{e.error}")
         puts ("Unable to connect to database. Error code: #{e.errno} Message: #{e.error}")
         puts XML_FOOTER
@@ -75,8 +61,6 @@ def databasequery(query_str)
     begin
         result = dbh.query(query_str)
     rescue MysqlError => e
-        #log.error("Error code: #{e.errno}")
-        #log.error("Error message: #{e.error}")
         #log.error("Error in database query. Error code: #{e.errno} Message: #{e.error}")
         puts "<error>Error in database query. Error code: #{e.errno} Message: #{e.error}</error>"
         puts XML_FOOTER
@@ -107,5 +91,22 @@ def formatToRuby (xmlform_data)
    minute = xmlform_data[10..11].to_i
    second = xmlform_data[12..13].to_i
    Time.local(year,month,day,hour,minute,second)
+end
+
+#this function finds the available free space on the hard drive
+def freespace()
+    #runs UNIX free space command
+    readme = IO.popen("df #{VIDEO_PATH}")
+    space_raw = readme.read
+    readme.close 
+
+    #get information from the command line as to how much space is available
+    space_match = space_raw.match(/\s(\d+)\s+(\d+)\s+(\d+)/)
+    space = Hash.new
+    space['total'] = space_match[1]
+    space['used'] = space_match[2]
+    space['available'] = space_match[3]
+
+    return space
 end
 

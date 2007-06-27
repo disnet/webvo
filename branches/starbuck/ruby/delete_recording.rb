@@ -20,12 +20,12 @@
 #delete_recording.rb
 #takes a programmeid from the front end and deletes it from the database
 
-require 'date'
-require "mysql"
 require "cgi"
 require "util"
 
-puts "Content-Type:text/xml\n\n<tv>"
+puts "Content-Type:text/xml\n\n"
+puts "<?xml version='1.0' encoding='ISO-8859-1'?>"
+puts "<tv>"
 cgi = CGI.new
 prog_id = cgi.params['prog_id'][0]
 
@@ -46,26 +46,9 @@ error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than
 error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
 error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31")
 
-#check in Recording to see if still recording
-recording_pid = databasequery("SELECT pid FROM Scheduled WHERE(ChannelID = '#{chan_id}'AND Start = '#{date_time}')").fetch_row
-recording_pid = recording_pid[0] if recording_pid.nil? == false
-
-#if is still recording, need to kill process (if it exists) and remove from Recording
-#this assumes any process with that pid deserves to die
-if recording_pid != nil
-    commandSent = system("kill -kill #{recording_pid.to_s}")
-end
-
 databasequery("DELETE FROM Scheduled WHERE (channelID = '#{chan_id}'AND start = '#{date_time}')")
 
 puts "<success>"
 puts "<prog_id>#{prog_id}</prog_id>"
 puts "</success>"
 puts XML_FOOTER
-exit
-#closing down standard out
-  STDOUT.close()
-  STDIN.close()
-  STDERR.close()
-#call record.rb
-system("ruby record.rb &")

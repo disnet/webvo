@@ -20,31 +20,9 @@
 #add_recording.rb
 #Schedules the programme identified by prog_id (channelID + start) to be recorded
 
-require 'mysql'
 require 'cgi'
 require 'util'
 
-#Functions-----------------------------------------------------------------------
-
-#this function finds the available free space on the hard drive to determine
-def freespace()
-  #runs UNIX free space command
-  readme = IO.popen("df #{VIDEO_PATH}")
-  space_raw = readme.read
-  readme.close
-
-  space_match = space_raw.match(/\s(\d+)\s+(\d+)\s+(\d+)/)
-  available = space_match[3]
-
-    # Not enough free space if we have less than 100 megs (avail is in kbytes)
-    if(available.to_i > 102400):
-        return true
-    else
-        return false
-    end
-end
-
-#main--------------------------------------------------------------------------
 puts "Content-Type: text/xml\n\n<tv>\n"
 cgi = CGI.new
 prog_id = cgi.params['prog_id'][0]
@@ -67,7 +45,9 @@ error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than
 error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
 error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
 
-error_if_not_equal(freespace(), true, "not enough room on server")
+# Not enough free space if we have less than 100 megs (avail is in kbytes)
+# -- Handle this differently.  Perhaps provide a warning to the user? 
+error_if_not_equal(freespace['available'].to_i > 102400, true, "not enough room on server")
 
 show_row = databasequery("SELECT channelID, title, `sub-title`, episode, number, Programme.xmlNode,
                          DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
@@ -80,24 +60,22 @@ now_time = Time.now
 now_xml = now_time.strftime(DATE_TIME_FORMAT_RUBY_XML)
 
 error_if_not_equal(show_row.nil?, false, "requested show not in source listings") 
-error_if_not_equal(now_xml.to_i < show_row['stop'].to_i, true, "today is #{now_time} and your requested show ends in the past at #{show_row['stop_string']}.  Please record only shows that are airing currently or in the future.")
+error_if_not_equal(now_xml.to_i < show_row['stop'].to_i, true, "Today is #{now_time} and your requested show ends in the past at #{show_row['stop_string']}.  Please record only shows that are airing currently or in the future.")
 
-filename = String.new
-[show_row['title'],show_row['episode'],show_row['sub-title'],show_row['start_string'],show_row['number']].each {|namepart|
-    if !namepart.nil?
-        filename += "#{namepart}_-_"
-    end
-}
+filename = [show_row['title'],show_row['episode'],show_row['sub-title'],show_row['start_string'],show_row['number']].delete_if{|val| val.nil?}.join("_-_")
+
 # is '-' a good replacement for a '/' in the filename?
-filename = Mysql.escape_string(filename.gsub(/\//,'-').gsub(/ /, "_").sub(/_-_$/, ""))
+filename = Mysql.escape_string(filename.gsub(/\//,'-').gsub(/ /, "_"))
 
 #todo: return a 'prog_id' (and xml?) for each overlaping show in an <error/>
 #   also include a priority value
-overlaping_progs = databasequery("SELECT filename from Scheduled WHERE 
-                                  (start < #{show_row['stop']}) and
-                                  (stop > #{show_row['start']})").each {|showname_row|
-    error_if_not_equal(true, false, "Requested show occurs during: #{showname_row.to_s.gsub(/_/," ")}")
+overlapping_shows = []
+databasequery("SELECT filename from Scheduled WHERE 
+               (start < #{show_row['stop']}) and
+               (stop > #{show_row['start']})").each { |show|
+    overlapping_shows.push(show[0].to_s.gsub(/_/," "))
 }
+error_if_not_equal(overlapping_shows.length, 0, "Requested show occurs during: #{overlapping_shows.join(' and ')}")
 databasequery("INSERT INTO Scheduled (channelID, start, stop, filename, priority) VALUES 
                ('#{chan_id}','#{start}','#{show_row['stop']}','#{filename}',0)")
 puts "<success>"
@@ -106,11 +84,3 @@ puts "#{show_row['xmlNode']}"
 puts "</success>"
 
 puts XML_FOOTER
-exit
-#call record.rb
-pid = fork do
-    #STDIN.close
-    #STDOUT.close
-    #STDERR.close
-    system('./record.rb &')
-end
