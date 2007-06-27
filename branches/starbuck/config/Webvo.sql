@@ -76,6 +76,9 @@ CREATE TABLE `Listing` (
   `showing` datetime NOT NULL,
   PRIMARY KEY  (`channelID`,`start`,`showing`),
   KEY `showing_index` (`showing`)
+  FOREIGN KEY (`channelID`, `start`) 
+    REFERENCES `Programme` (`channelID`, `start`) 
+    ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 -- --------------------------------------------------------
 

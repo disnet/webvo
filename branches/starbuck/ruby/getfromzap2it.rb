@@ -27,6 +27,10 @@ Dir.chdir($0.match(/(.*\/)/)[0])
 require 'mysql'
 require 'xml/libxml'
 require 'util'
+require 'logger'
+
+LOG = Logger.new(STDOUT)
+LOG.level = Logger::DEBUG
 
 f = File.open(XMLTV_CONFIG,'r')
 conf = f.read
@@ -135,8 +139,20 @@ xmldoc.find('channel').each { |e|
 }
 xmldoc.find('programme').each { |programme|
     prog = Prog.new(programme)
-    query = ("SELECT channelID, start FROM Programme WHERE start = #{prog.start} and channelID = #{prog.chanID}")
-    if dbh.query(query).fetch_row.nil?
+    # check for specific time
+    time_check = dbh.query("SELECT xmlNode, title FROM Programme WHERE start = #{prog.start} and channelID = #{prog.chanID}").fetch_row
+    # still need to update is xml data not the same
+    if time_check.nil? || time_check[0] != programme.to_s
+        LOG.debug("#{prog.title} replacing #{time_check[1]}") unless time_check.nil?
+        dbh.query("DELETE FROM Programme WHERE start = #{prog.start} and channelID = #{prog.chanID}")
+        # now need to find any overlapping old shows
+        dbh.query("SELECT channelID, start FROM Programme WHERE 
+            channelID = #{prog.chanID} and
+            start < #{prog.stop} and
+            #{prog.start} < stop").each { |dead_prog|
+            LOG.debug("#{dead_prog[0]} starting at #{dead_prog[1]} overlaps #{prog.title}")
+            dbh.query("DELETE FROM Programme WHERE channelID = '#{dead_prog[0]}' and start = '#{dead_prog[1]}'")
+        }
         query = ("INSERT INTO Programme (channelID, start, stop, title, `sub-title`, description, episode, credits, category, xmlNode) VALUES(#{prog.chanID},#{prog.start},#{prog.stop},#{prog.title},#{prog.sub_title},#{prog.desc},#{prog.episode},#{prog.credits},#{prog.category},#{prog.xmlNode})")
         dbh.query query
         hours_in(prog.start_s, prog.stop_s).each { |hour|
