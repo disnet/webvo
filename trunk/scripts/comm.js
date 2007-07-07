@@ -91,7 +91,8 @@ var gotRecording = function(req) {
 	recording.programmes = map(function(el) {return el;}, recording.programmes); 	// convert nodelist to array
     var now = new Date();
     forEach(recording.programmes, function(prog) {
-         if(zapTimeToDate(prog.getElementsByTagName('start')[0].firstChild.nodeValue) < now) {
+        var prog_start = prog.getAttribute('start')
+        if(zapTimeToDate(prog_start.slice(0,prog_start.length - 6)) < now) {
             $('boxCurrRecord').firstChild.nodeValue = " -- Currently Recording '" +
                 prog.getElementsByTagName('title')[0].firstChild.nodeValue + "'";
             
