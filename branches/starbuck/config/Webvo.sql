@@ -75,7 +75,7 @@ CREATE TABLE `Listing` (
   `start` datetime NOT NULL,
   `showing` datetime NOT NULL,
   PRIMARY KEY  (`channelID`,`start`,`showing`),
-  KEY `showing_index` (`showing`)
+  KEY `showing_index` (`showing`),
   FOREIGN KEY (`channelID`, `start`) 
     REFERENCES `Programme` (`channelID`, `start`) 
     ON DELETE CASCADE
@@ -89,7 +89,24 @@ CREATE TABLE `Listing` (
 CREATE TABLE `Recurrence` (
   `channelID` char(60) NOT NULL,
   `start` time NOT NULL,
-  `days` char(8) NOT NULL,
+  `stop` time NOT NULL,
   `priority` integer NOT NULL,
-  PRIMARY KEY  (`channelID`,`start`)
+  PRIMARY KEY  (`channelID`,`start`, `stop`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `RecurrenceDays`
+-- 
+
+CREATE TABLE `RecurrenceDay` (
+  `channelID` char(60) NOT NULL,
+  `start` time NOT NULL,
+  `stop` time NOT NULL,
+  `day` char(10) NOT NULL,
+  PRIMARY KEY  (`channelID`,`start`, `stop`, `day`),
+  FOREIGN KEY (`channelID`, `start`, `stop`) 
+    REFERENCES `Recurrence` (`channelID`, `start`, `stop`) 
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

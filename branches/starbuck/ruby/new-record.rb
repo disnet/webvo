@@ -18,6 +18,9 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ################################################################################
 
+# sets the working directory to the directory containing the script
+Dir.chdir($0.match(/(.*\/)/)[0])
+
 require "mysql"
 require "logger"
 require "util"
