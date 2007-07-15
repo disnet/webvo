@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 #!/usr/local/bin/ruby
 ################################################################################
 #WebVo: Web-based PVR
@@ -85,27 +86,34 @@ end
 
 def recordShow(show)
     LOG.debug("It is time to start recording #{show.filename} for #{show.stops_in} seconds")
-    file_num = Dir["*"].grep(/#{Regexp.escape(show.filename)}/).length/2
-    if file_num == 0
-        file_end = ""
-        File.new(show.filename+".xml", "w").puts show.xmlNode
-    else
-        file_end = FILE_PART + (file_num+1).to_s
-    end
-    LOG.info("Recording #{show.filename}#{file_end}")
-    Thread.current["rec_pid"] = fork do 
-        exec("#{ENCODER_BIN} -c #{show.channel} #{show.stops_in} \"#{VIDEO_PATH}#{show.filename}#{file_end}.mpg\"")
-    end
-    Process.wait
-    LOG.info("Finished #{show.filename}#{file_end}")
+    File.open(show.filename+".xml", File::WRONLY|File::TRUNC|File::CREAT) { |file| file << show.xmlNode }
+    LOG.info("Recording #{show.filename}")
+    # the append can cause problems, the file may stop plaing part way through, but you can still jump to the end parts
+    outfile = File.open(VIDEO_PATH+show.filename+".mpg", File::WRONLY|File::APPEND|File::CREAT )
+    system("ivtv-tune -c#{show.channel}")
+    videoin = IO.popen("cat /dev/video0", "r")
+    Thread.current["rec_pid"] = videoin.pid
+    videoin.each {|part| outfile << part }
+    outfile.close
+    LOG.info("Finished #{show.filename}")
 end
 
 def stopRecord(thread)
-    Process.kill("SIGKILL", thread['rec_pid'] )
+    LOG.debug("killing pid #{thread['rec_pid']}")
+    Process.kill("SIGTERM", thread['rec_pid'] ) unless thread['rec_pid'].nil?
+    thread.join
 end
 
 recording = Hash.new
 Dir.chdir(VIDEO_PATH)
+
+trap("SIGTERM") {
+    LOG.info("Exiting program")
+    recording.each_value { |thread| stopRecord thread }
+    exit
+}
+
+trap("SIGINT") { Process.kill("SIGTERM", Process.pid) }
 
 while true
     next_show = getNextShow()
