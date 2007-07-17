@@ -28,7 +28,6 @@ dbh.close
 start_script = File.open(SCRIPT_LOCATION, File::WRONLY|File::TRUNC|File::CREAT)
 start_script << File.read(CONFIG_PATH+STARTUP_FILE)
 start_script.close
-File.delete(SCRIPT_START, SCRIPT_STOP)
-File.symlink(SCRIPT_LOCATION, SCRIPT_START)
-File.symlink(SCRIPT_LOCATION, SCRIPT_STOP)
+File.symlink(SCRIPT_LOCATION, SCRIPT_START) unless Dir[SCRIPT_START].length > 0
+File.symlink(SCRIPT_LOCATION, SCRIPT_STOP) unless Dir[SCRIPT_STOP].length > 0
 system(SCRIPT_LOCATION + " start")
