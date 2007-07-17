@@ -1,0 +1,46 @@
+#! /bin/sh
+set -e
+
+# /etc/init.d/webvo: start and stop the WebVo record/maintenance daemon
+
+REC_PATH="/var/www/webvo/ruby/"
+REC_NAME="new-record.rb"
+USER="www-data"
+pidfile="record.pid"
+
+test -x $REC_PATH$REC_NAME || exit 0
+
+. /lib/lsb/init-functions
+
+case "$1" in
+  start)
+	log_begin_msg "Starting WebVo record script..."
+	start-stop-daemon --start --background --chuid $USER --exec $REC_PATH$REC_NAME || log_end_msg 1
+	log_end_msg 0
+	;;
+  stop)
+	log_begin_msg "Stopping WebVo record script..."
+	start-stop-daemon --stop --oknodo --pidfile $REC_PATH$pidfile || log_end_msg 1
+	log_end_msg 0
+	;;
+
+  reload|force-reload)
+    # todo?: implemented this here and in record
+	log_begin_msg "Reloading WebVo record script's configuration -- currently not implemented"
+	start-stop-daemon --start --background --chuid $USER --exec $REC_PATH$REC_NAME || log_end_msg 1
+	log_end_msg 0
+	;;
+
+  restart)
+	log_begin_msg "Restarting WebVo record script..."
+	start-stop-daemon --stop --oknodo --retry 30 --pidfile $REC_PATH$pidfile
+	start-stop-daemon --start --background --chuid $USER --exec $REC_PATH$REC_NAME || log_end_msg 1
+	log_end_msg 0
+	;;
+
+  *)
+	log_success_msg "Usage: /etc/init.d/webvo {start|stop|reload|force-reload|restart}"
+	exit 1
+esac
+
+exit 0
