@@ -29,6 +29,17 @@ require "util"
 LOG = Logger.new(STDOUT)
 LOG.level = Logger::INFO
 
+PIDFILE = Dir.getwd + File::SEPARATOR + "record.pid"
+begin
+    pid_file = File.open(PIDFILE, File::WRONLY|File::EXCL|File::CREAT)
+    pid_file << Process.pid
+rescue
+    puts "Error -- WebVo record may already be running, if not delete #{PIDFILE}"
+    exit
+ensure
+    pid_file.close unless pid_file.nil?
+end
+
 SLEEP_TIME = 3
 
 class Show
@@ -95,6 +106,7 @@ def recordShow(show)
     Thread.current["rec_pid"] = videoin.pid
     videoin.each {|part| outfile << part }
     outfile.close
+    videoin.close
     LOG.info("Finished #{show.filename}")
 end
 
@@ -110,6 +122,7 @@ Dir.chdir(VIDEO_PATH)
 trap("SIGTERM") {
     LOG.info("Exiting program")
     recording.each_value { |thread| stopRecord thread }
+    File.delete(PIDFILE)
     exit
 }
 
