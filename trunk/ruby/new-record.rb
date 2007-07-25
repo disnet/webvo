@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-#!/usr/local/bin/ruby
 ################################################################################
 #WebVo: Web-based PVR
 #Copyright (C) 2006 Molly Jo Bault, Tim Disney, Daryl Siu
@@ -27,31 +26,46 @@ require "logger"
 require "util"
 
 LOG = Logger.new(STDOUT)
-LOG.level = Logger::INFO
+LOG.level = Logger::DEBUG
 
 PIDFILE = Dir.getwd + File::SEPARATOR + "record.pid"
-begin
-    pid_file = File.open(PIDFILE, File::WRONLY|File::EXCL|File::CREAT)
-    pid_file << Process.pid
-rescue
-    puts "Error -- WebVo record may already be running, if not delete #{PIDFILE}"
-    exit
-ensure
-    pid_file.close unless pid_file.nil?
+pid_file = File.open(PIDFILE, File::RDONLY|File::CREAT)
+pid = pid_file.read.to_i
+pid_file.close
+if pid != 0
+    pidread = IO.popen("pidof ruby")
+    pids = pidread.read.split(" ")
+    pidread.close
+
+    pids.each { |livepid|
+        if livepid.to_i == pid
+            puts "Error -- WebVo record already running"
+            exit
+        end
+    }
 end
+pid_file = File.open(PIDFILE, File::WRONLY|File::CREAT|File::TRUNC)
+pid_file << Process.pid
+pid_file.close
 
 SLEEP_TIME = 3
 
 class Show
-    attr_reader :channel, :filename, :xmlNode, :channelID, :start_xml
+    attr_reader :channel, :filename, :xmlNode, :channelID, :start_xml, :start, :stop
+    attr_writer :start, :stop
+    protected :start, :stop
     def initialize(start, stop, channel, xmlNode, filename, channelID)
-        @start = formatToRuby(start)
+        @start = formatToRuby(start) - FILE_PADDING
         @start_xml = start
-        @stop = formatToRuby(stop)
+        @stop = formatToRuby(stop) + FILE_PADDING
         @channel = channel
         @xmlNode = xmlNode
         @filename = filename
         @channelID = channelID
+    end
+    def notShowing
+        return false if @start <= Time.now and @stop > Time.now
+        return true
     end
     def starts_in
         @start.to_i - Time.now.to_i
@@ -64,29 +78,54 @@ class Show
         LOG.debug("Show starts in: #{self.starts_in} seconds")
         LOG.debug("Show stops in:  #{self.stops_in} seconds")
     end
+    def unpad(after_show)
+        newpad = (@stop - after_show.start).to_i/2
+        @stop -= newpad
+        after_show.start += newpad
+    end
+end
+
+#this could be done better
+def paddedTime(position)
+    return (Time.now + FILE_PADDING).strftime(DATE_TIME_FORMAT_RUBY_XML) if position == "start"
+    return (Time.now - FILE_PADDING).strftime(DATE_TIME_FORMAT_RUBY_XML) if position == "stop"
 end
 
 def cleanScheduled
-    #todo: deal with padding?
-    databasequery "Delete FROM Scheduled WHERE stop < #{Time.now.strftime(DATE_TIME_FORMAT_RUBY_XML)}"
+    databasequery "Delete FROM Scheduled WHERE stop < #{paddedTime("stop")}"
 end
 
-#return the show that should currently be recording
+#return the show that should currently be recording, or nil
 def getNextShow()
     #todo: implement priority checking
-    #todo: implement padding
     #this query only grabs shows that should currently be recording
-    show_result = databasequery("SELECT DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
-                                DATE_FORMAT(s.stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
-                                number, filename, p.xmlNode as xmlNode, channelID
-                                FROM Scheduled s JOIN Channel USING (channelID)
-                                  JOIN Programme p USING(channelID, start)
-                                WHERE start <= #{Time.now.strftime(DATE_TIME_FORMAT_RUBY_XML)}
-                                AND s.stop > #{Time.now.strftime(DATE_TIME_FORMAT_RUBY_XML)}")
-    next_show = show_result.fetch_hash
-    return nil if next_show.nil?
-    #LOG.debug("The next show to record is #{next_show['filename']}")
-    Show.new(next_show['start'], next_show['stop'], next_show['number'], next_show['xmlNode'], next_show['filename'], next_show['channelID'])
+    #assume shows do not overlap, just the padded times overlap
+    shows = Array.new
+    databasequery("SELECT DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
+                   DATE_FORMAT(s.stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
+                   number, filename, p.xmlNode as xmlNode, channelID
+                   FROM Scheduled s JOIN Channel USING (channelID)
+                   JOIN Programme p USING(channelID, start)
+                   WHERE start <= #{paddedTime("start")}
+                   AND s.stop > #{paddedTime("stop")}").each_hash { |show_hash| 
+        shows << Show.new(show_hash['start'], 
+                          show_hash['stop'], 
+                          show_hash['number'], 
+                          show_hash['xmlNode'], 
+                          show_hash['filename'], 
+                          show_hash['channelID'])
+    }
+    return nil if shows.length == 0
+    if shows.length > 1
+        #we have adjacent shows, or at least close enough so they overlap when padded
+        shows.sort! {|a,b| a.starts_in <=> b.starts_in }
+        (1...shows.length).each {|pos|
+            shows[pos-1].unpad(shows[pos])
+        }
+        shows.delete_if { |show| show.notShowing }
+    end
+    #LOG.debug("The next show to record is #{shows[0].filename}")
+    shows[0]
 end
 
 def placeInRecorded(show)
@@ -100,7 +139,7 @@ def recordShow(show)
     File.open(show.filename+".xml", File::WRONLY|File::TRUNC|File::CREAT) { |file| file << show.xmlNode }
     LOG.info("Recording #{show.filename}")
     # the append can cause problems, the file may stop plaing part way through, but you can still jump to the end parts
-    outfile = File.open(VIDEO_PATH+show.filename+".mpg", File::WRONLY|File::APPEND|File::CREAT )
+    outfile = File.open(show.filename+".mpg", File::WRONLY|File::APPEND|File::CREAT )
     system("ivtv-tune -c#{show.channel}")
     videoin = IO.popen("cat /dev/video0", "r")
     Thread.current["rec_pid"] = videoin.pid
@@ -122,7 +161,7 @@ Dir.chdir(VIDEO_PATH)
 trap("SIGTERM") {
     LOG.info("Exiting program")
     recording.each_value { |thread| stopRecord thread }
-    File.delete(PIDFILE)
+    File.open(PIDFILE, File::WRONLY|File::TRUNC).close
     exit
 }
 

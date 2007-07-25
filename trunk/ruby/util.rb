@@ -19,6 +19,7 @@ LOG_PATH = constants[:LOG_PATH.to_s]
 ENCODER_BIN = constants[:ENCODER_BIN.to_s]
 FILE_PART = constants[:FILE_PART.to_s]
 CONFIG_PATH = constants[:CONFIG_PATH.to_s]
+FILE_PADDING = 120 #constants[:FILE_PADDING.to_i]
 
 LENGTH_OF_DATE_TIME = 14
 
