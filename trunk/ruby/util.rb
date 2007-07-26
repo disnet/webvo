@@ -2,11 +2,16 @@
 
 require "mysql"
 
-constants = Hash.new
-File.read('webvo.conf').each { |line|
-    line_reg = line.match(/\s*(.*?)\s*=\s*(.*)/)
-    constants[line_reg[1]] = line_reg[2] unless line_reg.nil?
-}
+def load_config
+    config = Hash.new
+    File.read('webvo.conf').each { |line|
+        line_reg = line.match(/\s*(.*?)\s*=\s*(.*)/)
+        config[line_reg[1]] = line_reg[2] unless line_reg.nil?
+    }
+    return config
+end
+
+constants = load_config
 
 XML_FILE_NAME = constants[:XML_FILE_NAME.to_s]
 XMLTV_CONFIG = constants[:XMLTV_CONFIG.to_s]
@@ -17,9 +22,8 @@ DBNAME = constants[:DBNAME.to_s]
 VIDEO_PATH = constants[:VIDEO_PATH.to_s]
 LOG_PATH = constants[:LOG_PATH.to_s]
 ENCODER_BIN = constants[:ENCODER_BIN.to_s]
-FILE_PART = constants[:FILE_PART.to_s]
 CONFIG_PATH = constants[:CONFIG_PATH.to_s]
-FILE_PADDING = 120 #constants[:FILE_PADDING.to_i]
+FILE_PADDING = constants[:FILE_PADDING.to_i]
 
 LENGTH_OF_DATE_TIME = 14
 

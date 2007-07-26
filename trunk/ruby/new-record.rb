@@ -55,9 +55,9 @@ class Show
     attr_writer :start, :stop
     protected :start, :stop
     def initialize(start, stop, channel, xmlNode, filename, channelID)
-        @start = formatToRuby(start) - FILE_PADDING
+        @start = formatToRuby(start) - load_config["FILE_PADDING"].to_i
         @start_xml = start
-        @stop = formatToRuby(stop) + FILE_PADDING
+        @stop = formatToRuby(stop) + load_config["FILE_PADDING"].to_i
         @channel = channel
         @xmlNode = xmlNode
         @filename = filename
@@ -87,8 +87,8 @@ end
 
 #this could be done better
 def paddedTime(position)
-    return (Time.now + FILE_PADDING).strftime(DATE_TIME_FORMAT_RUBY_XML) if position == "start"
-    return (Time.now - FILE_PADDING).strftime(DATE_TIME_FORMAT_RUBY_XML) if position == "stop"
+    return (Time.now + load_config["FILE_PADDING"].to_i).strftime(DATE_TIME_FORMAT_RUBY_XML) if position == "start"
+    return (Time.now - load_config["FILE_PADDING"].to_i).strftime(DATE_TIME_FORMAT_RUBY_XML) if position == "stop"
 end
 
 def cleanScheduled
@@ -136,10 +136,10 @@ end
 
 def recordShow(show)
     LOG.debug("It is time to start recording #{show.filename} for #{show.stops_in} seconds")
-    File.open(show.filename+".xml", File::WRONLY|File::TRUNC|File::CREAT) { |file| file << show.xmlNode }
+    File.open(load_config["VIDEO_PATH"] + File::SEPARATOR + show.filename+".xml", File::WRONLY|File::TRUNC|File::CREAT) { |file| file << show.xmlNode }
     LOG.info("Recording #{show.filename}")
     # the append can cause problems, the file may stop plaing part way through, but you can still jump to the end parts
-    outfile = File.open(show.filename+".mpg", File::WRONLY|File::APPEND|File::CREAT )
+    outfile = File.open(load_config["VIDEO_PATH"] + File::SEPARATOR + show.filename+".mpg", File::WRONLY|File::APPEND|File::CREAT )
     system("ivtv-tune -c#{show.channel}")
     videoin = IO.popen("cat /dev/video0", "r")
     Thread.current["rec_pid"] = videoin.pid
@@ -156,7 +156,6 @@ def stopRecord(thread)
 end
 
 recording = Hash.new
-Dir.chdir(VIDEO_PATH)
 
 trap("SIGTERM") {
     LOG.info("Exiting program")
