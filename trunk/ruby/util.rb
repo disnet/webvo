@@ -107,10 +107,12 @@ def freespace()
 
     #get information from the command line as to how much space is available
     space_match = space_raw.match(/\s(\d+)\s+(\d+)\s+(\d+)/)
-    space = Hash.new
-    space['total'] = space_match[1]
-    space['used'] = space_match[2]
-    space['available'] = space_match[3]
+    space = Hash.new(0)
+    unless space_match.nil?
+        space['total'] = space_match[1]
+        space['used'] = space_match[2]
+        space['available'] = space_match[3]
+    end
 
     return space
 end

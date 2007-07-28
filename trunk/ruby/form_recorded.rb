@@ -24,13 +24,14 @@ require 'date'
 require "mysql"
 require 'util'
 
+#todo: make this work when the movies dir is not visible from the web?
 SHOW_RELATIVE_ADDRESS = "movies/"
 
 #this file needs some upkeep, perhaps we need to send the "path" back differently?
 def add_size_path_to_xml_Node(size,related_files,fragNum, xmlNode)
   nodePart = "\t<size>" + size.to_s + "</size>\n"
   #nodePart << "\t<path>" + related_files.to_s.gsub(/&/,'&amp;') + "</path>\n"
-  related_files.each { |file| nodePart << "\t<path>" + file.gsub(/&/,'&amp;') + "</path>" }
+  related_files.each { |file| nodePart << "\t<path>" + SHOW_RELATIVE_ADDRESS + file.gsub(/&/,'&amp;') + "</path>" }
   nodePart << "\t<fragNum>" + fragNum.to_s + "</fragNum>\n"
   nodePart << "</programme>"
   xmlNode.gsub!("</programme>", nodePart)
