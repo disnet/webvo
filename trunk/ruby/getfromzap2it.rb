@@ -55,6 +55,29 @@ class XML::Node::Set
     end
 end
 
+# Class for channel sql entry formatting
+class Chan
+    def initialize(xmlNode)
+        @xmlNode = xmlNode
+    end
+    def id
+        Prog.sqlify @xmlNode["id"]
+    end
+    def id_raw
+        @xmlNode["id"]
+    end
+    def number
+        Chan.sqlify @xmlNode.find_first('display-name').content.to_i
+    end
+    def xmlNode
+        Chan.sqlify @xmlNode
+    end
+    private
+    def Chan.sqlify(node)
+        "'" + Mysql.escape_string(node.to_s).gsub("\\n","\n") + "'"
+    end
+end
+ 
 # Class for programme sql entry formatting
 class Prog
     def initialize(xmlNode)
@@ -131,10 +154,9 @@ chan_array = Array.new
 dbh.query("SELECT channelID FROM Channel").each { |cid| chan_array << cid[0] }
 
 xmldoc.find('channel').each { |e|
-    chan_id = e["id"].to_s
-    chan_number = e.find_first('display-name').content.to_i
-    if !chan_array.include?(chan_id)
-        dbh.query("INSERT INTO Channel (channelID, number, xmlNode) VALUES ('#{chan_id}', '#{chan_number}', '#{e}')")
+    chan = Chan.new(e)
+    unless chan_array.include?(chan.id_raw)
+        dbh.query("INSERT INTO Channel (channelID, number, xmlNode) VALUES (#{chan.id}, #{chan.number}, #{chan.xmlNode})")
     end
 }
 xmldoc.find('programme').each { |programme|
