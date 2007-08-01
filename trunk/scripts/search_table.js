@@ -20,7 +20,7 @@ function formSearchedTable() {
 		var table_row = TR({'id':"recording:" + progID},map(partial(TD,null), formed_row));	
 		var isRecording = recording.find(progID); 
 		if(isRecording != -1) {
-            updateNodeAttributes(table_row,{'class':'recordingProgramme'});
+            updateNodeAttributes(table_row,{'class':'recordingSearched'});
         }
         else {
             updateNodeAttributes(table_row,{'class':'programme'});

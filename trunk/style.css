@@ -55,6 +55,9 @@ td.listHead{
 .recordingProgramme {
 	background-color:#FF4242;	
 }
+.recordingSearched {
+	background-color:#9F7272;	
+}
 .recordingProgrammeOver {
 	background-color:#FF5C5C;
 }
