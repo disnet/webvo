@@ -338,3 +338,22 @@ var place_quick_nav= function(e) {
     setElementPosition(box,viewportPos);
     swapDOM('mnuQuicknav',box);
 };
+
+var searchSubmit_click = function(e) {
+    var d = doSimpleXMLHttpRequest('ruby/form_search.rb',
+        {'title':$('txtSearchTitle').value});
+    d.addCallbacks(gotSearch,fetchFailed);
+};
+
+var searchRecord_click = function(e) {
+	var chkBox = $('searched').getElementsByTagName('input');
+	var recArray = [];
+	var removeIDs = [];
+	for(var i = 0; i < chkBox.length; i++) {
+		if(chkBox[i].checked == true) {
+			recArray.push(doSimpleXMLHttpRequest('ruby/add_recording.rb',{'prog_id':chkBox[i].value}));
+			recArray[recArray.length - 1].addCallbacks(gotAdd,fetchFailed);
+		}
+	}
+	map(function(id) { removeElement("recording:" + id);}, removeIDs);
+};

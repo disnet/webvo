@@ -32,6 +32,7 @@ CREATE TABLE `Programme` (
   `credits` varchar(4000),
   `category` varchar(250),
   `xmlNode` text NOT NULL,
+  KEY `title_index` (`title`),
   PRIMARY KEY  (`channelID`,`start`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

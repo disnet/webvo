@@ -85,14 +85,8 @@ class Show
     end
 end
 
-#this could be done better
-def paddedTime(position)
-    return (Time.now + load_config["FILE_PADDING"].to_i).strftime(DATE_TIME_FORMAT_RUBY_XML) if position == "start"
-    return (Time.now - load_config["FILE_PADDING"].to_i).strftime(DATE_TIME_FORMAT_RUBY_XML) if position == "stop"
-end
-
 def cleanScheduled
-    databasequery "Delete FROM Scheduled WHERE stop < #{paddedTime("stop")}"
+    databasequery "Delete FROM Scheduled WHERE stop < #{PaddedTime.strstop}"
 end
 
 #return the show that should currently be recording, or nil
@@ -106,8 +100,8 @@ def getNextShow()
                    number, filename, p.xmlNode as xmlNode, channelID
                    FROM Scheduled s JOIN Channel USING (channelID)
                    JOIN Programme p USING(channelID, start)
-                   WHERE start <= #{paddedTime("start")}
-                   AND s.stop > #{paddedTime("stop")}").each_hash { |show_hash| 
+                   WHERE start <= #{PaddedTime.strstart}
+                   AND s.stop > #{PaddedTime.strstop}").each_hash { |show_hash| 
         shows << Show.new(show_hash['start'], 
                           show_hash['stop'], 
                           show_hash['number'], 

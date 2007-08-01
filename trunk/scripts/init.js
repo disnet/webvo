@@ -55,6 +55,9 @@ recording.find = function (progID) {//
 var recorded = Object();
 recorded.programmes = null;
 
+var searched = Object();
+searched.programmes = null;
+
 var defRecording = new Deferred();
 var defRecorded = new Deferred();
 
@@ -83,6 +86,8 @@ function init() {
     connect('btnSearch','onclick',btnSearch_click);
 	connect('btnRemoveRecording','onclick',btnRemoveRecording_click);
 	connect('btnDeleteRecorded','onclick',btnDeleteRecorded_click);
+	connect('btnSearchSubmit','onclick',searchSubmit_click);
+	connect('btnSearchRecord','onclick',searchRecord_click);
     connect(window,'onscroll',place_quick_nav);
 }
 

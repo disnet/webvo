@@ -155,3 +155,15 @@ var gotSpace = function(req) {
 var fetchFailed = function (err) {
     log("Fetch Failed: " + err + errMsg);
 };
+
+var gotSearch = function(req) {
+	searched.programmes = req.responseXML.getElementsByTagName('programme');
+    var error = req.responseXML.getElementsByTagName('error');
+
+    if(error.length != 0) {
+        alert('Error in gotRecorded: ' + error[0].firstChild.nodeValue + errMsg);
+    }
+
+	searched.programmes = map(function(el) {return el;}, searched.programmes); 	// convert nodelist to array
+	formSearchedTable();
+};

@@ -117,3 +117,17 @@ def freespace()
     return space
 end
 
+class PaddedTime
+    def PaddedTime.start
+        Time.now + load_config["FILE_PADDING"].to_i
+    end
+    def PaddedTime.stop
+        Time.now - load_config["FILE_PADDING"].to_i
+    end
+    def PaddedTime.strstart
+        PaddedTime.start.strftime(DATE_TIME_FORMAT_RUBY_XML)
+    end
+    def PaddedTime.strstop
+        PaddedTime.stop.strftime(DATE_TIME_FORMAT_RUBY_XML)
+    end
+end
