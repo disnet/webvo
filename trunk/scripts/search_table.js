@@ -17,13 +17,21 @@ function formSearchedTable() {
 		//formed_row.push(row.getElementsByTagName('channel')[0].firstChild.nodeValue);
         formed_row.push("");
 		formed_row.push(INPUT({'type':'checkbox','value':progID}));
-		return TR({'id':"recording:" + progID},map(partial(TD,null), formed_row));	
+		var table_row = TR({'id':"recording:" + progID},map(partial(TD,null), formed_row));	
+		var isRecording = recording.find(progID); 
+		if(isRecording != -1) {
+            updateNodeAttributes(table_row,{'class':'recordingProgramme'});
+        }
+        else {
+            updateNodeAttributes(table_row,{'class':'programme'});
+        }
+        return table_row
 	}
 	
-	var new_table = TABLE({'id':'searched','class':'tblRecord'},
+	var new_table = TABLE({'id':'searched','class':'schedule'},
 		THEAD({'style':'width:100%'},
-			TR({'class':'tblRecordHead'},
-				map(partial(TD,{'class':'tblRecord'}), ['Title','Description','Start','End','Channel','Record']))),
+			TR({'class':'head'},
+				map(partial(TD,{'class':'head'}), ['Title','Description','Start','End','Channel','Record']))),
         TBODY({'style':'width:100%'},
 			map(disp_row,searched.programmes)));
 	swapDOM('searched',new_table);
