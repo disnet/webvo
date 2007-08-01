@@ -10,6 +10,15 @@ function formSearchedTable() {
 		
 		var formed_row =[];
 		formed_row.push(row.getElementsByTagName('title')[0].firstChild.nodeValue);
+		var prog_episode_node = row.getElementsByTagName('episode-num');
+        var prog_episode = "";
+        for (var i = 0; i < prog_episode_node.length; i++) {
+            if (getNodeAttribute(prog_episode_node[i],"system") == "onscreen") {
+                prog_episode = prog_episode_node[i].firstChild.nodeValue;
+                break;
+            }
+        }
+		formed_row.push(prog_episode);
 		var prog_desc = row.getElementsByTagName('desc');
 		formed_row.push(prog_desc.length == 0 ? "" : prog_desc[0].firstChild.nodeValue);
 		formed_row.push(zapTimeToDate(prog_start).toLocaleString());
@@ -31,7 +40,7 @@ function formSearchedTable() {
 	var new_table = TABLE({'id':'searched','class':'schedule'},
 		THEAD({'style':'width:100%'},
 			TR({'class':'head'},
-				map(partial(TD,{'class':'head'}), ['Title','Description','Start','End','Channel','Record']))),
+				map(partial(TD,{'class':'head'}), ['Title','Episode','Description','Start','End','Channel','Record']))),
         TBODY({'style':'width:100%'},
 			map(disp_row,searched.programmes)));
 	swapDOM('searched',new_table);

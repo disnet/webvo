@@ -13,6 +13,15 @@ function formRecordedTable() {
         var title = row.getElementsByTagName('title')[0].firstChild.nodeValue;
         
 		formed_row.push(A({'href': path},title));
+		var prog_episode_node = row.getElementsByTagName('episode-num');
+        var prog_episode = "";
+        for (var i = 0; i < prog_episode_node.length; i++) {
+            if (getNodeAttribute(prog_episode_node[i],"system") == "onscreen") {
+                prog_episode = prog_episode_node[i].firstChild.nodeValue;
+                break;
+            }
+        }
+		formed_row.push(prog_episode);
 		var prog_desc = row.getElementsByTagName('desc');
 		formed_row.push(prog_desc.length == 0 ? "" : prog_desc[0].firstChild.nodeValue);
 		formed_row.push(zapTimeToDate(prog_start).toLocaleString());
@@ -27,7 +36,7 @@ function formRecordedTable() {
 	var new_table = TABLE({'id':'recorded','class':'tblRecord'},
 		THEAD({'style':'width:100%'},
 			TR({'class':'tblRecordHead'},
-				map(partial(TD,{'class':'tblRecord'}), ['Title','Description','Start','End','Size','Delete']))),
+				map(partial(TD,{'class':'tblRecord'}), ['Title','Episode','Description','Start','End','Size','Delete']))),
         TBODY({'style':'width:100%'},
 			map(disp_row,recorded.programmes)));
 	swapDOM('recorded',new_table);
