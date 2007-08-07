@@ -26,6 +26,7 @@ function formRecordedTable() {
 		formed_row.push(prog_desc.length == 0 ? "" : prog_desc[0].firstChild.nodeValue);
 		formed_row.push(zapTimeToDate(prog_start).toLocaleString());
 		formed_row.push(zapTimeToDate(prog_stop).toLocaleString());
+        formed_row.push(getChanNum(channelID));
 		var size = parseInt(row.getElementsByTagName('size')[0].firstChild.nodeValue);
 		size = Math.round( size / (1024*1024));
 		formed_row.push(size.toString() + " MB");
@@ -36,7 +37,7 @@ function formRecordedTable() {
 	var new_table = TABLE({'id':'recorded','class':'tblRecord'},
 		THEAD({'style':'width:100%'},
 			TR({'class':'tblRecordHead'},
-				map(partial(TD,{'class':'tblRecord'}), ['Title','Episode','Description','Start','End','Size','Delete']))),
+				map(partial(TD,{'class':'tblRecord'}), ['Title','Episode','Description','Start','End','Channel','Size','Delete']))),
         TBODY({'style':'width:100%'},
 			map(disp_row,recorded.programmes)));
 	swapDOM('recorded',new_table);

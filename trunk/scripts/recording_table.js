@@ -23,8 +23,7 @@ function formRecordingTable() {
 		formed_row.push(prog_desc.length == 0 ? "" : prog_desc[0].firstChild.nodeValue);
 		formed_row.push(zapTimeToDate(prog_start).toLocaleString());
 		formed_row.push(zapTimeToDate(prog_stop).toLocaleString());
-		//formed_row.push(row.getElementsByTagName('channel')[0].firstChild.nodeValue);
-        formed_row.push("");
+        formed_row.push(getChanNum(channelID));
 		formed_row.push(INPUT({'type':'checkbox','value':progID}));
 		return TR({'id':"recording:" + progID},map(partial(TD,null), formed_row));	
 	}

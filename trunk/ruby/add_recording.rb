@@ -26,6 +26,7 @@ require 'util'
 puts "Content-Type: text/xml\n\n<tv>\n"
 cgi = CGI.new
 prog_id = cgi.params['prog_id'][0]
+priority = cgi.params['priority'][0].to_i
 
 error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 
@@ -67,17 +68,17 @@ filename = [show_row['title'],show_row['episode'],show_row['sub-title'],show_row
 # is '-' a good replacement for a '/' in the filename?
 filename = Mysql.escape_string(filename.gsub(/\//,'-').gsub(/ /, "_"))
 
-#todo: return a 'prog_id' (and xml?) for each overlaping show in an <error/>
-#   also include a priority value
+#todo: return a 'prog_id' and 'priority' (and xml?) for each overlaping show in an <error/>
 overlapping_shows = []
 databasequery("SELECT filename from Scheduled WHERE 
                (start < #{show_row['stop']}) and
-               (stop > #{show_row['start']})").each { |show|
+               (stop > #{show_row['start']}) and
+               (priority >= #{priority})").each { |show|
     overlapping_shows.push(show[0].to_s.gsub(/_/," "))
 }
 error_if_not_equal(overlapping_shows.length, 0, "Requested show occurs during: #{overlapping_shows.join(' and ')}")
 databasequery("INSERT INTO Scheduled (channelID, start, stop, filename, priority) VALUES 
-               ('#{chan_id}','#{start}','#{show_row['stop']}','#{filename}',0)")
+               ('#{chan_id}','#{start}','#{show_row['stop']}','#{filename}',#{priority})")
 puts "<success>"
 puts "<prog_id>#{prog_id}</prog_id>"
 puts "#{show_row['xmlNode']}"

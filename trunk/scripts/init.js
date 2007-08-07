@@ -88,6 +88,7 @@ function init() {
 	connect('btnDeleteRecorded','onclick',btnDeleteRecorded_click);
 	connect('btnSearchSubmit','onclick',searchSubmit_click);
 	connect('btnSearchRecord','onclick',searchRecord_click);
+	connect('txtSearchTitle','onkeyup',search_key_press);
     connect(window,'onscroll',place_quick_nav);
 }
 

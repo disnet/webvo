@@ -22,6 +22,7 @@ var gotChannels_init = function(req) {
 // Get the programmes from server
 var gotProgrammes = function(req) {
    schedule.xmlProgrammes = req.responseXML;
+   schedule.xmlChannels = req.responseXML.getElementsByTagName('channel'); 
 
    var error = schedule.xmlProgrammes.getElementsByTagName('error');
    if(error.length != 0) {

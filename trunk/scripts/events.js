@@ -315,6 +315,9 @@ var previous_hours = function(e) {
 };
 
 var place_quick_nav= function(e) {
+    if (getNodeAttribute($('listingContent'),'class') == 'invisible') {
+        return 1
+    }
     var btnNextHours = INPUT({'id':'btnNext','class':'button', 'type':'button','value':'>'},null);
     var btnPreviousHours = INPUT({'id':'btnPrevious','class':'button', 'type':'button','value':'<'},null);
     var btnHours = INPUT({'id':'btnHours','class':'button', 'type':'button','value':'H'},null);
@@ -357,3 +360,10 @@ var searchRecord_click = function(e) {
 	}
 	map(function(id) { removeElement("recording:" + id);}, removeIDs);
 };
+
+var search_key_press = function(e) {
+    var key = e.key()
+    if (key.code == 13) {
+        searchSubmit_click(null)
+    }
+}

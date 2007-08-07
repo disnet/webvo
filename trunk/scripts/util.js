@@ -76,3 +76,15 @@ function makeInvisible(el) {
 function makeVisible(el) {
 	removeElementClass(el,'invisible');
 }
+
+function getChanNum(chanID) {
+    chanNum = ""
+    for (var i = 0; i < schedule.xmlChannels.length; i++) {
+        if (chanID == getNodeAttribute(schedule.xmlChannels[i],"id")) {
+            chanName = getFirstElementByTagAndClassName('display-name',null,schedule.xmlChannels[i])
+            chanNum = chanName.firstChild.nodeValue
+            break;
+        }
+    }
+    return chanNum
+}
