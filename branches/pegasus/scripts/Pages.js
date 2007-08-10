@@ -5,15 +5,10 @@ function ScheduledFrame() {
 
 ScheduledFrame.prototype = {
     init: function() {
-        makeInvisible('listingContent');
-        makeVisible('scheduledContent');
         connect('btnRemoveScheduled','onclick',this.btnRemoveScheduled_click);
-        this.load();
     },
 
     load: function() {
-        this.def = doSimpleXMLHttpRequest("ruby/form_scheduled.rb"); 
-        this.def.addCallbacks(this.gotScheduled, this.fetchFailed);
     },
 
     
@@ -28,5 +23,30 @@ ScheduledFrame.prototype = {
 
     btnRemoveScheduled_click: function(e) {
         console.log("The button has been clicked");
+    }
+};
+
+function ListingFrame() {
+    this.title = "Listing";
+    this.def = new Deferred();
+}
+
+ListingFrame.prototype = {
+    init: function() {
+    },
+
+    load: function() {
+        this.def = doSimpleXMLHttpRequest("ruby/form_listing.rb",
+            {'start_date_time': '20070809190000', 'end_date_time': '20070809220000'}
+        );
+        this.def.addCallbacks(this.gotListing, this.fetchFailed);
+    },
+
+    gotListing: function(req) {
+        console.log(req); 
+    },
+
+    fetchFailed: function(req) {
+        console.error("Fetch Failed");
     }
 };

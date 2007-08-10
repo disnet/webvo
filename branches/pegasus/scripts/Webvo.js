@@ -1,7 +1,7 @@
 App = {
     init: function() {
-        this.page = new ScheduledFrame();
-        this.page.init();
+        this.def = new Deferred();
+    
     }
 };
 
