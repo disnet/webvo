@@ -50,79 +50,8 @@ pid_file.close
 
 SLEEP_TIME = 3
 
-class Show
-    attr_reader :channel, :filename, :xmlNode, :channelID, :start_xml, :start, :stop
-    attr_writer :start, :stop
-    protected :start, :stop
-    def initialize(start, stop, channel, xmlNode, filename, channelID)
-        @start = formatToRuby(start) - load_config["FILE_PADDING"].to_i
-        @start_xml = start
-        @stop = formatToRuby(stop) + load_config["FILE_PADDING"].to_i
-        @channel = channel
-        @xmlNode = xmlNode
-        @filename = filename
-        @channelID = channelID
-    end
-    def notShowing
-        return false if @start <= Time.now and @stop > Time.now
-        return true
-    end
-    def starts_in
-        @start.to_i - Time.now.to_i
-    end
-    def stops_in
-        @stop.to_i - Time.now.to_i
-    end
-    def showTimes()
-        # starts_in is only used here, it has no use otherwise
-        LOG.debug("Show starts in: #{self.starts_in} seconds")
-        LOG.debug("Show stops in:  #{self.stops_in} seconds")
-    end
-    def unpad(after_show)
-        newpad = (@stop - after_show.start).to_i/2
-        @stop -= newpad
-        after_show.start += newpad
-    end
-end
-
 def cleanScheduled
     databasequery "Delete FROM Scheduled WHERE stop < #{PaddedTime.strstop}"
-end
-
-#return the show that should currently be recording, or nil
-def getNextShow()
-    #todo: implement priority checking
-    #this query only grabs shows that should currently be recording
-    #assume shows do not overlap, just the padded times overlap
-    shows = Array.new
-    now_showing = "SELECT DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
-                   DATE_FORMAT(s.stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
-                   number, filename, p.xmlNode as xmlNode, channelID, priority
-                   FROM Scheduled s JOIN Channel USING (channelID)
-                   JOIN Programme p USING(channelID, start)
-                   WHERE start <= #{PaddedTime.strstart}
-                   AND s.stop > #{PaddedTime.strstop}"
- 
-    databasequery("SELECT * FROM (#{now_showing}) as sub1
-                   WHERE priority = (SELECT max(priority) FROM (#{now_showing}) as sub2 )").each_hash { |show_hash| 
-        shows << Show.new(show_hash['start'], 
-                          show_hash['stop'], 
-                          show_hash['number'], 
-                          show_hash['xmlNode'], 
-                          show_hash['filename'], 
-                          show_hash['channelID'])
-    }
-    return nil if shows.length == 0
-    if shows.length > 1
-        #we have adjacent shows, or at least close enough so they overlap when padded
-        shows.sort! {|a,b| a.starts_in <=> b.starts_in }
-        (1...shows.length).each {|pos|
-            shows[pos-1].unpad(shows[pos])
-        }
-        shows.delete_if { |show| show.notShowing }
-    end
-    #LOG.debug("The next show to record is #{shows[0].filename}")
-    shows[0]
 end
 
 def placeInRecorded(show)
