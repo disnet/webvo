@@ -9,7 +9,7 @@ This is a step by step guide to install webvo on a fully updated fresh install o
 = Prerequisites =
 
 === 1. IVTV Drivers ===
-IVTV comes installed with Ubuntu 7.04 Fiesty.  If you are using a different distro or an older version of Ubuntu check-out the IVTV installation instructions for WebVo 1.0.
+IVTV comes installed with Ubuntu 7.04 Fiesty.  If you are using a different distro or an older version of Ubuntu check-out the IVTV installation instructions for WebVo 1.0.  For more information check-out the [http://ivtvdriver.org/index.php/Howto ivtv how to]
 
 === 2. Apache ===
 Install apache2
