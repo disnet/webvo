@@ -8,21 +8,21 @@ This document provides basic information about the system, as well as how to ins
 
 = Installation Instructions = 
 
-Development and testing for the webvo server was done on Ubuntu Linux 6.06 however other distributions of Linux should work as well.
+Development and testing for the webvo server was done on Ubuntu Linux 6.06 however other distributions of Linux should work as well.  On the latest build of WebVo most of the tests were on Ubuntu 7.04 which is what we would recommend you use.  If you are using Ubuntu 7.04 or greater try using the webvo installation at [http://webvo.googlecode.com/files/install_webvo] which has automated the installation process.
 
 You will need a TV Tuner card supported by IVTV driver. This driver supports the Hauppauge PVR 150/250/350/500 models. The PVR-250 is the only card known to work but any card supported by this driver should be fine.
 The IVTV drivers can be found at [http://ivtvdriver.org/index.php/Main_Page]
 
 *Software Dependencies*
 
-||MySQL 5.0||
+||MySQL 5.0 (Server)||
 ||Apache 2.0||
 ||ruby 1.8||
-||python 2.4||
+||python 2.4 -> required in WebVo 1.0 not in subsequent versions||
 ||libxml-ruby 0.3.8.4||
 ||ruby-mysql 2.6||
 ||xmltv||
 
-Once all the dependencies have been installed, download the webvo source code from http://webvo.googlecode.com/files/webvo.tar.gz and unzip it into the Apache web folder (default is /var/www/htdocs).
+Once all the dependencies have been installed, download the webvo source code from http://webvo.googlecode.com/files/webvo.tar.gz and unzip it into the Apache web folder (default is /var/www/).
 
 For a step by step guide for installing webvo see UbuntuSetup. It is specific to Ubuntu 6.10 but it should give you a good idea of what to do for other distros.
