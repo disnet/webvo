@@ -8,7 +8,7 @@ This document provides basic information about the system, as well as how to ins
 
 = Installation Instructions = 
 
-Development and testing for the webvo server was done on Ubuntu Linux 6.06 however other distributions of Linux should work as well.  On the latest build of WebVo most of the tests were on Ubuntu 7.04 which is what we would recommend you use.  If you are using Ubuntu 7.04 or greater try using the webvo installation at [http://webvo.googlecode.com/files/install_webvo] which has automated the installation process.
+Development and testing for the webvo server was done on Ubuntu Linux 6.06 however other distributions of Linux should work as well.  On the latest build of WebVo most of the tests were on Ubuntu 7.04 which is what we would recommend you use.  If you are using Ubuntu 7.04 or greater try using the webvo installation at [http://webvo.googlecode.com/files/install_webvo Ubuntu 7 Installation] which has automated most the installation process.
 
 You will need a TV Tuner card supported by IVTV driver. This driver supports the Hauppauge PVR 150/250/350/500 models. The PVR-250 is the only card known to work but any card supported by this driver should be fine.
 The IVTV drivers can be found at [http://ivtvdriver.org/index.php/Main_Page]
