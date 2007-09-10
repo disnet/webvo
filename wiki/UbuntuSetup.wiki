@@ -1,8 +1,7 @@
-#summary Set by step guide to set up webvo on Ubuntu 6.10
-
+#summary Set by step guide to set up webvo on Ubuntu 7.04
 *WARNING! This document is in flux as it is in the process of being updated for WebVo 2.0. ~Molly Jo August 14, 2007*
 
-= Installation for WebVo 2.0 =
+= Installation for Webvo 2.0 =
 
 This is a step by step guide to install webvo on a fully updated fresh install of Ubuntu 7.04. If you're using a different distro then concepts in this guide should be transferable, if not the exact commands. Some familiarity with Linux is assumed and will be useful if you run into any errors not foreseen in the document. If you run into any problems please post them in the discussion forum.
 
