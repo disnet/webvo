@@ -65,8 +65,7 @@ error_if_not_equal(now_xml.to_i < show_row['stop'].to_i, true, "Today is #{now_t
 
 filename = [show_row['title'],show_row['episode'],show_row['sub-title'],show_row['start_string'],show_row['number']].delete_if{|val| val.nil?}.join("_-_")
 
-# is '-' a good replacement for a '/' in the filename?
-filename = Mysql.escape_string(filename.gsub(/\//,'-').gsub(/ /, "_"))
+filename = Mysql.escape_string(format_filename(filename))
 
 #todo: return a 'prog_id' and 'priority' (and xml?) for each overlaping show in an <error/>
 overlapping_shows = []

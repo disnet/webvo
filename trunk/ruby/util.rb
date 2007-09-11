@@ -88,6 +88,11 @@ def hours_in (start, stop)
     return hours
 end
 
+def format_filename (name)
+    # is '-' a good replacement for the replaced chars in the filename?
+    name.gsub(/\/|\\|:|\*|\?|"|<|>/,'-').gsub(/ /, "_")
+end
+
 def formatToRuby (xmlform_data)
    year = xmlform_data[0..3].to_i
    month = xmlform_data[4..5].to_i
