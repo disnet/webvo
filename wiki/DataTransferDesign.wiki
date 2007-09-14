@@ -1,0 +1,89 @@
+#summary Design of new data transfer
+
+= Motivation =
+
+The way in which data is transfered from BE to FE and then rendered is inefficient. Large amounts of unneeded xml is sent to the FE which results in long DOM parsing delays. All the html is then generated dynamically by js which slows down rendering. 
+
+While this has been acceptable for current needs, once we move into the reworking of search it becomes too slow and unwieldy.
+
+
+= Design Summary =
+
+Display elements will now be generated in the ruby BE and sent down to the FE along with any needed data. The FE will then be able to simply assign the generated html to the innerHTML.
+
+=== XML Mockup ===
+{{{
+<scheduled>
+  <header>
+    <CDATA>
+     <tr>
+       <td>Title</td>
+       <td>Episode</td>
+       <td>Start</td>
+       <td>End</td>
+       <td>Channel</td>
+    </CDATA>
+  </header>
+  <programme id="programmID">
+    <start>start time</start>
+    <CDATA>
+      <tr>
+        <td>prog title</td>
+        <td>prog episode</td>
+        <td>start</td>
+        <td>end</td>
+        <td>channel</td>
+      </tr>
+    </CDATA>
+   </programme>
+</scheduled>
+}}}
+
+=== JSON Mockup ===
+{{{
+{ 
+
+'scheduled': {
+
+  'header-html': '<th>
+       <td>Title</td>
+       <td>Episode</td>
+       <td>Start</td>
+       <td>End</td>
+       <td>Channel</td></th>',
+
+  'programmes': [
+    {
+      'id':'progID',
+      'start' : 'start time',
+      'prog-html' : '<tr>
+         <td>Title</td>
+         <td>Episode</td>
+         <td>Start</td>
+         <td>End</td>
+         <td>Channel</td></tr>'
+    },
+    {
+      'id':'progID',
+      'start' : 'start time',
+      'prog-html' : '<tr>
+         <td>Title</td>
+         <td>Episode</td>
+         <td>Start</td>
+         <td>End</td>
+         <td>Channel</td></tr>'
+    }
+    ]
+  }
+
+}
+}}}
+
+I really like the idea of using JSON for this. It's a lot cleaner, especially for the FE. No more xml dom walking just a simple `eval(json)`. Sweet sweetness.
+
+
+
+ 
+ 
+ 
+ 
