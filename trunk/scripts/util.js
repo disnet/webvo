@@ -1,5 +1,14 @@
 // Collection of utility functions
 
+var Util = {
+    makeVisible: function(el) {
+        removeElementClass(el,'invisible');
+    },
+    makeInvisible: function(el) {
+        addElementClass(el,'invisible');
+    }
+}
+
 // Converts an object to an 2D array (sort of)
 // for every property in obj (assume each property is an array)
 // arr[i] = obj.property
