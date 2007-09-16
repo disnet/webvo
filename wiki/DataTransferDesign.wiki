@@ -43,8 +43,6 @@ Display elements will now be generated in the ruby BE and sent down to the FE al
 {{{
 { 
 
-'scheduled': {
-
   'header-html': '<th>
        <td>Title</td>
        <td>Episode</td>
@@ -74,8 +72,6 @@ Display elements will now be generated in the ruby BE and sent down to the FE al
          <td>Channel</td></tr>'
     }
     ]
-  }
-
 }
 }}}
 
@@ -83,6 +79,7 @@ I really like the idea of using JSON for this. It's a lot cleaner, especially fo
 
 
 
+ 
  
  
  
