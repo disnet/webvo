@@ -56,7 +56,7 @@ Display elements will now be generated in the ruby BE and sent down to the FE al
     {
       'id':'progID',
       'start' : 'start time',
-      'prog-html' : '<tr>
+      'html' : '<tr>
          <td>Title</td>
          <td>Episode</td>
          <td>Start</td>
@@ -66,7 +66,7 @@ Display elements will now be generated in the ruby BE and sent down to the FE al
     {
       'id':'progID',
       'start' : 'start time',
-      'prog-html' : '<tr>
+      'html' : '<tr>
          <td>Title</td>
          <td>Episode</td>
          <td>Start</td>
@@ -83,6 +83,7 @@ I really like the idea of using JSON for this. It's a lot cleaner, especially fo
 
 
 
+ 
  
  
  
