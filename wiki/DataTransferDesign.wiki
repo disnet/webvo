@@ -43,7 +43,7 @@ Display elements will now be generated in the ruby BE and sent down to the FE al
 {{{
 { 
 
-  'header-html': '<th>
+  'header': '<th>
        <td>Title</td>
        <td>Episode</td>
        <td>Start</td>
@@ -79,6 +79,7 @@ I really like the idea of using JSON for this. It's a lot cleaner, especially fo
 
 
 
+ 
  
  
  
