@@ -268,17 +268,17 @@ class JSON_Output
 
         if @type == SEARCH
             @progblock = lambda {|prog|
-            "{ 'id':'#{prog.id}',
-            'start': '#{prog.start}',
-            'html': '<tr>
-                <td>#{prog.title}</td>
-                <td>#{prog.sub_title}</td>
-                <td>#{prog.episode}</td>
-                <td>#{prog.desc}</td>
-                <td>#{prog.start_readable}</td>
-                <td>#{prog.stop_readable}</td>
-                <td>Channel</td>
-                <td><input type=\"checkbox\" value=\"#{prog.id}\"/></td>' }"
+            retstr = "{ 'id':'#{prog.id}',"
+            retstr += "'start': '#{prog.start}',"
+            retstr += "'html': '<tr id=\"#{prog.id}\" class=\"programme\">"
+                retstr += "<td>#{prog.title}</td>"
+                retstr += "<td>#{prog.sub_title}</td>"
+                retstr += "<td>#{prog.episode}</td>"
+                retstr += "<td>#{prog.desc}</td>"
+                retstr += "<td>#{prog.start_readable}</td>"
+                retstr += "<td>#{prog.stop_readable}</td>"
+                retstr += "<td>Channel</td>"
+                retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td>' }"
 
             }
         elsif @type == LISTING
