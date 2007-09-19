@@ -216,7 +216,7 @@ class Prog
         if item.nil?
             ""
         else
-            @format_block.call(item)
+            @format_block.call(item).gsub(/'/,"&#39;")
         end
     end
 end
@@ -278,7 +278,7 @@ class JSON_Output
                 <td>#{prog.start_readable}</td>
                 <td>#{prog.stop_readable}</td>
                 <td>Channel</td>
-                <td><input type='checkbox' value='#{prog.id}'/></td>' }"
+                <td><input type=\"checkbox\" value=\"#{prog.id}\"/></td>' }"
 
             }
         elsif @type == LISTING
