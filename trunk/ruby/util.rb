@@ -126,6 +126,7 @@ end
 
 # Class for programme sql entry formatting
 class Prog
+    TIME_FORMAT = "%A %m/%d/%Y %I:%M %p"
     def initialize(xmlNode)
         @xmlNode = xmlNode
         set_mysql_output
@@ -139,11 +140,17 @@ class Prog
     def start
         format @xmlNode["start"][0..13]
     end
+    def start_readable
+        format formatToRuby(@xmlNode["start"][0..13]).strftime(TIME_FORMAT)
+    end
     def start_s
         @xmlNode["start"][0..13]
     end
     def stop
         format @xmlNode["stop"][0..13]
+    end
+    def stop_readable
+        format formatToRuby(@xmlNode["stop"][0..13]).strftime(TIME_FORMAT)
     end
     def stop_s
         @xmlNode["stop"][0..13]
@@ -235,25 +242,15 @@ class JSON_Output
         retstr += @header_html
         retstr += "'programmes': [\n"
 
-        @progs.each {|prog|
-            retstr += "{ 'id':'#{prog.id}',
-            'start': '#{prog.start}',
-            'prog-html': '<tr>
-                <td>#{prog.title}</td>
-                <td>#{prog.sub_title}</td>
-                <td>#{prog.episode}</td>
-                <td>#{prog.desc}</td>
-                <td>#{prog.start}</td>
-                <td>#{prog.stop}</td>
-                <td>Channel</td>
-                <td><input type='checkbox' value='#{prog.id}'/></td>' },\n"
-        }
+        programme_node = Array.new
+        @progs.each {|aprog| programme_node << @progblock.call(aprog)}
+        retstr += programme_node.join(",\n")
 
         retstr += "] } }"
     end
     private
     def type_changed
-        @header_html = "'header-html': '<th>"
+        @header_html = "'header': '<th>"
         if @type == LISTING
            nil 
         else
@@ -268,6 +265,35 @@ class JSON_Output
         @header_html += "<td>Checkbox</td>"
         end
         @header_html += "</th>', \n"
+
+        if @type == SEARCH
+            @progblock = lambda {|prog|
+            "{ 'id':'#{prog.id}',
+            'start': '#{prog.start}',
+            'html': '<tr>
+                <td>#{prog.title}</td>
+                <td>#{prog.sub_title}</td>
+                <td>#{prog.episode}</td>
+                <td>#{prog.desc}</td>
+                <td>#{prog.start_readable}</td>
+                <td>#{prog.stop_readable}</td>
+                <td>Channel</td>
+                <td><input type='checkbox' value='#{prog.id}'/></td>' }"
+
+            }
+        elsif @type == LISTING
+            @progblock = lambda {
+            }
+
+        elsif @type == SCHEDULED
+            @progblock = lambda {
+            }
+
+        elsif @type == RECORDED
+            @progblock = lambda {
+            }
+
+        end
     end
 end
 
