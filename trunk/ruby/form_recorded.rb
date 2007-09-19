@@ -45,7 +45,7 @@ puts XML_HEADER
 #for each check against record.rb's pattern
 f_size = 0
 Dir.chdir(VIDEO_PATH)
-file_list = Dir["*"]
+file_list = Dir["**/*"]
 databasequery("SELECT filename, xmlNode 
               FROM Recorded JOIN Programme USING (channelID, start) 
               ORDER BY start").each_hash { |recorded|

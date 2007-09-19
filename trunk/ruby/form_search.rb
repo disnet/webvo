@@ -2,15 +2,13 @@
 
 require 'cgi'
 require 'util'
-
-puts XML_HEADER
+require 'xml/libxml'
 
 cgi = CGI.new
 
 search_title = cgi.params['title'][0]
 sub_title = cgi.params['sub_title'][0]
-
-error_if_not_equal(cgi.params.size == 0, false, "No search terms entered")
+format = cgi.params['format'][0]
 
 query = "SELECT DISTINCT xmlNode
          FROM Programme
@@ -19,10 +17,22 @@ query += " AND ( title LIKE '#{Mysql.escape_string(search_title)}%'" unless sear
 query += " OR title LIKE 'the #{Mysql.escape_string(search_title)}%' )" unless search_title.nil?
 #query += " AND `sub-title` LIKE '%#{sub_title}%'" unless sub_title.nil?
 
-query += " LIMIT 400"
+query += " LIMIT 20"
 
-databasequery(query).each { |show| 
-    puts show
-}
+result = databasequery(query)
 
-puts XML_FOOTER
+if format == "new"
+    puts JSON_HEADER
+    json_out = JSON_Output.new(JSON_Output::SEARCH)
+    result.each {|showxml|
+        prog = Prog.new(XML::Parser.string(showxml.to_s).parse)
+        prog.set_json_output
+        json_out.add_programme(prog)
+    }
+    puts json_out
+
+else
+    puts XML_HEADER
+    result.each {|showxml| puts showxml}
+    puts XML_FOOTER
+end

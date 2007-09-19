@@ -34,6 +34,8 @@ XML_HEADER = "Content-Type:text/xml\n\n<?xml version=\"1.0\" encoding=\"ISO-8859
 
 XML_FOOTER = "</tv>"
 
+JSON_HEADER = "Content-Type:text\n\n"
+
 DATE_FORMAT_STRING = "%Y%m%d"
 DATE_TIME_FORMAT_STRING = "%Y-%m-%d_[%H.%i.%S]"
 DATE_TIME_FORMAT_STRING_RUBY = "%Y-%m-%d_[%H.%M.%S]"
@@ -121,6 +123,166 @@ def freespace()
 
     return space
 end
+
+# Class for programme sql entry formatting
+class Prog
+    def initialize(xmlNode)
+        @xmlNode = xmlNode
+        set_mysql_output
+    end
+    def id
+        self.chanID + self.start
+    end
+    def chanID
+        format @xmlNode["channel"]
+    end
+    def start
+        format @xmlNode["start"][0..13]
+    end
+    def start_s
+        @xmlNode["start"][0..13]
+    end
+    def stop
+        format @xmlNode["stop"][0..13]
+    end
+    def stop_s
+        @xmlNode["stop"][0..13]
+    end
+    def title
+        format @xmlNode.find('title').first.content
+    end
+    def sub_title
+        node = @xmlNode.find('sub-title')
+        if node.first.nil?
+            return format(nil)
+        else
+            return format(node.first.content)
+        end
+    end
+    def desc
+        node = @xmlNode.find('desc')
+        if node.first.nil?
+            return format(nil)
+        else
+            return format(node.first.child)
+        end
+    end
+    def episode
+        onscreen_ep = nil
+        @xmlNode.find('episode-num').each {|ep| onscreen_ep = ep.content if ep['system'] == 'onscreen'}
+        format onscreen_ep
+    end
+    def credits
+        format @xmlNode.find('credits').first
+    end
+    def category
+        cats = String.new
+        @xmlNode.find('category').each {|cat| cats += cat.child.to_s + ","}
+        format (cats[0...cats.length-1])
+    end
+    def xmlNode
+        format @xmlNode
+    end
+    def set_mysql_output
+        @format_block = lambda {|item|
+            if item.nil?
+                return "NULL"
+            else
+                "'" + Mysql.escape_string(item.to_s).gsub("\\n","\n") + "'"
+            end
+        }
+        @format_style = "MySQL"
+    end
+    def set_json_output
+        @format_block = lambda {|item| item.to_s}
+        @format_style = "JSON"
+    end
+    private
+    def Prog.sqlify(node)
+        if node.nil?
+            "NULL"
+        else
+            "'" + Mysql.escape_string(node.to_s).gsub("\\n","\n") + "'"
+        end
+    end
+    def format(item)
+        if item.nil?
+            ""
+        else
+            @format_block.call(item)
+        end
+    end
+end
+
+class JSON_Output
+    SEARCH = "search"
+    #have to deal with date range to fully implement listing
+    LISTING = "listing"
+    SCHEDULED = "scheduled"
+    RECORDED = "recorded"
+
+    def initialize(type)
+        @type = type
+        type_changed
+        @progs = Array.new
+    end
+    def add_programme(prog)
+        prog.set_json_output
+        @progs << prog
+    end
+    def to_s
+        retstr = "{ '#{@type}': { "
+        retstr += @header_html
+        retstr += "'programmes': [\n"
+
+        @progs.each {|prog|
+            retstr += "{ 'id':'#{prog.id}',
+            'start': '#{prog.start}',
+            'prog-html': '<tr>
+                <td>#{prog.title}</td>
+                <td>#{prog.sub_title}</td>
+                <td>#{prog.episode}</td>
+                <td>#{prog.desc}</td>
+                <td>#{prog.start}</td>
+                <td>#{prog.stop}</td>
+                <td>Channel</td>
+                <td><input type='checkbox' value='#{prog.id}'/></td>' },\n"
+        }
+
+        retstr += "] } }"
+    end
+    private
+    def type_changed
+        @header_html = "'header-html': '<th>"
+        if @type == LISTING
+           nil 
+        else
+        @header_html += "<td>Title</td>"
+        @header_html += "<td>Sub-Title</td>"
+        @header_html += "<td>Episode</td>"
+        @header_html += "<td>Description</td>"
+        @header_html += "<td>Start</td>"
+        @header_html += "<td>End</td>"
+        @header_html += "<td>Channel</td>"
+        @header_html += "<td>Size</td>" if @type == RECORDED
+        @header_html += "<td>Checkbox</td>"
+        end
+        @header_html += "</th>', \n"
+    end
+end
+
+def format_programme(prog, type)
+    if type == 'search'
+
+    elsif type == 'scheduled'
+
+    elsif type == 'recorded'
+
+    elsif type == 'listing'
+
+    end
+end
+        
 
 class PaddedTime
     def PaddedTime.start
