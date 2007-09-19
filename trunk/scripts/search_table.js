@@ -13,8 +13,8 @@ function formSearchedTable() {
 		var prog_episode_node = row.getElementsByTagName('episode-num');
         var prog_episode = "";
         for (var i = 0; i < prog_episode_node.length; i++) {
+            prog_episode = prog_episode_node[i].firstChild.nodeValue;
             if (getNodeAttribute(prog_episode_node[i],"system") == "onscreen") {
-                prog_episode = prog_episode_node[i].firstChild.nodeValue;
                 break;
             }
         }
@@ -25,10 +25,14 @@ function formSearchedTable() {
 		formed_row.push(zapTimeToDate(prog_stop).toLocaleString());
         formed_row.push(getChanNum(channelID));
 		formed_row.push(INPUT({'type':'checkbox','value':progID}));
-		var table_row = TR({'id':"recording:" + progID},map(partial(TD,null), formed_row));	
+		var table_row = TR({'id':"searched:" + progID},map(partial(TD,null), formed_row));	
 		var isRecording = recording.find(progID); 
+		var isRecorded = recorded.find(row); 
 		if(isRecording != -1) {
             updateNodeAttributes(table_row,{'class':'recordingSearched'});
+        }
+        else if(isRecorded != -1) {
+            updateNodeAttributes(table_row,{'class':'recordedSearched'});
         }
         else {
             updateNodeAttributes(table_row,{'class':'programme'});

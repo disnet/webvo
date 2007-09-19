@@ -55,6 +55,36 @@ recording.find = function (progID) {//
 var recorded = Object();
 recorded.programmes = null;
 
+recorded.find = function (row) {  
+	if(recorded.programmes == null) {return -1;}
+
+    var title = row.getElementsByTagName('title')[0].firstChild.nodeValue
+	var prog_episode_node = row.getElementsByTagName('episode-num');
+    var prog_episode = "";
+    for (var i = 0; i < prog_episode_node.length; i++) {
+        prog_episode = prog_episode_node[i].firstChild.nodeValue;
+        if (getNodeAttribute(prog_episode_node[i],"system") == "onscreen") {
+            break;
+        }
+    }
+
+    var ep = null;
+	for (var i = 0; i < recorded.programmes.length; i++) {
+        var curr_title = recorded.programmes[i].getElementsByTagName('title')[0].firstChild.nodeValue
+        if (curr_title != title) {
+            continue;
+        }
+		var eps = recorded.programmes[i].getElementsByTagName('episode-num');
+        for (var j = 0; j < eps.length; j++) {
+            recorded_ep = eps[j].firstChild.nodeValue;
+            if (recorded_ep == prog_episode) {
+                return 1;
+            }
+        }
+	}
+	return -1;	
+};
+
 var searched = Object();
 searched.programmes = null;
 
