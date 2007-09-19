@@ -17,16 +17,20 @@ App.prototype = {
 
 var search = {
     submit: function(e) {
-        var d = loadJSONDoc('ruby/form_search.json');
+        var searchText = $('txtSearchTitle').value;
+        var d = loadJSONDoc('ruby/form_search.rb',{'title':searchText,'format':'new'});
         d.addCallbacks(search.gotSearch,search.fetchFailed);
     },
     gotSearch: function(req) {
         app.search_data = req;
+        console.log(req);
+        $('searched').innerHTML = req.search.header;
         $('searched').innerHTML += req.search.programmes[0].html;
         $('searched').innerHTML += req.search.programmes[1].html;
     },
     fetchFailed: function(req) {
-        console.log('error in search');
+        console.error("Problem retrieving search results:");
+        console.error(req);
     }
 };
 
