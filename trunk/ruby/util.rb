@@ -250,21 +250,21 @@ class JSON_Output
     end
     private
     def type_changed
-        @header_html = "'header': '<th>"
+        @header_html = "'header': '<tr>"
         if @type == LISTING
            nil 
         else
-        @header_html += "<td>Title</td>"
-        @header_html += "<td>Sub-Title</td>"
-        @header_html += "<td>Episode</td>"
-        @header_html += "<td>Description</td>"
-        @header_html += "<td>Start</td>"
-        @header_html += "<td>End</td>"
-        @header_html += "<td>Channel</td>"
-        @header_html += "<td>Size</td>" if @type == RECORDED
-        @header_html += "<td>Checkbox</td>"
+        @header_html += "<th>Title</th>"
+        @header_html += "<th>Sub-Title</th>"
+        @header_html += "<th>Episode</th>"
+        @header_html += "<th>Description</th>"
+        @header_html += "<th>Start</th>"
+        @header_html += "<th>End</th>"
+        @header_html += "<th>Channel</th>"
+        @header_html += "<th>Size</th>" if @type == RECORDED
+        @header_html += "<th>Checkbox</th>"
         end
-        @header_html += "</th>', \n"
+        @header_html += "</tr>', \n"
 
         if @type == SEARCH
             @progblock = lambda {|prog|
