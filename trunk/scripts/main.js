@@ -23,10 +23,12 @@ var search = {
     },
     gotSearch: function(req) {
         app.search_data = req;
+        var searchTable = $('searched');
         console.log(req);
-        $('searched').innerHTML = req.search.header;
-        $('searched').innerHTML += req.search.programmes[0].html;
-        $('searched').innerHTML += req.search.programmes[1].html;
+        searchTable.innerHTML = req.search.header;
+        for(var i = 0; i < req.search.programmes.length; i++) {
+            searchTable.innerHTML += req.search.programmes[i].html;
+        }
     },
     fetchFailed: function(req) {
         console.error("Problem retrieving search results:");
