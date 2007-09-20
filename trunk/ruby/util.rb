@@ -231,7 +231,7 @@ class JSON_Output
     SCHEDULED = "scheduled"
     RECORDED = "recorded"
 
-    def initialize(type)
+    def initialize(type, daterange = [])
         @type = type
         type_changed
         @progs = Array.new
@@ -286,18 +286,16 @@ class JSON_Output
     end
 end
 
-def format_programme(prog, type)
-    if type == 'search'
-
-    elsif type == 'scheduled'
-
-    elsif type == 'recorded'
-
-    elsif type == 'listing'
-
+#this is a hack to make the nil? test work on tvbox, like it does on the Feisty image
+#this appears to work on the Feisty image
+class XML::Node::Set
+    def nil?
+        if self.length == 0
+            return true
+        end
+        false
     end
 end
-        
 
 class PaddedTime
     def PaddedTime.start

@@ -143,7 +143,7 @@ class Prog
     end
 end
 
-system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME)
+system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME + " --days 14 ")
 
 xmldoc = XML::Document.file(XML_FILE_NAME)
 
