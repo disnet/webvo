@@ -126,9 +126,12 @@ end
 
 # Class for programme sql entry formatting
 class Prog
+    attr_reader :channel, :size
     TIME_FORMAT = "%A %m/%d/%Y %I:%M %p"
-    def initialize(xmlNode)
+    def initialize(xmlNode, channel, size = "0")
         @xmlNode = xmlNode
+        @channel = channel
+        @size = size
         set_mysql_output
     end
     def id
@@ -250,50 +253,36 @@ class JSON_Output
     end
     private
     def type_changed
-        @header_html = "'header': '<tr>"
+        @header_html = "'header': '<tr class=\"head\">"
         if @type == LISTING
            nil 
         else
-        @header_html += "<th>Title</th>"
-        @header_html += "<th>Sub-Title</th>"
-        @header_html += "<th>Episode</th>"
-        @header_html += "<th>Description</th>"
-        @header_html += "<th>Start</th>"
-        @header_html += "<th>End</th>"
-        @header_html += "<th>Channel</th>"
-        @header_html += "<th>Size</th>" if @type == RECORDED
-        @header_html += "<th>Checkbox</th>"
-        end
-        @header_html += "</tr>', \n"
+            @header_html += "<th>Title</th>"
+            @header_html += "<th>Episode Title</th>"
+            @header_html += "<th>Episode</th>"
+            @header_html += "<th>Description</th>"
+            @header_html += "<th>Start</th>"
+            @header_html += "<th>End</th>"
+            @header_html += "<th>Channel</th>"
+            @header_html += "<th>Size</th>" if @type == RECORDED
+            @header_html += "<th>Checkbox</th>"
 
-        if @type == SEARCH
             @progblock = lambda {|prog|
-            retstr = "{ 'id':'#{prog.id}',"
-            retstr += "'start': '#{prog.start}',"
-            retstr += "'html': '<tr id=\"#{prog.id}\" class=\"programme\">"
+                retstr = "{ 'id':'#{prog.id}',"
+                retstr += "'start': '#{prog.start}',"
+                retstr += "'html': '<tr id=\"#{prog.id}\" class=\"programme\">"
                 retstr += "<td>#{prog.title}</td>"
                 retstr += "<td>#{prog.sub_title}</td>"
                 retstr += "<td>#{prog.episode}</td>"
                 retstr += "<td>#{prog.desc}</td>"
                 retstr += "<td>#{prog.start_readable}</td>"
                 retstr += "<td>#{prog.stop_readable}</td>"
-                retstr += "<td>Channel</td>"
+                retstr += "<td>#{prog.channel}</td>"
+                retstr += "<td>#{prog.size}</td>" if @type == RECORDED
                 retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td>' }"
-
             }
-        elsif @type == LISTING
-            @progblock = lambda {
-            }
-
-        elsif @type == SCHEDULED
-            @progblock = lambda {
-            }
-
-        elsif @type == RECORDED
-            @progblock = lambda {
-            }
-
         end
+        @header_html += "</tr>', \n"
     end
 end
 

@@ -21,7 +21,7 @@ error_if_not_equal( showname.nil?, false, "Show does not exist")
 showname = showname[0]
 
 #remove from hard drive
-Dir[VIDEO_PATH+"*"].grep(/#{Regexp.escape(showname)}/).each {|file| File.delete file}
+Dir[VIDEO_PATH+"**/*"].grep(/#{Regexp.escape(showname)}/).each {|file| File.delete file}
 
 databasequery("DELETE FROM Scheduled WHERE (channelID = '#{chan_id}'AND start = '#{date_time}')")
 databasequery("DELETE FROM Recorded WHERE (channelID = '#{chan_id}'AND start = '#{date_time}')")

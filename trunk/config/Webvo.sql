@@ -33,6 +33,8 @@ CREATE TABLE `Programme` (
   `category` varchar(250),
   `xmlNode` text NOT NULL,
   KEY `title_index` (`title`),
+  KEY `start_index` (`start`),
+  KEY `stop_index` (`stop`),
   PRIMARY KEY  (`channelID`,`start`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

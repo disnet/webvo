@@ -22,10 +22,30 @@
 
 require "mysql"
 require 'util'
+require 'xml/libxml'
 
-puts XML_HEADER
-databasequery("SELECT xmlNode from Programme JOIN Scheduled USING(channelID, start)").each {|prog|
-    puts prog
-}
-puts XML_FOOTER
-exit
+#this is only need for the trnasition to json
+require 'cgi'
+cgi = CGI.new
+format = cgi.params['format'][0]
+json = cgi.params['json'][0]
+
+
+# changing the order will break error xml formatting
+result = databasequery("SELECT p.xmlNode, number from Programme p JOIN Scheduled USING(channelID, start) JOIN Channel USING(channelID)")
+
+if format == "new" or json == "true"
+    puts JSON_HEADER
+    json_out = JSON_Output.new(JSON_Output::SCHEDULED)
+    result.each_hash {|hash|
+        prog = Prog.new(XML::Parser.string(hash['xmlNode'].to_s).parse, hash['number'])
+        prog.set_json_output
+        json_out.add_programme(prog)
+    }
+    puts json_out
+
+else
+    puts XML_HEADER
+    result.each {|show| puts show[0]}
+    puts XML_FOOTER
+end
