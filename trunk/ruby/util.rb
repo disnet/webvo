@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require "mysql"
+require "xml/libxml"
 
 def load_config
     config = Hash.new
