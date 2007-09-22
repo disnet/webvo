@@ -32,7 +32,7 @@ json = cgi.params['json'][0]
 
 
 # changing the order will break error xml formatting
-result = databasequery("SELECT p.xmlNode, number from Programme p JOIN Scheduled USING(channelID, start) JOIN Channel USING(channelID)")
+result = databasequery("SELECT p.xmlNode, number from Programme p JOIN Scheduled USING(channelID, start) JOIN Channel USING(channelID) ORDER BY start")
 
 if format == "new" or json == "true"
     puts JSON_HEADER
