@@ -239,7 +239,7 @@ class Prog
         @format_style = "MySQL"
     end
     def set_json_output
-        @format_block = lambda {|item| item.to_s}
+        @format_block = lambda {|item| item.to_s.gsub(/'/,"&#39;")}
         @format_style = "JSON"
     end
     private
@@ -254,7 +254,7 @@ class Prog
         if item.nil?
             ""
         else
-            @format_block.call(item).gsub(/'/,"&#39;")
+            @format_block.call(item)
         end
     end
 end
@@ -304,7 +304,14 @@ class JSON_Output
             @progblock = lambda {|prog|
                 progclass = prog.past? ? '"programmePast"' : '"programme"'
                 progcolspan = '"' + minutes_overlap(prog.start_time, prog.stop_time, @start, @stop).to_s + '"'
-                "'html': '<td id=\"#{prog.id}\" class=#{progclass} colspan=#{progcolspan}>#{prog.title}</td>"
+                retstr = "{ 'id':'#{prog.id}',"
+                retstr += "'start': '#{prog.start}',"
+                retstr += "'stop': '#{prog.stop}',"
+                retstr += "'title': '#{prog.title}',"
+                retstr += "'sub_title': '#{prog.sub_title}',"
+                retstr += "'episode': '#{prog.episode}',"
+                retstr += "'desc': '#{prog.desc}',"
+                retstr += "'html': '<td id=\"#{prog.id}\" class=#{progclass} colspan=#{progcolspan}>#{prog.title}</td>' }"
             }
         else
             @header_html += "<tr class=\"head\">"
