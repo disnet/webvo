@@ -29,10 +29,12 @@ STOP = "end_date_time"
 LOG = Logger.new(LOG_PATH+"form_listing_log.txt")
 LOG.level = Logger::DEBUG
 
-puts XML_HEADER
-
+# changing the order will break error xml formatting
 cgi = CGI.new                      # The CGI object is how we get the arguments 
   
+format = cgi.params['format'][0]
+json = cgi.params['json'][0]
+
 error_if_not_equal(cgi.has_key?(START), true, "Need start date time")
 error_if_not_equal(cgi.has_key?(STOP), true, "Need end date time")
 
@@ -64,17 +66,33 @@ error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31
 error_if_not_equal(end_date[6..7].to_i <= 31, true, "Ending day must be less than 31")
 
 before_query = Time.now
+retstr = ""
 range = hours_in(start_date_time, end_date_time).join(",")
 # Is there a faster, better way to do this?
 query = "SELECT DISTINCT xmlNode from Channel JOIN Listing USING(channelID) WHERE showing in (#{range})"
-databasequery(query).each { |chan| puts chan[0]}
-query = "SELECT DISTINCT xmlNode from Programme JOIN Listing USING(channelID, start) WHERE showing in (#{range})"
-databasequery(query).each { |prog| puts prog[0] }
+channels = databasequery(query) #.each { |chan| puts chan[0]}
+query = "SELECT DISTINCT p.xmlNode, number from Programme p JOIN Listing USING(channelID, start) JOIN Channel USING(channelID) WHERE showing in (#{range}) ORDER BY channelID, start"
+programmes = databasequery(query) #.each { |prog| puts prog[0] }
+
+if format == "new" or json == "true"
+    puts JSON_HEADER
+    json_out = JSON_Output.new(JSON_Output::LISTING, start_date_time, end_date_time)
+    programmes.each_hash {|hash|
+        prog = Prog.new(XML::Parser.string(hash['xmlNode'].to_s).parse, hash['number'])
+        prog.set_json_output
+        json_out.add_programme(prog)
+    }
+    puts json_out
+else
+    puts XML_HEADER
+    channels.each { |chan| puts chan[0] }
+    programmes.each { |prog| puts prog[0] }
+    puts XML_FOOTER
+end
+  
 after_query = Time.now
 LOG.debug("SQL query on start: #{start_date_time}  and stop: #{end_date_time}  took: " + (after_query - before_query).to_s)
 
-puts XML_FOOTER
-  
 #checking to see if the user requested an unavailable timeframe
 #error_if_not_equal(start >= oldest_e, true, "Ran off begining of info.xml")
 #error_if_not_equal(stop <= newest_e, true, "Ran off end of info.xml")

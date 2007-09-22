@@ -79,16 +79,26 @@ def databasequery(query_str)
     return result
 end
 
-def hours_in (start, stop)
+def hours_in (start, stop, return_time = false)
     startTime = formatToRuby(start)
     stopTime = formatToRuby(stop)
     hours = []
     hour = startTime - startTime.min * 60 - startTime.sec
     while hour < stopTime
-        hours << hour.strftime(DATE_TIME_FORMAT_RUBY_XML)
+        if return_time == false
+            hours << hour.strftime(DATE_TIME_FORMAT_RUBY_XML)
+        else
+            hours << hour
+        end
         hour += 60 * 60
     end
     return hours
+end
+
+def minutes_overlap (start, stop, range_start, range_stop)
+    start = range_start if start < range_start
+    stop = range_stop if stop > range_stop
+    (stop - start).to_i/60
 end
 
 def format_filename (name)
@@ -97,6 +107,7 @@ def format_filename (name)
 end
 
 def formatToRuby (xmlform_data)
+   return xmlform_data if xmlform_data.instance_of? Time
    year = xmlform_data[0..3].to_i
    month = xmlform_data[4..5].to_i
    day = xmlform_data[6..7].to_i
@@ -125,14 +136,28 @@ def freespace()
     return space
 end
 
+#this is a hack to make the nil? test work on tvbox, like it does on the Feisty image
+#this appears to work on the Feisty image
+class XML::Node::Set
+    def nil?
+        if self.length == 0
+            return true
+        end
+        false
+    end
+end
+
 # Class for programme sql entry formatting
 class Prog
-    attr_reader :channel, :size
+    attr_reader :channel, :size, :start_time, :stop_time
     TIME_FORMAT = "%A %m/%d/%Y %I:%M %p"
     def initialize(xmlNode, channel, size = "0")
         @xmlNode = xmlNode
         @channel = channel
         @size = size
+
+        @start_time = formatToRuby(@xmlNode["start"][0..13])
+        @stop_time = formatToRuby(@xmlNode["stop"][0..13])
         set_mysql_output
     end
     def id
@@ -141,11 +166,18 @@ class Prog
     def chanID
         format @xmlNode["channel"]
     end
+    def past?
+        if @stop_time < Time.now
+            return true
+        else
+            return false
+        end
+    end
     def start
         format @xmlNode["start"][0..13]
     end
     def start_readable
-        format formatToRuby(@xmlNode["start"][0..13]).strftime(TIME_FORMAT)
+        format @start_time.strftime(TIME_FORMAT)
     end
     def start_s
         @xmlNode["start"][0..13]
@@ -154,7 +186,7 @@ class Prog
         format @xmlNode["stop"][0..13]
     end
     def stop_readable
-        format formatToRuby(@xmlNode["stop"][0..13]).strftime(TIME_FORMAT)
+        format @stop_time.strftime(TIME_FORMAT)
     end
     def stop_s
         @xmlNode["stop"][0..13]
@@ -180,7 +212,9 @@ class Prog
     end
     def episode
         onscreen_ep = nil
-        @xmlNode.find('episode-num').each {|ep| onscreen_ep = ep.content if ep['system'] == 'onscreen'}
+        @xmlNode.find('episode-num').each {|ep| 
+            onscreen_ep = ep.content if ep['system'] == 'onscreen' or onscreen_ep.nil?
+        }
         format onscreen_ep
     end
     def credits
@@ -232,7 +266,9 @@ class JSON_Output
     SCHEDULED = "scheduled"
     RECORDED = "recorded"
 
-    def initialize(type, daterange = [])
+    def initialize(type, start = Time.now, stop = Time.new)
+        @start = formatToRuby start
+        @stop = formatToRuby stop
         @type = type
         type_changed
         @progs = Array.new
@@ -254,10 +290,24 @@ class JSON_Output
     end
     private
     def type_changed
-        @header_html = "'header': '<tr class=\"head\">"
+        @header_html = "'header': '"
         if @type == LISTING
-           nil 
+            minutes_in_range = (@stop - @start).to_i/60
+            @header_html += "<tr>"
+            (minutes_in_range + 1).times { @header_html += "<td class=\"empty\" style=\"border: 0px none ;\"/>" }
+            @header_html += "</tr><tr class=\"head\">"
+            @header_html += "<td>Ch.</td>"
+            hours_in(@start, @stop, true).each {|hour| 
+                @header_html += "<td colspan=\"30\">#{hour.strftime("%I:00%p")}</td>"
+                @header_html += "<td colspan=\"30\">#{hour.strftime("%I:30%p")}</td>"
+            }
+            @progblock = lambda {|prog|
+                progclass = prog.past? ? '"programmePast"' : '"programme"'
+                progcolspan = '"' + minutes_overlap(prog.start_time, prog.stop_time, @start, @stop).to_s + '"'
+                "'html': '<td id=\"#{prog.id}\" class=#{progclass} colspan=#{progcolspan}>#{prog.title}</td>"
+            }
         else
+            @header_html += "<tr class=\"head\">"
             @header_html += "<th>Title</th>"
             @header_html += "<th>Episode Title</th>"
             @header_html += "<th>Episode</th>"
@@ -284,17 +334,6 @@ class JSON_Output
             }
         end
         @header_html += "</tr>', \n"
-    end
-end
-
-#this is a hack to make the nil? test work on tvbox, like it does on the Feisty image
-#this appears to work on the Feisty image
-class XML::Node::Set
-    def nil?
-        if self.length == 0
-            return true
-        end
-        false
     end
 end
 

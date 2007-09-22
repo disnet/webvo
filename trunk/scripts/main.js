@@ -61,10 +61,11 @@ SearchData.prototype.setQuery = function(term,val) {
 
 SearchData.prototype.reqHandler = function() {
     var searchTable = $('searched');
-    searchTable.innerHTML = this.data.search.header;
+    var temp_html = this.data.search.header;
     for(var i = 0; i < this.data.search.programmes.length; i++) {
-        searchTable.innerHTML += this.data.search.programmes[i].html;
+        temp_html += this.data.search.programmes[i].html;
     }
+    searchTable.innerHTML = temp_html
 }
 SearchData.prototype.searchFailed = function(req) { 
     console.error("Problem retrieving search results:");

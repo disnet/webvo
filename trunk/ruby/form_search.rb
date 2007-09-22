@@ -18,6 +18,7 @@ query += " AND ( title LIKE '#{Mysql.escape_string(search_title)}%'" unless sear
 query += " OR title LIKE 'the #{Mysql.escape_string(search_title)}%' )" unless search_title.nil?
 #query += " AND `sub-title` LIKE '%#{sub_title}%'" unless sub_title.nil?
 
+query += " ORDER BY episode"
 query += " LIMIT 400"
 
 # changing the order will break error xml formatting
