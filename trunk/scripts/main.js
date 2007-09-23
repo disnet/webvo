@@ -6,6 +6,8 @@ function App(dbg){
    this.recorded_data = null;
 
    this.search_data = new SearchData();
+   this.scheduled_data = new ScheduledData();
+   this.recorded_data = new RecordedData();
 
    this.pages = [$('listingContent'), $('scheduledContent'), $('recordedContent'), $('searchContent')];
 }
@@ -32,9 +34,11 @@ App.prototype = {
     },
     showScheduled: function() {
         this._displayPage($('scheduledContent')); 
+        this.scheduled_data.update();
     },
     showRecorded: function() {
         this._displayPage($('recordedContent')); 
+        this.recorded_data.update();
     },
     showSearch: function() {
         this._displayPage($('searchContent')); 
@@ -50,43 +54,6 @@ App.prototype = {
     }
 };
 
-function SearchData() {
-    bindMethods(this); /* preserve `this` for callbacks */
-}
-SearchData.prototype = new JSONRequest('ruby/form_search.rb');
-
-SearchData.prototype.setQuery = function(term,val) {
-    this._query[term] = val;
-}
-
-SearchData.prototype.reqHandler = function() {
-    var searchTable = $('searched');
-    var temp_html = this.data.search.header;
-    for(var i = 0; i < this.data.search.programmes.length; i++) {
-        temp_html += this.data.search.programmes[i].html;
-    }
-    searchTable.innerHTML = temp_html
-}
-SearchData.prototype.searchFailed = function(req) { 
-    console.error("Problem retrieving search results:");
-    console.error(req);
-}
-
-function JSONRequest(url) {
-    this._url = url;
-    this._query = {'json':'true'};
-}
-JSONRequest.prototype.update = function() {
-    var d = loadJSONDoc(this._url,this._query);
-    d.addCallbacks(this._gotRequest,this._fetchFailed);
-}
-JSONRequest.prototype._gotRequest = function(req) {
-    this.data = req;
-    this.reqHandler();
-}
-JSONRequest.prototype._fetchFailed = function(req) {
-    console.log('Abstract method...should have been implemented in child');
-}
 
 
 var app;
