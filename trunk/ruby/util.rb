@@ -337,7 +337,7 @@ class JSON_Output
                 retstr += "<td>#{prog.stop_readable}</td>"
                 retstr += "<td>#{prog.channel}</td>"
                 retstr += "<td>#{prog.size}</td>" if @type == RECORDED
-                retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td>' }"
+                retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
             }
         end
         @header_html += "</tr>', \n"
