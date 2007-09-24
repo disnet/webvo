@@ -1,5 +1,5 @@
 #summary Set by step guide to set up webvo on Ubuntu 7.04
-*WARNING! This document is in flux as it is in the process of being updated for WebVo 2.0. ~Molly Jo August 14, 2007*
+*WARNING! This document is in flux as it is in the process of being updated for Webvo 2.0. ~Molly Jo August 14, 2007*
 
 = Installation for Webvo 2.0 =
 
@@ -405,3 +405,4 @@ Add task to grab the tv listing to your cron
 19 3 * * * /home/public_html/webvo/ruby/getfromzap2it.rb
 }}}
 Will run every day at 3:19AM. Change as you see fit.
+ 
