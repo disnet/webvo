@@ -166,7 +166,7 @@ Add task to grab the tv listing to your cron
 Will run every day at 3:19AM. Change as you see fit.
 
 
-= Installation for WebVo 1.0 =
+= Installation for Webvo 1.0 =
 
 This is a step by step guide to install webvo on a fully updated fresh install of Ubuntu 6.10. If you're using a different distro then concepts in this guide should be transferable, if not the exact commands. Some familiarity with Linux is assumed and will be useful if you run into any errors not foreseen in the document. If you run into any problems please post them in the discussion forum.
 
@@ -405,4 +405,5 @@ Add task to grab the tv listing to your cron
 19 3 * * * /home/public_html/webvo/ruby/getfromzap2it.rb
 }}}
 Will run every day at 3:19AM. Change as you see fit.
+ 
  
