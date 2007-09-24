@@ -55,7 +55,7 @@ Install ruby-mysql
 }}}
 
 === 5. XMLTV ===
-*WARNING: zap2it labs is discontinuing their service.  The WebVo team is working on a replacement for xml tv listings. ~Molly Jo Aug. 14, 2007*
+*WARNING: zap2it labs is discontinuing their service.  The Webvo team is working on a replacement for xml tv listings. ~Molly Jo Aug. 14, 2007*
 Install xmltv
 {{{
 ~$ sudo apt-get install xmltv
@@ -405,5 +405,6 @@ Add task to grab the tv listing to your cron
 19 3 * * * /home/public_html/webvo/ruby/getfromzap2it.rb
 }}}
 Will run every day at 3:19AM. Change as you see fit.
+ 
  
  
