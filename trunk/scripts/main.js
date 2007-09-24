@@ -54,8 +54,6 @@ App.prototype = {
     }
 };
 
-
-
 var app;
 window.onload = function() {
     app = new App(true);

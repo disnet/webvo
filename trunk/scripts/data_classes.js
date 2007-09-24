@@ -77,7 +77,7 @@ SearchData.prototype.setQuery = function(term,val) {
 /* swap search table with new data */
 SearchData.prototype.reqHandler = function() {
     var oldSearchTable = $('searched');
-    var temp_html = '<table id="searched_table">';
+    var temp_html = '<table id="searched">';
     temp_html += this.data.search.header;
     for(var i = 0; i < this.data.search.programmes.length; i++) {
         temp_html += this.data.search.programmes[i].html;
