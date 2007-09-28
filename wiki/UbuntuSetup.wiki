@@ -55,12 +55,18 @@ Install ruby-mysql
 }}}
 
 === 5. XMLTV ===
-*WARNING: zap2it labs is discontinuing their service.  The Webvo team is working on a replacement for xml tv listings. ~Molly Jo Aug. 14, 2007*
-Install xmltv
+Download the new XMLTV
+http://easynews.dl.sourceforge.net/sourceforge/xmltv/xmltv-0.5.48.tar.bz2 after you
+get it you will have to re-set it up.
+
 {{{
-~$ sudo apt-get install xmltv
-}}}
-You will need to sign up for xml listings at http://labs.zap2it.com. Use certificate code: 'ZYZM-TE5O-SBUT'. 
+wget http://easynews.dl.sourceforge.net/sourceforge/xmltv/xmltv-0.5.48.tar.bz2
+tar xvzf xmltv-0.5.48.tar.bz2
+cd xmltv-0.5.48/
+pearl Makefile.PL
+make
+sudo make install
+}}} 
 
 Configure xmltv. This is for North America. Currently webvo only grabs North American listings.  You will need your zap2it username and password you just got. Leave the timezone as default (+0000).
 {{{
