@@ -32,11 +32,12 @@ config_xmltv_config="true"
 config_encoder_bin="true"
 config_sql="false"
 config_download_webvo="true"
-config_apache="false"
+config_apache="true"
+config_cron="true"
 
 installed_packages=""
 
-#get configuration flags
+#get configuration flags----------------------------------------------------------
 
 #not sure how to do this elegantly . . .
 
@@ -72,7 +73,7 @@ do
 		shift
 	;;
 	"LOG_PATH:")
-		LOG_PATH=$2root
+		LOG_PATH=$2
 		shift
 	;;
 	"XMLTV_CONFIG:")
@@ -91,10 +92,13 @@ do
 		INSTALL_PATH=$2
 		shift
 	;;
-	? | help | --help | -help | -?)
+	"-NOCRON")
+		config_cron="false"
+	;;
+	? | help | --help | -help | -? | help:)
 	cat << EOF
 
-install_webvo [option] [value] [option] [value] ....
+install_webvo [flag] [option]: [value] [option]: [value] ....
 
 Options:
 INSTALL_PATH:  -- where webvo should be installed default "/var/www/"
@@ -114,8 +118,11 @@ ENCODER_BIN:   -- where the encoder is installed default
                   "$INSTALL_PATH/webvo/ruby/dummy_record.rb"
 FILE_PADDING:  -- the file padding setting default "120"
 
+Flag:
+-NOCRON        -- the getfromzap2it will not be scheduled.
+
 Installs and configures WebVo the web based PVR.
-For more information see http://code.google.com/p/webvo/.
+For more information see http://webvo.googlecode.com.
 
 EOF
 exit
@@ -128,7 +135,29 @@ exit
 	shift
 done
 
-#check the inputs
+#check what distribution in --------------------------------------------------------------------
+
+if [ "$(grep 'DISTRIB_ID=Ubuntu' /etc/lsb-release )" = "$NULL" ] || [ "$( grep 'DISTRIB_RELEASE=7.04' /etc/lsb-release )" = "$NULL" ]
+then
+	echo "Not a recommended webvo system, proceed anyway?"
+	echo "Enter [y]es to continue, [n]o to abort"
+	read -p "Enter [y]es or [n]o " answer
+	case "$answer" in
+		[yY1])
+			echo "Choose to brave the wild unknown."
+		;;
+		[nN])
+			echo "Aborted"
+			exit 1
+		;;
+	esac
+else
+	echo "Running Fiesty"
+
+fi
+
+
+#check the user input ---------------------------------------------------------------------------
 #SERVERNAME="localhost"
 #USERNAME="root"
 #USERPASS="csc4150"
@@ -205,6 +234,12 @@ fi
 echo 'Updating apt-get'
 apt-get -y -q=2 update
 
+if [ ! "$?" = "0" ]
+then
+	echo 'Updating apt-get failed, trying aptitude'
+	aptitude -y -q=2 update
+fi
+
 for package in ${packages[@]}
 do
 	if [ "$( dpkg --get-selections | awk 'BEGIN { FS = " "; OFS = "\t" } { $1 = $1; gsub(/\t+/, "\t"); print}' | cut -f1 | grep -x $package )" = "$NULL" ]
@@ -233,6 +268,33 @@ do
 	fi
 done
 
+#install xmltv for new grabber --Not added to Repository as of 9-20-2007
+
+echo "Downloading and installing XMLTV"
+cd /tmp
+wget 'http://downloads.sourceforge.net/xmltv/xmltv-0.5.48.tar.bz2?modtime=1187633769&big_mirror=0' -o install_log
+bzip2 -d xmltv-0.5.48.tar.bz2
+tar -xf xmltv-0.5.48.tar
+cd xmltv-0.5.48
+perl Makefile.PL
+make
+make test
+make install
+
+echo "Did this look like it worked?"
+echo "Enter [y]es to continue, [n]o to abort"
+read -p "Enter [y]es or [n]o " answer
+case "$answer" in
+	[yY1])
+		echo "installation of XMLTV Succeeded"
+	;;
+	[nN])
+		echo "installation of XMLTV FAILED"
+		exit 1
+	;;
+esac
+
+#Downloading webvo
 if [ "$config_download_webvo" = "true" ]
 then
 	if [ -d $INSTALL_PATH ]
@@ -244,6 +306,7 @@ then
 		tar -xf webvo.tar
 		echo "Moving Webvo to $INSTALL_PATH"
 		cp -r webvo $INSTALL_PATH
+		chown "$(logname).$(logname) $INSTALL_PATH"
 		rm webvo.tar
 		rm -r webvo
 	else
@@ -260,7 +323,7 @@ then
 #SET PASSWORD FOR 'root'@'$SERVERNAME' = PASSWORD('$USERPASS')
 #quit
 #EOF
-	./config.rb
+	$INSTALL_PATH/webvo/ruby/config.rb
 
 fi
 
@@ -270,14 +333,86 @@ if [ "$config_apache" = "true" ]
 then
 	echo "Will set up apache"
 	#parse some of the configuration files to set up apache
+	#set up ruby and python as executable
+	if [ -f "/etc/apache2/apache2.conf" ]
+	then
+		echo "Setting up ruby and pythons as executables"
+		cd /etc/apache2
+		cat apache2.conf | sed -e 's/#AddHandler cgi-script .cgi/AddHandler cgi-script .cgi .rb .py/' > apache2.conf~
+#		diff apache2.conf~ apache2.conf
+		
+		if [ "$( diff apache2.conf~ apache2.conf | grep '>')" = "$NULL" ]
+		then
+			echo "No Changes made to Apache2"
+		else
+			echo "Apache2 executables configured"
+			/etc/init.d/apache2 stop
+			rm apache2.conf
+			mv apache2.conf~ apache2.conf
+			/etc/init.d/apache2 restart
+		fi
+		rm apache2.conf~
+	fi
+	
+	#set up the install path with apache2
+	if [ ! -f "/etc/apache2/conf.d/alias" ]
+	then
+		echo "alias doesn't exist"
+	fi
+	
+	#checks if install in a non-default path.  If it is, alias needs to be added.
+
+	if [ $(echo "${INSTALL_PATH#'/var/www'}") = $NULL ] || [ $(echo "${INSTALL_PATH#'/var/www'}") = '/' ]
+	then
+		echo "No need to alias"
+	else
+		echo "requested installation to a non-default path need to alias"
+		cat "Alias /webvo $INSTALL_PATH/webvo" > /etc/apache2/conf.d/alias
+		cat "<Directory /home/public_html/webvo/>" >> /etc/apache2/conf.d/alias
+  		cat "Options Indexes FollowSymLinks ExecCGI" >> /etc/apache2/conf.d/alias
+  		cat "AllowOverride All" >> /etc/apache2/conf.d/alias
+  		cat "Order allow,deny" >> /etc/apache2/conf.d/alias
+  		cat "Allow from all" >> /etc/apache2/conf.d/alias
+		cat "</Directory>" >> /etc/apache2/conf.d/alias
+		/etc/init.d/apache2 restart
+	fi
+	
 fi
 
-echo configuring log_path
-if ["$config_log_path"= "true" ]
+echo "configuring log_path $config_log_path"
+if [ "$config_log_path" = "true" ]
 then
 	#make log path writable
-	 #sudo chmod a+w logs
+	 sudo chmod a+w $LOG_PATH
 fi
+
+#modify cron
+if [ config_cron = "true" ]
+then
+	if [ -d /etc/cron.daily ]
+	then
+		cp $INSTALL_PATH/webvo/ruby/getfromzap2it.rb /etc/cron.daily/
+	else
+		cd /tmp
+		crontab -u $(logname) -l > curcrontab
+		echo "19 3 * * * $INSTALL_PATH/webvo/ruby/getfromzap2it.rb" | sed -e 's/\//./g' | sed -e 's/*/./g' > searchstr
+		searchstr="$( cat searchstr )"
+		echo "$searchstr"
+		grep -G  "$searchstr" curcrontab
+		#if it isn't already scheduled, schedule it!
+		if [ "$?" = "1" ]
+		then
+			echo "Scheduling Cron"
+			echo "19 3 * * * $INSTALL_PATH/webvo/ruby/getfromzap2it.rb" >> curcrontab
+			crontab -u $(logname) curcrontab
+		else
+			echo "Webvo already scheduled with Cron"
+		fi
+		rm searchstr
+		rm curcrontab
+	fi
+fi
+
 
 #write out config file
 echo "writing out config file $INSTALL_PATH/webvo/ruby" 
@@ -288,6 +423,7 @@ then
 		echo "Configuration file already exists!"
 	elif [ "$config_download_webvo" = "true" ]
 	then
+
 		echo Writing Configuration File
 		cd "$INSTALL_PATH/webvo/ruby"
 		echo "SERVERNAME = $SERVERNAME" > webvo.config
