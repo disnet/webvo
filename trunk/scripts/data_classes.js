@@ -27,6 +27,15 @@ JSONRequest.prototype._fetchFailed = function(req) {
     console.log('Abstract method...should have been implemented in child');
 }
 
+function ListingData() {
+    bindMethods(this);
+}
+ListingData.prototype = new JSONRequest('ruby/form_listing.rb');
+
+ListingData.prototype.reqHandler = function () {
+    $('schedule').innerHTML = this.data.listing.header;
+    
+}
 
 /*  @class Data storage class to hold and display recorded information 
     @base JSONRequest

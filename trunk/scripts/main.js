@@ -8,6 +8,7 @@ function App(dbg){
    this.search_data = new SearchData();
    this.scheduled_data = new ScheduledData();
    this.recorded_data = new RecordedData();
+   this.listing_data = new ListingData();
 
    this.pages = [$('listingContent'), $('scheduledContent'), $('recordedContent'), $('searchContent')];
 }
@@ -31,6 +32,7 @@ App.prototype = {
     /* Display/hide pages */
     showListing: function() {
         this._displayPage($('listingContent')); 
+        this.listing_data.update();
     },
     showScheduled: function() {
         this._displayPage($('scheduledContent')); 
