@@ -35,11 +35,15 @@ cgi = CGI.new                      # The CGI object is how we get the arguments
 format = cgi.params['format'][0]
 json = cgi.params['json'][0]
 
-error_if_not_equal(cgi.has_key?(START), true, "Need start date time")
-error_if_not_equal(cgi.has_key?(STOP), true, "Need end date time")
-
-start_date_time = cgi.params[START][0]
-end_date_time = cgi.params[STOP][0]
+if cgi.has_key?(START) and cgi.has_key?(STOP)
+    start_date_time = cgi.params[START][0]
+    end_date_time = cgi.params[STOP][0]
+else
+    temp_time = Time.new
+    temp_time = temp_time - temp_time.min * 60 - temp_time.sec
+    start_date_time = temp_time.strftime(DATE_TIME_FORMAT_RUBY_XML)
+    end_date_time = (temp_time + DEFAULT_LISTING_HOURS * 60 * 60).strftime(DATE_TIME_FORMAT_RUBY_XML)
+end
 
 #checks lengths of arguments to make sure the have the length of YYYYMMDDHHMMSS
 error_if_not_equal(start_date_time.length, LENGTH_OF_DATE_TIME, "incorrect len for start date")
@@ -69,9 +73,10 @@ before_query = Time.now
 retstr = ""
 range = hours_in(start_date_time, end_date_time).join(",")
 # Is there a faster, better way to do this?
+# This should not be needed in the JSON output formatting
 query = "SELECT DISTINCT xmlNode from Channel JOIN Listing USING(channelID) WHERE showing in (#{range})"
 channels = databasequery(query) #.each { |chan| puts chan[0]}
-query = "SELECT DISTINCT p.xmlNode, number from Programme p JOIN Listing USING(channelID, start) JOIN Channel USING(channelID) WHERE showing in (#{range}) ORDER BY channelID, start"
+query = "SELECT DISTINCT p.xmlNode, number from Programme p JOIN Listing USING(channelID, start) JOIN Channel USING(channelID) WHERE showing in (#{range}) ORDER BY number, start"
 programmes = databasequery(query) #.each { |prog| puts prog[0] }
 
 if format == "new" or json == "true"

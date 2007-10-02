@@ -28,6 +28,8 @@ FILE_PADDING = constants[:FILE_PADDING.to_i]
 
 LENGTH_OF_DATE_TIME = 14
 
+DEFAULT_LISTING_HOURS = 3
+
 SUPPORTED_ENCODING_SCHEMES= [".mpg", ".avi"]
 SUPPORTED_FILE_TYPES = [".mpg", ".avi"]
 
@@ -259,6 +261,52 @@ class Prog
     end
 end
 
+class List_Output
+    CHANNEL = "channels"
+    NAME = "names"
+    LISTING = "listing"
+    def initialize(type, start = Time.new, stop = Time.new)
+        @type = type
+        @list = Hash.new
+        @start = start
+        @stop = stop
+        @prog_html = lambda {|prog|
+            progclass = prog.past? ? '"programmePast"' : '"programme"'
+            progcolspan = '"' + minutes_overlap(prog.start_time, prog.stop_time, @start, @stop).to_s + '"'
+            "<td id=\"#{prog.id}\" class=#{progclass} colspan=#{progcolspan}>#{prog.title}</td>"
+        }
+    end
+    def add(channel, progid)
+        unless @list.has_key? channel
+            @list[channel] = Array.new
+        end
+        @list[channel] = @list[channel] << progid
+    end
+    def change_type(type)
+        @type = type
+    end
+    def to_s
+        temp_list = Array.new
+        if @type == LISTING
+            @list.sort{|a,b| a[0].to_i <=> b[0].to_i}.each {|arr|
+                temp_list << "<tr><td class=\"channelName\">#{arr[0]}</td>"
+                #this assumes that @prog was populated in the proper order
+                arr[1].each {|aprog|
+                    temp_list << @prog_html.call(aprog)
+                }
+                temp_list << "</tr>\n"
+            }
+            temp_list.to_s
+        else
+            @list.each {|key, val|
+                temp_list << "{ '#{key}': [ '#{val.join("','")}'] }"
+            }
+            retstr = "'#{@type}': [ \n"
+            retstr += temp_list.join(",\n") + "]"
+        end
+    end
+end
+
 class JSON_Output
     SEARCH = "search"
     #have to deal with date range to fully implement listing
@@ -278,40 +326,51 @@ class JSON_Output
         @progs << prog
     end
     def to_s
+        programme_node = Array.new
+        programme_html = List_Output.new(List_Output::LISTING, @start, @stop) 
+        chan_list = List_Output.new(List_Output::CHANNEL)
+        @progs.each {|aprog| 
+            programme_node << @progblock.call(aprog)
+            chan_list.add(aprog.chanID, aprog.id)
+            programme_html.add(aprog.channel, aprog) if @type == LISTING
+            #programme_html += @prog_html.call(aprog) if @type == LISTING
+        }
+        progStr = programme_node.join(",\n")
+        @header_html += programme_html.to_s.gsub(/\n/, "") + "</table>',\n" if @type == LISTING
+
         retstr = "{ '#{@type}': { "
         retstr += @header_html
         retstr += "'programmes': [\n"
+        retstr += progStr + " ]"
 
-        programme_node = Array.new
-        @progs.each {|aprog| programme_node << @progblock.call(aprog)}
-        retstr += programme_node.join(",\n")
+        retstr += ",\n'lists': {\n"
+        retstr += chan_list.to_s
+        retstr +=  " \n}\n"
 
-        retstr += "] } }"
+        retstr += "} }"
     end
     private
     def type_changed
         @header_html = "'header': '"
         if @type == LISTING
             minutes_in_range = (@stop - @start).to_i/60
-            @header_html += "<tr>"
+            @header_html += "<table class=\"schedule\" id=\"schedule\"><tr>"
             (minutes_in_range + 1).times { @header_html += "<td class=\"empty\" style=\"border: 0px none ;\"/>" }
             @header_html += "</tr><tr class=\"head\">"
-            @header_html += "<td>Ch.</td>"
+            @header_html += "<th>Ch.</th>"
             hours_in(@start, @stop, true).each {|hour| 
-                @header_html += "<td colspan=\"30\">#{hour.strftime("%I:00%p")}</td>"
-                @header_html += "<td colspan=\"30\">#{hour.strftime("%I:30%p")}</td>"
+                @header_html += "<th colspan=\"30\">#{hour.strftime("%I:00%p")}</th>"
+                @header_html += "<th colspan=\"30\">#{hour.strftime("%I:30%p")}</th>"
             }
+            @header_html += "</tr>"
             @progblock = lambda {|prog|
-                progclass = prog.past? ? '"programmePast"' : '"programme"'
-                progcolspan = '"' + minutes_overlap(prog.start_time, prog.stop_time, @start, @stop).to_s + '"'
                 retstr = "{ 'id':'#{prog.id}',"
                 retstr += "'start': '#{prog.start}',"
                 retstr += "'stop': '#{prog.stop}',"
                 retstr += "'title': '#{prog.title}',"
                 retstr += "'sub_title': '#{prog.sub_title}',"
                 retstr += "'episode': '#{prog.episode}',"
-                retstr += "'desc': '#{prog.desc}',"
-                retstr += "'html': '<td id=\"#{prog.id}\" class=#{progclass} colspan=#{progcolspan}>#{prog.title}</td>' }"
+                retstr += "'desc': '#{prog.desc}' }"
             }
         else
             @header_html += "<tr class=\"head\">"
@@ -324,6 +383,7 @@ class JSON_Output
             @header_html += "<th>Channel</th>"
             @header_html += "<th>Size</th>" if @type == RECORDED
             @header_html += "<th>Checkbox</th>"
+            @header_html += "</tr>', \n"
 
             @progblock = lambda {|prog|
                 retstr = "{ 'id':'#{prog.id}',"
@@ -340,7 +400,6 @@ class JSON_Output
                 retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
             }
         end
-        @header_html += "</tr>', \n"
     end
 end
 
