@@ -48,7 +48,7 @@ RecordedData.prototype = new JSONRequest('ruby/form_recorded.rb');
 /* swap recorded table with new data */
 RecordedData.prototype.reqHandler = function() {
     var oldRecordedTable = $('recorded');
-    var temp_html = '<table id="recorded_table">';
+    var temp_html = '<table id="recorded_table" class="recorded_table">';
     temp_html += this.data.recorded.header;
     for(var i = 0; i < this.data.recorded.programmes.length; i++) {
         temp_html += this.data.recorded.programmes[i].html;
@@ -64,14 +64,32 @@ ScheduledData.prototype = new JSONRequest('ruby/form_scheduled.rb');
 
 /* swap scheduled table with new data */
 ScheduledData.prototype.reqHandler = function() {
-    var oldScheduledTable = $('recording');
-    var temp_html = '<table id="recording_table">';
+    var oldScheduledTable = $('scheduled');
+    var temp_html = '<table id="scheduled_table" class="scheduled_table">';
     temp_html += this.data.scheduled.header;
     for(var i = 0; i < this.data.scheduled.programmes.length; i++) {
         temp_html += this.data.scheduled.programmes[i].html;
     }
     temp_html += '</table>';
     oldScheduledTable.innerHTML = temp_html;
+    this.markAdjacent();
+}
+
+/* mark scheduled listings if adjacent to other scheduled shows 
+   this depends on the programme data being sequentially ordered 
+*/
+ScheduledData.prototype.markAdjacent = function() {
+    var previousEnd = "";
+    for(var i = 0; i < this.data.scheduled.programmes.length; i++) {
+        if (this.data.scheduled.programmes[i].start == previousEnd) {
+            addElementClass(this.data.scheduled.programmes[i].id, "adjacentBefore");
+        }
+        else {
+            removeElementClass(this.data.scheduled.programmes[i].id, "adjacentBefore");
+        }
+        previousEnd = this.data.scheduled.programmes[i].stop;
+    }
+
 }
 
 function SearchData() {
@@ -86,7 +104,7 @@ SearchData.prototype.setQuery = function(term,val) {
 /* swap search table with new data */
 SearchData.prototype.reqHandler = function() {
     var oldSearchTable = $('searched');
-    var temp_html = '<table id="searched">';
+    var temp_html = '<table id="searched_table" class="searched_table">';
     temp_html += this.data.search.header;
     for(var i = 0; i < this.data.search.programmes.length; i++) {
         temp_html += this.data.search.programmes[i].html;

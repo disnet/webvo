@@ -241,7 +241,10 @@ class Prog
         @format_style = "MySQL"
     end
     def set_json_output
-        @format_block = lambda {|item| item.to_s.gsub(/'/,"&#39;")}
+        @format_block = lambda {|item| 
+            return "&nbsp;" if item.nil?
+            item.to_s.gsub(/'/,"&#39;")
+        }
         @format_style = "JSON"
     end
     private
@@ -253,11 +256,7 @@ class Prog
         end
     end
     def format(item)
-        if item.nil?
-            ""
-        else
-            @format_block.call(item)
-        end
+        @format_block.call(item)
     end
 end
 
@@ -329,9 +328,11 @@ class JSON_Output
         programme_node = Array.new
         programme_html = List_Output.new(List_Output::LISTING, @start, @stop) 
         chan_list = List_Output.new(List_Output::CHANNEL)
+        name_list = List_Output.new(List_Output::NAME)
         @progs.each {|aprog| 
             programme_node << @progblock.call(aprog)
             chan_list.add(aprog.chanID, aprog.id)
+            name_list.add(aprog.title, aprog.id)
             programme_html.add(aprog.channel, aprog) if @type == LISTING
             #programme_html += @prog_html.call(aprog) if @type == LISTING
         }
@@ -345,6 +346,7 @@ class JSON_Output
 
         retstr += ",\n'lists': {\n"
         retstr += chan_list.to_s
+        retstr += ",\n" + name_list.to_s
         retstr +=  " \n}\n"
 
         retstr += "} }"
@@ -354,9 +356,9 @@ class JSON_Output
         @header_html = "'header': '"
         if @type == LISTING
             minutes_in_range = (@stop - @start).to_i/60
-            @header_html += "<table class=\"schedule\" id=\"schedule\"><tr>"
-            (minutes_in_range + 1).times { @header_html += "<td class=\"empty\" style=\"border: 0px none ;\"/>" }
-            @header_html += "</tr><tr class=\"head\">"
+            @header_html += "<table id=\"schedule_table\" class=\"schedule_table\"><tr class=\"empty\">"
+            (minutes_in_range + 1).times { @header_html += "<td/>" }
+            @header_html += "</tr><tr>"
             @header_html += "<th>Ch.</th>"
             hours_in(@start, @stop, true).each {|hour| 
                 @header_html += "<th colspan=\"30\">#{hour.strftime("%I:00%p")}</th>"
@@ -373,7 +375,7 @@ class JSON_Output
                 retstr += "'desc': '#{prog.desc}' }"
             }
         else
-            @header_html += "<tr class=\"head\">"
+            @header_html += "<tr>"
             @header_html += "<th>Title</th>"
             @header_html += "<th>Episode Title</th>"
             @header_html += "<th>Episode</th>"
@@ -387,7 +389,9 @@ class JSON_Output
 
             @progblock = lambda {|prog|
                 retstr = "{ 'id':'#{prog.id}',"
+                retstr += "'html_id': '#{@type}#{prog.id}',"
                 retstr += "'start': '#{prog.start}',"
+                retstr += "'stop': '#{prog.stop}',"
                 retstr += "'html': '<tr id=\"#{prog.id}\" class=\"programme\">"
                 retstr += "<td>#{prog.title}</td>"
                 retstr += "<td>#{prog.sub_title}</td>"

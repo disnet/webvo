@@ -46,6 +46,9 @@ td.listHead{
 	background-color:#999999 ;
     margin-left: 0px;
 }
+.programme:hover, .programme:hover td {
+	background-color: #8CD749;
+}
 .programmeOver {
 	background-color: #8CD749;
 }
@@ -64,23 +67,41 @@ td.listHead{
 .recordingProgrammeOver {
 	background-color:#FF5C5C;
 }
+
+.recorded_table,
+.schedule_table,
+.scheduled_table,
+.searched_table,
 table.schedule {
 	clear:right;
     width: 100%;
     border: 0px;
 }
-table.schedule td{
-    border:1px solid black;
+
+.recorded_table td, .recorded_table th,
+.schedule_table td, .schedule_table th,
+.scheduled_table td, .scheduled_table th,
+.searched_table td, .searched_table th,
+table.schedule td, table.schedule th{
+	border: 1px solid black;
+}
+
+.recorded_table th,
+.schedule_table th,
+.scheduled_table th,
+.searched_table th {
+	text-align:center;
+	background-color: gray;
 }
 
 .tblRecord td {
 	background-color: #999999;
-	border:1px solid black;
+	border: 1px solid black;
 }
 
 .tblRecordHead td{
-	background-color: gray;
-	border:1px solid black;
+    background-color: gray;
+	border: 1px solid black;
 	text-align:center;
 }
 
@@ -88,6 +109,12 @@ table.tblRecord  {
 	width: 100%;
 	text-align:left;
 }
+
+.adjacentBefore td{
+    border-top-color: #DD4444;
+    border-top-width: 2px;
+}
+
 #boxSpace {
     text-align:right;
     width:100%;
@@ -214,3 +241,7 @@ border-top:1px solid #999999; text-align:left; clear:both;}
 float:right; clear:right; text-align:right;}
 
 .footer p {margin:0;}
+
+tr.empty td{
+    border: 0px none ! important;
+}

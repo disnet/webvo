@@ -25,4 +25,6 @@ unless recording.nil?
     puts "</recording>"
 end
 
+puts "<datetime>" + Time.new.strftime(DATE_TIME_FORMAT_RUBY_XML) + "</datetime>"
+
 puts XML_FOOTER

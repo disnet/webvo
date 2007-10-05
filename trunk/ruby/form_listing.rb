@@ -34,15 +34,17 @@ cgi = CGI.new                      # The CGI object is how we get the arguments
   
 format = cgi.params['format'][0]
 json = cgi.params['json'][0]
+hours = cgi.params['hours'][0]
+hours = DEFAULT_LISTING_HOURS if hours.nil?
+start_date_time = cgi.params[START][0]
 
 if cgi.has_key?(START) and cgi.has_key?(STOP)
-    start_date_time = cgi.params[START][0]
     end_date_time = cgi.params[STOP][0]
 else
     temp_time = Time.new
     temp_time = temp_time - temp_time.min * 60 - temp_time.sec
-    start_date_time = temp_time.strftime(DATE_TIME_FORMAT_RUBY_XML)
-    end_date_time = (temp_time + DEFAULT_LISTING_HOURS * 60 * 60).strftime(DATE_TIME_FORMAT_RUBY_XML)
+    start_date_time = temp_time.strftime(DATE_TIME_FORMAT_RUBY_XML) if start_date_time.nil?
+    end_date_time = (temp_time + hours.to_i * 60 * 60).strftime(DATE_TIME_FORMAT_RUBY_XML)
 end
 
 #checks lengths of arguments to make sure the have the length of YYYYMMDDHHMMSS
