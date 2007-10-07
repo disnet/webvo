@@ -27,6 +27,14 @@ JSONRequest.prototype._fetchFailed = function(req) {
     console.log('Abstract method...should have been implemented in child');
 }
 
+/* connect all items to clicked */
+JSONRequest.prototype.connectToClick = function(programmes) {
+    programmes = this._workingData
+    for(var i = 0; i < programmes.length; i++) {
+        connect(programmes[i].html_id, 'onclick', clicked);
+    }
+}
+
 function ListingData() {
     bindMethods(this);
 }
@@ -55,6 +63,8 @@ RecordedData.prototype.reqHandler = function() {
     }
     temp_html += '</table>';
     oldRecordedTable.innerHTML = temp_html;
+    this._workingData = this.data.recorded.programmes;
+    this.connectToClick();
 }
 
 function ScheduledData() {
@@ -73,6 +83,8 @@ ScheduledData.prototype.reqHandler = function() {
     temp_html += '</table>';
     oldScheduledTable.innerHTML = temp_html;
     this.markAdjacent();
+    this._workingData = this.data.scheduled.programmes;
+    this.connectToClick();
 }
 
 /* mark scheduled listings if adjacent to other scheduled shows 
@@ -88,7 +100,6 @@ ScheduledData.prototype.markAdjacent = function() {
             removeElementClass(this.data.scheduled.programmes[i].html_id, "adjacentBefore");
         }
         previousEnd = this.data.scheduled.programmes[i].stop;
-        connect(this.data.scheduled.programmes[i].html_id, 'onclick', clicked);
     }
 
 }
@@ -128,6 +139,8 @@ SearchData.prototype.reqHandler = function() {
     }
     temp_html += '</table>';
     oldSearchTable.innerHTML = temp_html
+    this._workingData = this.data.search.programmes;
+    this.connectToClick();
 }
 SearchData.prototype.searchFailed = function(req) { 
     console.error("Problem retrieving search results:");
