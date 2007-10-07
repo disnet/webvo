@@ -263,6 +263,7 @@ end
 class List_Output
     CHANNEL = "channels"
     NAME = "names"
+    DATETIME = "datetime"
     LISTING = "listing"
     def initialize(type, start = Time.new, stop = Time.new)
         @type = type
@@ -272,7 +273,7 @@ class List_Output
         @prog_html = lambda {|prog|
             progclass = prog.past? ? '"programmePast"' : '"programme"'
             progcolspan = '"' + minutes_overlap(prog.start_time, prog.stop_time, @start, @stop).to_s + '"'
-            "<td id=\"#{prog.id}\" class=#{progclass} colspan=#{progcolspan}>#{prog.title}</td>"
+            "<td id=\"#{@type}#{prog.id}\" class=#{progclass} colspan=#{progcolspan}>#{prog.title}</td>"
         }
     end
     def add(channel, progid)
@@ -329,10 +330,12 @@ class JSON_Output
         programme_html = List_Output.new(List_Output::LISTING, @start, @stop) 
         chan_list = List_Output.new(List_Output::CHANNEL)
         name_list = List_Output.new(List_Output::NAME)
+        datetime_list = List_Output.new(List_Output::DATETIME)
         @progs.each {|aprog| 
             programme_node << @progblock.call(aprog)
             chan_list.add(aprog.chanID, aprog.id)
             name_list.add(aprog.title, aprog.id)
+            datetime_list.add(aprog.start, aprog.id)
             programme_html.add(aprog.channel, aprog) if @type == LISTING
             #programme_html += @prog_html.call(aprog) if @type == LISTING
         }
@@ -347,6 +350,7 @@ class JSON_Output
         retstr += ",\n'lists': {\n"
         retstr += chan_list.to_s
         retstr += ",\n" + name_list.to_s
+        retstr += ",\n" + datetime_list.to_s
         retstr +=  " \n}\n"
 
         retstr += "} }"
@@ -367,6 +371,7 @@ class JSON_Output
             @header_html += "</tr>"
             @progblock = lambda {|prog|
                 retstr = "{ 'id':'#{prog.id}',"
+                retstr += "'html_id': '#{@type}#{prog.id}',"
                 retstr += "'start': '#{prog.start}',"
                 retstr += "'stop': '#{prog.stop}',"
                 retstr += "'title': '#{prog.title}',"
