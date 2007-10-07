@@ -392,7 +392,7 @@ class JSON_Output
                 retstr += "'html_id': '#{@type}#{prog.id}',"
                 retstr += "'start': '#{prog.start}',"
                 retstr += "'stop': '#{prog.stop}',"
-                retstr += "'html': '<tr id=\"#{prog.id}\" class=\"programme\">"
+                retstr += "'html': '<tr id=\"#{@type}#{prog.id}\" class=\"programme\">"
                 retstr += "<td>#{prog.title}</td>"
                 retstr += "<td>#{prog.sub_title}</td>"
                 retstr += "<td>#{prog.episode}</td>"

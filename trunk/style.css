@@ -55,6 +55,12 @@ td.listHead{
 .programmePast {
 	background-color: #AAAAAA;
 }
+.programmeSelected {
+	background-color: #708570;
+}
+.programmeSelected:hover, .programmeSelected:hover td{
+	background-color: #70BB40;
+}
 .recordingProgramme {
 	background-color:#FF4242;	
 }

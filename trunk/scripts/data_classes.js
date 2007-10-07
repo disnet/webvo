@@ -82,14 +82,31 @@ ScheduledData.prototype.markAdjacent = function() {
     var previousEnd = "";
     for(var i = 0; i < this.data.scheduled.programmes.length; i++) {
         if (this.data.scheduled.programmes[i].start == previousEnd) {
-            addElementClass(this.data.scheduled.programmes[i].id, "adjacentBefore");
+            addElementClass(this.data.scheduled.programmes[i].html_id, "adjacentBefore");
         }
         else {
-            removeElementClass(this.data.scheduled.programmes[i].id, "adjacentBefore");
+            removeElementClass(this.data.scheduled.programmes[i].html_id, "adjacentBefore");
         }
         previousEnd = this.data.scheduled.programmes[i].stop;
+        connect(this.data.scheduled.programmes[i].html_id, 'onclick', clicked);
     }
 
+}
+
+/* toggle the checkbox associated with the clicked object
+   does the checkbox have to be visable?
+*/
+function clicked(e) {
+    var input = getFirstElementByTagAndClassName('input', null, this);
+    if (input != e.target()) {
+        Util.toggleCheck(input);
+    }
+    if (input.checked) {
+        addElementClass(this, "programmeSelected");
+    }
+    else {
+        removeElementClass(this, "programmeSelected");
+    }
 }
 
 function SearchData() {

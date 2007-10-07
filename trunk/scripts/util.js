@@ -6,6 +6,9 @@ var Util = {
     },
     makeInvisible: function(el) {
         addElementClass(el,'invisible');
+    },
+    toggleCheck: function(el) {
+        el.checked = !el.checked
     }
 }
 
