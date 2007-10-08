@@ -55,16 +55,11 @@ td.listHead{
 .programmePast {
 	background-color: #AAAAAA;
 }
-.programmeSelected {
-	background-color: #708570;
-}
-.programmeSelected:hover, .programmeSelected:hover td{
-	background-color: #70BB40;
-}
 .recordingProgramme {
 	background-color:#FF4242;	
 }
-.recordingSearched {
+.recordingSearched,
+.scheduledSearched {
 	background-color:#9F7272;	
 }
 .recordedSearched {
@@ -72,6 +67,12 @@ td.listHead{
 }
 .recordingProgrammeOver {
 	background-color:#FF5C5C;
+}
+.programmeSelected {
+	background-color: #708570;
+}
+.programmeSelected:hover, .programmeSelected:hover td{
+	background-color: #70BB40;
 }
 
 .recorded_table,

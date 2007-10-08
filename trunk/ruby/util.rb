@@ -276,11 +276,11 @@ class List_Output
             "<td id=\"#{@type}#{prog.id}\" class=#{progclass} colspan=#{progcolspan}>#{prog.title}</td>"
         }
     end
-    def add(channel, progid)
-        unless @list.has_key? channel
-            @list[channel] = Array.new
+    def add(group, progid)
+        unless @list.has_key? group
+            @list[group] = Array.new
         end
-        @list[channel] = @list[channel] << progid
+        @list[group] = @list[group] << progid
     end
     def change_type(type)
         @type = type
@@ -320,10 +320,22 @@ class JSON_Output
         @type = type
         type_changed
         @progs = Array.new
+        @scheduled = Hash.new
+        @recorded = Hash.new
     end
     def add_programme(prog)
         prog.set_json_output
         @progs << prog
+    end
+    def add_recorded(prog)
+        return nil unless @type == SEARCH
+        prog.set_json_output
+        @scheduled[prog.episode + prog.title] = true
+    end
+    def add_scheduled(prog)
+        return nil unless @type == SEARCH
+        prog.set_json_output
+        @recorded[prog.episode + prog.title] = true
     end
     def to_s
         programme_node = Array.new
@@ -356,6 +368,14 @@ class JSON_Output
         retstr += "} }"
     end
     private
+    def get_class(identifier)
+        if @scheduled.has_key? identifier
+            return "programme scheduledSearched" 
+        elsif @recorded.has_key? identifier
+            return "programme recordedSearched"
+        end
+        return "programme"
+    end
     def type_changed
         @header_html = "'header': '"
         if @type == LISTING
@@ -397,7 +417,7 @@ class JSON_Output
                 retstr += "'html_id': '#{@type}#{prog.id}',"
                 retstr += "'start': '#{prog.start}',"
                 retstr += "'stop': '#{prog.stop}',"
-                retstr += "'html': '<tr id=\"#{@type}#{prog.id}\" class=\"programme\">"
+                retstr += "'html': '<tr id=\"#{@type}#{prog.id}\" class=\"#{get_class(prog.episode+prog.title)}\">"
                 retstr += "<td>#{prog.title}</td>"
                 retstr += "<td>#{prog.sub_title}</td>"
                 retstr += "<td>#{prog.episode}</td>"
