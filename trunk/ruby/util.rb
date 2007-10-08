@@ -330,12 +330,12 @@ class JSON_Output
     def add_recorded(prog)
         return nil unless @type == SEARCH
         prog.set_json_output
-        @scheduled[prog.episode + prog.title] = true
+        @recorded[prog.episode + prog.title] = true
     end
     def add_scheduled(prog)
         return nil unless @type == SEARCH
         prog.set_json_output
-        @recorded[prog.episode + prog.title] = true
+        @scheduled[prog.episode + prog.title] = true
     end
     def to_s
         programme_node = Array.new

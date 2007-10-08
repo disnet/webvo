@@ -38,7 +38,7 @@ if format == "new" or json == "true"
     }
     databasequery("SELECT xmlNode from Recorded 
                   JOIN Programme USING (channelID, start)").each {|xml|
-        json_out.add_scheduled(Prog.new(XML::Parser.string(xml[0].to_s).parse, "0"))
+        json_out.add_recorded(Prog.new(XML::Parser.string(xml[0].to_s).parse, "0"))
     }
     puts json_out
 
