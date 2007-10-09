@@ -65,6 +65,13 @@ td.listHead{
 .recordedSearched {
 	background-color:#707090;	
 }
+.recordingSearched:hover, .recordingSearched:hover td,
+.scheduledSearched:hover, .scheduledSearched:hover td {
+	background-color: #C07070;
+}
+.recordedSearched:hover, .recordedSearched:hover td {
+	background-color: #7070C0;
+}
 .recordingProgrammeOver {
 	background-color:#FF5C5C;
 }
