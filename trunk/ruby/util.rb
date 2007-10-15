@@ -354,7 +354,7 @@ class JSON_Output
         progStr = programme_node.join(",\n")
         @header_html += programme_html.to_s.gsub(/\n/, "") + "</table>',\n" if @type == LISTING
 
-        retstr = "{ '#{@type}': { "
+        retstr = "{ 'type': '#{@type}',\n"
         retstr += @header_html
         retstr += "'programmes': [\n"
         retstr += progStr + " ]"
@@ -365,7 +365,7 @@ class JSON_Output
         retstr += ",\n" + datetime_list.to_s
         retstr +=  " \n}\n"
 
-        retstr += "} }"
+        retstr += "}"
     end
     private
     def get_class(identifier)
