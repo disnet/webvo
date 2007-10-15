@@ -41,7 +41,7 @@ function ListingData() {
 ListingData.prototype = new JSONRequest('ruby/form_listing.rb');
 
 ListingData.prototype.reqHandler = function () {
-    $('schedule').innerHTML = this.data.listing.header;
+    $('schedule').innerHTML = this.data.header;
     
 }
 

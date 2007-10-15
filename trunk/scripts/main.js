@@ -1,16 +1,19 @@
 function App(dbg){
-   this._dbg = dbg; 
-   this.search_data = null;
-   this.listing_data = null;
-   this.scheduled_data = null;
-   this.recorded_data = null;
+    this._dbg = dbg; 
 
-   this.search_data = new SearchData();
-   this.scheduled_data = new ScheduledData();
-   this.recorded_data = new RecordedData();
-   this.listing_data = new ListingData();
+    this.listing_data = new ListingData();
 
-   this.pages = [$('listingContent'), $('scheduledContent'), $('recordedContent'), $('searchContent')];
+    this.scheduled_table = new InfoTable('scheduled','ruby/form_scheduled.rb','ruby/add_recording.rb');
+    this.scheduled_table.addUpdateCallback(this._markScheduledAdjacent);
+
+    this.recorded_table = new InfoTable('recorded','ruby/form_recorded.rb','ruby/add_recording.rb');
+    this.search_table = new InfoTable('searched','ruby/form_search.rb','ruby/add_recording.rb'); 
+
+    this.pages = [$('listingContent'), $('scheduledContent'), $('recordedContent'), $('searchContent')];
+}
+
+function foo() {
+    console.log('foo');
 }
 
 App.prototype = {
@@ -25,8 +28,7 @@ App.prototype = {
     },
     
     searchSubmit: function(e) {
-        this.search_data.setQuery('title',$('txtSearchTitle').value);
-        this.search_data.update();
+        this.search_table.update('json=true&title=' + $('txtSearchTitle').value);
     },
 
     /* Display/hide pages */
@@ -36,11 +38,11 @@ App.prototype = {
     },
     showScheduled: function() {
         this._displayPage($('scheduledContent')); 
-        this.scheduled_data.update();
+        this.scheduled_table.update('json=true');
     },
     showRecorded: function() {
         this._displayPage($('recordedContent')); 
-        this.recorded_data.update();
+        this.recorded_table.update('json=true');
     },
     showSearch: function() {
         this._displayPage($('searchContent')); 
@@ -53,7 +55,21 @@ App.prototype = {
             }
         }
         Util.makeVisible(elDisplay);
+    },
+    
+    _markScheduledAdjacent: function() {
+        var previousEnd = "";
+        for(var i = 0; i < this.scheduled_table.data.programmes.length; i++) {
+            if (this.scheduled_table.data.programmes[i].start == previousEnd) {
+                addElementClass(this.scheduled_table.data.programmes[i].html_id, "adjacentBefore");
+            }
+            else {
+                removeElementClass(this.scheduled_table.data.programmes[i].html_id, "adjacentBefore");
+            }
+            previousEnd = this.scheduled_table.data.programmes[i].stop;
+        }
     }
+
 };
 
 var app;
