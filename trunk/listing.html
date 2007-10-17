@@ -15,7 +15,6 @@
 <script src="MochiKit/Signal.js" type="text/javascript"></script>
 <script src="MochiKit/DateTime.js" type="text/javascript"></script>
 <script src="MochiKit/Logging.js" type="text/javascript"></script>
-<!--
 <script src="scripts/init.js" type="text/javascript"></script>
 <script src="scripts/events.js" type="text/javascript"></script>
 <script src="scripts/util.js" type="text/javascript"></script>
@@ -24,10 +23,6 @@
 <script src="scripts/recording_table.js" type="text/javascript"></script>
 <script src="scripts/recorded_table.js" type="text/javascript"></script>
 <script src="scripts/search_table.js" type="text/javascript"></script>
--->
-<script src="scripts/util.js" type="text/javascript"></script>
-<script src="scripts/data_classes.js" type="text/javascript"></script>
-<script src="scripts/main.js" type="text/javascript"></script>
 
 </head>
 
@@ -38,7 +33,7 @@
 
 <div><ul class="navbar">
 		 <li id="btnListing"><a href="#" class="nav">TV Listing</a></li>
-		 <li id="btnScheduled"><a href="#" class="nav">Scheduled</a></li>
+		 <li id="btnRecording"><a href="#" class="nav">Scheduled</a></li>
 		 <li id="btnRecorded"><a href="#" class="nav">Recorded</a></li>
          <li id="btnSearch"><a href="#" class="nav">Search</a></li>
 </ul></div>
@@ -58,17 +53,17 @@
  </table>
 
  <div id="listingContentMain">
-    <div id="schedule"></div>
+    <table id="schedule"></table>
 	<div id="mnuRecord" class="invisible"></div>
 	<div id="mnuAddStatus" class="invisible"></div>
     <div id="mnuQuicknav" class="invisible"></div>
  </div>
  </div>
 
- <div id="scheduledContent" class='invisible'>
+ <div id="recordingContent" class='invisible'>
 	<div id="mnuRecording">
 		<h2>Shows to be recorded</h2>
-		<div id="recording"></div>
+		<table id="recording"></table>
 		<div class="rjust">
 			<input id="btnRemoveRecording" class="button" type="submit" value="Remove Selected"></input>
 		</div>
@@ -78,7 +73,7 @@
  <div id="recordedContent" class='invisible'>
  	<div id="mnuRecorded">
  		<h2>Shows that have been recorded</h2>
-		<div id="recorded"></div>
+		<table id="recorded"></table>
 		<div class="rjust">
 			<input id="btnDeleteRecorded" class="button" type="submit" value="Delete Selected"></input>
 		</div>
@@ -90,7 +85,7 @@
         <h2>Search for shows (beta)</h2>
         <input id="txtSearchTitle" class="searchBox" type="text" />
 		<input id="btnSearchSubmit" class="button" type="submit" value="Search"></input>
-		<div id="searched"></div>
+		<table id="searched"></table>
 		<div class="rjust">
 			<input id="btnSearchRecord" class="button" type="submit" value="Record Selected"></input>
 		</div>
