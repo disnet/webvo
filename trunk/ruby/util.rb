@@ -335,7 +335,11 @@ class JSON_Output
     def add_scheduled(prog)
         return nil unless @type == SEARCH
         prog.set_json_output
-        @scheduled[prog.episode + prog.title] = true
+        key = prog.episode + prog.title
+        unless @scheduled.has_key? key
+            @scheduled[key] = Array.new
+        end
+        @scheduled[key] = @scheduled[key] << prog.start_time
     end
     def to_s
         programme_node = Array.new
@@ -368,10 +372,16 @@ class JSON_Output
         retstr += "}"
     end
     private
-    def get_class(identifier)
-        if @scheduled.has_key? identifier
-            return "programme scheduledSearched" 
-        elsif @recorded.has_key? identifier
+    def get_class(prog)
+        prog.set_json_output
+        key = prog.episode + prog.title
+        if @scheduled.has_key? key
+            if @scheduled[key].include? prog.start_time
+                return "programme scheduledSearched" 
+            else
+                return "programme scheduledOtherSearched" 
+            end
+        elsif @recorded.has_key? key
             return "programme recordedSearched"
         end
         return "programme"
@@ -417,7 +427,7 @@ class JSON_Output
                 retstr += "'html_id': '#{@type}#{prog.id}',"
                 retstr += "'start': '#{prog.start}',"
                 retstr += "'stop': '#{prog.stop}',"
-                retstr += "'html': '<tr id=\"#{@type}#{prog.id}\" class=\"#{get_class(prog.episode+prog.title)}\">"
+                retstr += "'html': '<tr id=\"#{@type}#{prog.id}\" class=\"#{get_class(prog)}\">"
                 retstr += "<td>#{prog.title}</td>"
                 retstr += "<td>#{prog.sub_title}</td>"
                 retstr += "<td>#{prog.episode}</td>"
