@@ -1,3 +1,4 @@
+#!/usr/local/bin/ruby
 #!/usr/bin/env ruby
 ################################################################################
 #WebVo: Web-based PVR
@@ -181,8 +182,9 @@ xmldoc.find('programme').each { |programme|
             query = ("INSERT INTO Listing (channelID, start, showing) VALUES(#{prog.chanID},#{prog.start},'#{hour}')")
             begin
                 dbh.query query
-            rescue
-                LOG.debug("Problem with Listing insert for programme #{prog.title} (already in db?): \n#{query}")
+            rescue MysqlError => e
+                LOG.debug "Error in database query. Error code: #{e.errno} Message: #{e.error}"
+                LOG.debug "Problem with Listing insert for programme #{prog.title} (already in db?): \n#{query}" 
             end
         }
     end
