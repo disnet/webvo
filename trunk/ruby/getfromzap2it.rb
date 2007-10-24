@@ -179,7 +179,11 @@ xmldoc.find('programme').each { |programme|
         dbh.query query
         hours_in(prog.start_s, prog.stop_s).each { |hour|
             query = ("INSERT INTO Listing (channelID, start, showing) VALUES(#{prog.chanID},#{prog.start},'#{hour}')")
-            dbh.query query
+            begin
+                dbh.query query
+            rescue
+                LOG.debug("Problem with Listing insert for programme #{prog.title} (already in db?): \n#{query}")
+            end
         }
     end
 }
