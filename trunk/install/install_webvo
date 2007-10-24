@@ -230,6 +230,7 @@ fi
 #FILE_PADDING="120"
 
 
+
 #install required packages-------------------------------------------------------------------------
 echo 'Updating apt-get'
 apt-get -y -q=2 update
@@ -294,28 +295,65 @@ case "$answer" in
 	;;
 esac
 
-#Downloading webvo
+#Downloading webvo-----------------------------------------------------------------------------
 if [ "$config_download_webvo" = "true" ]
 then
-	if [ -d $INSTALL_PATH ]
+#	if [ -d $INSTALL_PATH ]
+#	then
+#		echo "Downloading Webvo"
+#		cd /tmp
+#		wget http://webvo.googlecode.com/files/webvo.tar.gz
+#		gzip -d webvo.tar.gz
+#		tar -xf webvo.tar
+#		echo "Moving Webvo to $INSTALL_PATH"
+#		cp -r webvo $INSTALL_PATH
+#		chown "$(logname).$(logname) $INSTALL_PATH"
+#		rm webvo.tar
+#		rm -r webvo
+#	else
+#		echo Install path $INSTALL_PATH invalid
+#	fi
+	svn checkout http://webvo.googlecode.com/svn/trunk/ /tmp/webvo
+	mv /tmp/webvo/$INSTALL_PATH $INSTALL_PATH
+	chown "$(USER).$(USER) $INSTALL_PATH"
+fi
+
+#Write the config file---------------------------------------------------------------------------
+
+echo "writing out config file $INSTALL_PATH/webvo/ruby" 
+if [ -d "$INSTALL_PATH/webvo/ruby" ]
+then
+	if [ -f "webvo.config" ]
 	then
-		echo "Downloading Webvo"
-		cd /tmp
-		wget http://webvo.googlecode.com/files/webvo.tar.gz
-		gzip -d webvo.tar.gz
-		tar -xf webvo.tar
-		echo "Moving Webvo to $INSTALL_PATH"
-		cp -r webvo $INSTALL_PATH
-		chown "$(logname).$(logname) $INSTALL_PATH"
-		rm webvo.tar
-		rm -r webvo
-	else
-		echo Install path $INSTALL_PATH invalid
+		echo "Configuration file already exists!"
+	elif [ "$config_download_webvo" = "true" ]
+	then
+
+		echo Writing Configuration File
+		cd "$INSTALL_PATH/webvo/ruby"
+		echo "SERVERNAME = $SERVERNAME" > webvo.config
+		echo "USERNAME = $USERNAME" >> webvo.config
+		echo "USERPASS = $USERPASS" >> webvo.config
+		echo "DBNAME = $DBNAME" >> webvo.config
+		echo "XML_FILE_NAME = $XML_FILE_NAME" >> webvo.config
+		echo "VIDEO_PATH = $VIDEO_PATH" >> webvo.config
+		echo "CONFIG_PATH = $CONFIG_PATH" >> webvo.config
+		echo "LOG_PATH = $LOG_PATH" >> webvo.config
+		echo "XMLTV_CONFIG = $XMLTV_CONFIG" >> webvo.config
+		echo "ENCODER_BIN = $ENCODER_BIN" >> webvo.config
+		echo "FILE_PADDING = $FILE_PADDING" >> webvo.config
 	fi
 fi
-#-----------------------------------------------------------------------------------
-config_sql="false"
-#configue sql
+
+#configuring log_path to make it writable------------------------------------------
+echo "configuring log_path $config_log_path"
+if [ "$config_log_path" = "true" ]
+then
+	#make log path writable
+	 sudo chmod a+w $LOG_PATH
+fi
+
+#configue sql----------------------------------------------------------------------
 if [ "$config_sql" = "true" ]
 then
 	#set sql root password
@@ -327,7 +365,9 @@ then
 
 fi
 
-#configure apache
+
+
+#configure apache-------------------------------------------------------------------
 echo configuring apache $config_apache
 if [ "$config_apache" = "true" ]
 then
@@ -338,9 +378,7 @@ then
 	then
 		echo "Setting up ruby and pythons as executables"
 		cd /etc/apache2
-		cat apache2.conf | sed -e 's/#AddHandler cgi-script .cgi/AddHandler cgi-script .cgi .rb .py/' > apache2.conf~
-#		diff apache2.conf~ apache2.conf
-		
+		cat apache2.conf | sed -e 's/#AddHandler cgi-script .cgi/AddHandler cgi-script .cgi .rb .py/' > apache2.conf~		
 		if [ "$( diff apache2.conf~ apache2.conf | grep '>')" = "$NULL" ]
 		then
 			echo "No Changes made to Apache2"
@@ -361,7 +399,6 @@ then
 	fi
 	
 	#checks if install in a non-default path.  If it is, alias needs to be added.
-
 	if [ $(echo "${INSTALL_PATH#'/var/www'}") = $NULL ] || [ $(echo "${INSTALL_PATH#'/var/www'}") = '/' ]
 	then
 		echo "No need to alias"
@@ -379,14 +416,7 @@ then
 	
 fi
 
-echo "configuring log_path $config_log_path"
-if [ "$config_log_path" = "true" ]
-then
-	#make log path writable
-	 sudo chmod a+w $LOG_PATH
-fi
-
-#modify cron
+#modify cron--------------------------------------------------------------------------------
 if [ config_cron = "true" ]
 then
 	if [ -d /etc/cron.daily ]
@@ -410,33 +440,6 @@ then
 		fi
 		rm searchstr
 		rm curcrontab
-	fi
-fi
-
-
-#write out config file
-echo "writing out config file $INSTALL_PATH/webvo/ruby" 
-if [ -d "$INSTALL_PATH/webvo/ruby" ]
-then
-	if [ -f "webvo.config" ]
-	then
-		echo "Configuration file already exists!"
-	elif [ "$config_download_webvo" = "true" ]
-	then
-
-		echo Writing Configuration File
-		cd "$INSTALL_PATH/webvo/ruby"
-		echo "SERVERNAME = $SERVERNAME" > webvo.config
-		echo "USERNAME = $USERNAME" >> webvo.config
-		echo "USERPASS = $USERPASS" >> webvo.config
-		echo "DBNAME = $DBNAME" >> webvo.config
-		echo "XML_FILE_NAME = $XML_FILE_NAME" >> webvo.config
-		echo "VIDEO_PATH = $VIDEO_PATH" >> webvo.config
-		echo "CONFIG_PATH = $CONFIG_PATH" >> webvo.config
-		echo "LOG_PATH = $LOG_PATH" >> webvo.config
-		echo "XMLTV_CONFIG = $XMLTV_CONFIG" >> webvo.config
-		echo "ENCODER_BIN = $ENCODER_BIN" >> webvo.config
-		echo "FILE_PADDING = $FILE_PADDING" >> webvo.config
 	fi
 fi
 
