@@ -12,6 +12,8 @@ function InfoTable(sContainerId,sUpdateUrl, sSubmitUrl)
 
     this.data = {};
     this._callbackChain = [];
+
+    this._markAdjacent = false;
 }
 
 InfoTable.prototype = {
@@ -27,7 +29,26 @@ InfoTable.prototype = {
     },
 
     addUpdateCallback: function(fCallback) {
-        this._callbackChain.push(fCallback);
+        throw new Error("Function turned off for now");
+        //this._callbackChain.push(fCallback);
+    },
+
+    // todo: can I do something with properties?
+    setMarkAdjacent: function(val) {
+        this._markAdjacent = val;
+    },
+
+    _markScheduledAdjacent: function() {
+        var previousEnd = "";
+        for(var i = 0; i < this.scheduled_table.data.programmes.length; i++) {
+            if (this.scheduled_table.data.programmes[i].start == previousEnd) {
+                addElementClass(this.scheduled_table.data.programmes[i].html_id, "adjacentBefore");
+           }
+            else {
+                removeElementClass(this.scheduled_table.data.programmes[i].html_id, "adjacentBefore");
+            }
+            previousEnd = this.scheduled_table.data.programmes[i].stop;
+        }
     },
 
     _gotRequest: function(req){
@@ -41,6 +62,11 @@ InfoTable.prototype = {
         }
         temp_html += '</table>';
         oldTable.innerHTML = temp_html;
+
+        if (this._markAdjacent) {
+            this._markScheduledAdjacent;
+        }
+
         this._connectClick();
     },
 

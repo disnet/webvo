@@ -4,16 +4,13 @@ function App(dbg){
     this.listing_data = new ListingData();
 
     this.scheduled_table = new InfoTable('scheduled','ruby/form_scheduled.rb','ruby/add_recording.rb');
-    this.scheduled_table.addUpdateCallback(this._markScheduledAdjacent);
+    //this.scheduled_table.addUpdateCallback(this._markScheduledAdjacent);
+    this.scheduled_table.setMarkAdjacent(true);
 
     this.recorded_table = new InfoTable('recorded','ruby/form_recorded.rb','ruby/add_recording.rb');
     this.search_table = new InfoTable('searched','ruby/form_search.rb','ruby/add_recording.rb'); 
 
     this.pages = [$('listingContent'), $('scheduledContent'), $('recordedContent'), $('searchContent')];
-}
-
-function foo() {
-    console.log('foo');
 }
 
 App.prototype = {
@@ -55,21 +52,7 @@ App.prototype = {
             }
         }
         Util.makeVisible(elDisplay);
-    },
-    
-    _markScheduledAdjacent: function() {
-        var previousEnd = "";
-        for(var i = 0; i < this.scheduled_table.data.programmes.length; i++) {
-            if (this.scheduled_table.data.programmes[i].start == previousEnd) {
-                addElementClass(this.scheduled_table.data.programmes[i].html_id, "adjacentBefore");
-            }
-            else {
-                removeElementClass(this.scheduled_table.data.programmes[i].html_id, "adjacentBefore");
-            }
-            previousEnd = this.scheduled_table.data.programmes[i].stop;
-        }
     }
-
 };
 
 var app;
