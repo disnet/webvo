@@ -38,16 +38,17 @@ InfoTable.prototype = {
         this._markAdjacent = val;
     },
 
+    // this function is no longer specific to scheduled data and should be renamed - dmh
     _markScheduledAdjacent: function() {
         var previousEnd = "";
-        for(var i = 0; i < this.scheduled_table.data.programmes.length; i++) {
-            if (this.scheduled_table.data.programmes[i].start == previousEnd) {
-                addElementClass(this.scheduled_table.data.programmes[i].html_id, "adjacentBefore");
+        for(var i = 0; i < this.data.programmes.length; i++) {
+            if (this.data.programmes[i].start == previousEnd) {
+                addElementClass(this.data.programmes[i].html_id, "adjacentBefore");
            }
             else {
-                removeElementClass(this.scheduled_table.data.programmes[i].html_id, "adjacentBefore");
+                removeElementClass(this.data.programmes[i].html_id, "adjacentBefore");
             }
-            previousEnd = this.scheduled_table.data.programmes[i].stop;
+            previousEnd = this.data.programmes[i].stop;
         }
     },
 
@@ -64,7 +65,7 @@ InfoTable.prototype = {
         oldTable.innerHTML = temp_html;
 
         if (this._markAdjacent) {
-            this._markScheduledAdjacent;
+            this._markScheduledAdjacent();
         }
 
         this._connectClick();
