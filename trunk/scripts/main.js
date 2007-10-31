@@ -1,10 +1,9 @@
 function App(dbg){
     this._dbg = dbg; 
 
-    this.listing_data = new ListingData();
+    this.listing_data = new ListingData('ruby/form_listing.rb');
 
     this.scheduled_table = new InfoTable('scheduled','ruby/form_scheduled.rb','ruby/add_recording.rb');
-    //this.scheduled_table.addUpdateCallback(this._markScheduledAdjacent);
     this.scheduled_table.setMarkAdjacent(true);
 
     this.recorded_table = new InfoTable('recorded','ruby/form_recorded.rb','ruby/add_recording.rb');

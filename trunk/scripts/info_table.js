@@ -17,15 +17,13 @@ function InfoTable(sContainerId,sUpdateUrl, sSubmitUrl)
 }
 
 InfoTable.prototype = {
-    update : function(sQuery) {
+    update : function(sQuery,callback) {
         var url = this._update_url + "?" + sQuery;
         var d = loadJSONDoc(url);   
         this._deffered = d;
 
         d.addCallbacks(this._gotRequest,this._fetchFailed);
-        for(var i = 0; i < this._callbackChain.length; i++) {
-            d.addCallback(this._callbackChain[i]);
-        }
+        d.addCallback(callback);
     },
 
     addUpdateCallback: function(fCallback) {
