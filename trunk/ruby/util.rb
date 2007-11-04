@@ -436,7 +436,17 @@ class JSON_Output
                 retstr += "<td>#{prog.stop_readable}</td>"
                 retstr += "<td>#{prog.channel}</td>"
                 retstr += "<td>#{prog.size}</td>" if @type == RECORDED
-                retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
+
+                #TODO: david, rubyfy this kludge please
+                if @type == SEARCH
+                    retstr += "<td><input name=\"searchCheck\" type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
+                elsif @type == SCHEDULED
+                    retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
+                elsif @type == RECORDED
+                    retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
+                else  
+                    retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
+                end
             }
         end
     end
