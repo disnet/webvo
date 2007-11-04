@@ -30,8 +30,9 @@ App.prototype = {
 
     searchAddRecording: function(e) {
         var sel = filter(function(el){ return el.checked; }, document.getElementsByName('searchCheck'));
-        console.log(sel);
-        this.adder.add(sel.value);
+        for(var i = 0; i < sel.length; i++) {
+            this.adder.add(sel[i].value);
+        }
     },
 
     /* Display/hide pages */
