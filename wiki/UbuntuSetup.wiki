@@ -61,9 +61,9 @@ get it you will have to re-set it up.
 
 {{{
 wget http://easynews.dl.sourceforge.net/sourceforge/xmltv/xmltv-0.5.48.tar.bz2
-tar xvzf xmltv-0.5.48.tar.bz2
+tar xvff xmltv-0.5.48.tar.bz2
 cd xmltv-0.5.48/
-pearl Makefile.PL
+perl Makefile.PL
 make
 sudo make install
 }}} 
