@@ -28,7 +28,6 @@ queries.each {|query|
     end
 }
 
-exit
 unless dbIsUtc
     puts "converting db"
     query = "SELECT channelID, 
