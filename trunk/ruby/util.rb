@@ -524,12 +524,12 @@ def getNextShow()
     #assume shows do not overlap, just the padded times overlap
     shows = Array.new
     now_showing = "SELECT DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
-                   DATE_FORMAT(s.stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
+                   DATE_FORMAT(p.stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
                    number, filename, p.xmlNode as xmlNode, channelID, priority
                    FROM Scheduled s JOIN Channel USING (channelID)
                    JOIN Programme p USING(channelID, start)
                    WHERE start <= '#{PaddedTime.strstart}'
-                   AND s.stop > '#{PaddedTime.strstop}'"
+                   AND p.stop > '#{PaddedTime.strstop}'"
  
     databasequery("SELECT * FROM (#{now_showing}) as sub1
                    WHERE priority = (SELECT max(priority) FROM (#{now_showing}) as sub2 )").each_hash { |show_hash| 

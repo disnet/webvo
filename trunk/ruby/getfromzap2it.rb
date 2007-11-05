@@ -125,7 +125,9 @@ databasequery("SELECT channelID, title, `sub-title`, episode, number, Programme.
                FROM Programme JOIN Channel USING(channelID)
                JOIN Scheduled USING(channelID, start, stop)").each_hash {|show_row|
 
-    filename = [show_row['title'],show_row['episode'],show_row['sub-title'],show_row['start_string'],show_row['number']].delete_if{|val| val.nil?}.join("_-_")
+    start_string = formatToRuby(show_row['start']).localtime.strftime(DATE_TIME_FORMAT_STRING_RUBY)
+
+    filename = [show_row['title'],show_row['episode'],show_row['sub-title'],start_string,show_row['number']].delete_if{|val| val.nil?}.join("_-_")
 
     filename = format_filename(filename)
 

@@ -67,7 +67,9 @@ now_xml = now_time.strftime(DATE_TIME_FORMAT_RUBY_XML)
 error_if_not_equal(show_row.nil?, false, "requested show not in source listings") 
 error_if_not_equal(now_xml.to_i < show_row['stop'].to_i, true, "Today is #{now_time} and your requested show ends in the past at #{show_row['stop_string']}.  Please record only shows that are airing currently or in the future.")
 
-filename = [show_row['title'],show_row['episode'],show_row['sub-title'],show_row['start_string'],show_row['number']].delete_if{|val| val.nil?}.join("_-_")
+start_string = formatToRuby(show_row['start']).localtime.strftime(DATE_TIME_FORMAT_STRING_RUBY)
+
+filename = [show_row['title'],show_row['episode'],show_row['sub-title'],start_string,show_row['number']].delete_if{|val| val.nil?}.join("_-_")
 
 filename = Mysql.escape_string(format_filename(filename))
 
