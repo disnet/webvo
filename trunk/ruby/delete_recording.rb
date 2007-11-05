@@ -27,11 +27,13 @@ puts "Content-Type:text/xml\n\n"
 puts "<?xml version='1.0' encoding='ISO-8859-1'?>"
 puts "<tv>"
 cgi = CGI.new
+json = cgi.params['json'][0]
 prog_id = cgi.params['prog_id'][0]
 
 error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 
 date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
+date_time = formatToRuby(date_time+Time.now.strftime(" %z")).strftime(DATE_TIME_FORMAT_RUBY_XML) unless json == "true"
 chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   
 start_date = date_time[0..7]

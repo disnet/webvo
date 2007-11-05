@@ -41,7 +41,7 @@ start_date_time = cgi.params[START][0]
 if cgi.has_key?(START) and cgi.has_key?(STOP)
     end_date_time = cgi.params[STOP][0]
 else
-    temp_time = Time.new
+    temp_time = Time.new.utc
     temp_time = temp_time - temp_time.min * 60 - temp_time.sec
     start_date_time = temp_time.strftime(DATE_TIME_FORMAT_RUBY_XML) if start_date_time.nil?
     end_date_time = (temp_time + hours.to_i * 60 * 60).strftime(DATE_TIME_FORMAT_RUBY_XML)
@@ -73,7 +73,9 @@ error_if_not_equal(end_date[6..7].to_i <= 31, true, "Ending day must be less tha
 
 before_query = Time.now
 retstr = ""
-range = hours_in(start_date_time, end_date_time).join(",")
+zone = ""
+zone = Time.now.strftime(" %z") unless json == "true"
+range = hours_in(start_date_time+zone, end_date_time+zone).join(",")
 # Is there a faster, better way to do this?
 # This should not be needed in the JSON output formatting
 query = "SELECT DISTINCT xmlNode from Channel JOIN Listing USING(channelID) WHERE showing in (#{range})"

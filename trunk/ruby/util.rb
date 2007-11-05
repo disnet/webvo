@@ -2,6 +2,7 @@
 
 require "mysql"
 require "xml/libxml"
+require "time"
 
 def load_config
     config = Hash.new
@@ -108,15 +109,33 @@ def format_filename (name)
     name.gsub(/\/|\\|:|\*|\?|"|<|>/,'-').gsub(/ /, "_")
 end
 
+def dbIsUtc
+    return false
+    query = "SELECT 
+            DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
+            xmlNode FROM Programme limit 1"
+    result = databasequery(query).fetch_row
+    dbStart = formatToRuby result[0]
+    prog = Prog.new(XML::Parser.string(result[1].to_s).parse, nil)
+    puts result;
+    puts result[0]
+    puts dbStart, prog.start_time
+    dbStart == prog.start_time
+end
+
 def formatToRuby (xmlform_data)
-   return xmlform_data if xmlform_data.instance_of? Time
-   year = xmlform_data[0..3].to_i
-   month = xmlform_data[4..5].to_i
-   day = xmlform_data[6..7].to_i
-   hour = xmlform_data[8..9].to_i
-   minute = xmlform_data[10..11].to_i
-   second = xmlform_data[12..13].to_i
-   Time.local(year,month,day,hour,minute,second)
+    return xmlform_data.utc if xmlform_data.instance_of? Time
+    year = xmlform_data[0..3]
+    month = xmlform_data[4..5]
+    day = xmlform_data[6..7]
+    hour = xmlform_data[8..9]
+    minute = xmlform_data[10..11]
+    second = xmlform_data[12..13]
+    zone = "Z"
+    if xmlform_data.length >= 20
+        zone = xmlform_data[15..17] + ":" + xmlform_data[18..19]
+    end
+    Time.xmlschema("#{year}-#{month}-#{day}T#{hour}:#{minute}:#{second}#{zone}")
 end
 
 #this function finds the available free space on the hard drive
@@ -158,8 +177,8 @@ class Prog
         @channel = channel
         @size = size
 
-        @start_time = formatToRuby(@xmlNode["start"][0..13])
-        @stop_time = formatToRuby(@xmlNode["stop"][0..13])
+        @start_time = formatToRuby(@xmlNode["start"][0..19])
+        @stop_time = formatToRuby(@xmlNode["stop"][0..19])
         set_mysql_output
     end
     def id
@@ -176,19 +195,25 @@ class Prog
         end
     end
     def start
-        format @xmlNode["start"][0..13]
+        #format @xmlNode["start"][0..13]
+        format @start_time.strftime(DATE_TIME_FORMAT_RUBY_XML) #.xmlschema[0..18]
     end
     def start_readable
-        format @start_time.strftime(TIME_FORMAT)
+        # Time.localtime modifies the reciever, so either a temp time is needed,
+        #  or all dealings with the time should be "converted" to the zone they
+        #  are expect to be in.
+        format Time.at(@start_time).localtime.strftime(TIME_FORMAT)
     end
     def start_s
         @xmlNode["start"][0..13]
     end
     def stop
-        format @xmlNode["stop"][0..13]
+        #format @xmlNode["stop"][0..13]
+        format @stop_time.strftime(DATE_TIME_FORMAT_RUBY_XML) #.xmlschema[0..18]
     end
     def stop_readable
-        format @stop_time.strftime(TIME_FORMAT)
+        # See comment on start_readable
+        format Time.at(@stop_time).localtime.strftime(TIME_FORMAT)
     end
     def stop_s
         @xmlNode["stop"][0..13]
@@ -436,17 +461,7 @@ class JSON_Output
                 retstr += "<td>#{prog.stop_readable}</td>"
                 retstr += "<td>#{prog.channel}</td>"
                 retstr += "<td>#{prog.size}</td>" if @type == RECORDED
-
-                #TODO: david, rubyfy this kludge please
-                if @type == SEARCH
-                    retstr += "<td><input name=\"searchCheck\" type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
-                elsif @type == SCHEDULED
-                    retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
-                elsif @type == RECORDED
-                    retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
-                else  
-                    retstr += "<td><input type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
-                end
+                retstr += "<td><input name=\"#{@type}Check\" type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
             }
         end
     end
@@ -454,10 +469,10 @@ end
 
 class PaddedTime
     def PaddedTime.start
-        Time.now + load_config["FILE_PADDING"].to_i
+        Time.now.utc + load_config["FILE_PADDING"].to_i
     end
     def PaddedTime.stop
-        Time.now - load_config["FILE_PADDING"].to_i
+        Time.now.utc - load_config["FILE_PADDING"].to_i
     end
     def PaddedTime.strstart
         PaddedTime.start.strftime(DATE_TIME_FORMAT_RUBY_XML)
@@ -513,8 +528,8 @@ def getNextShow()
                    number, filename, p.xmlNode as xmlNode, channelID, priority
                    FROM Scheduled s JOIN Channel USING (channelID)
                    JOIN Programme p USING(channelID, start)
-                   WHERE start <= #{PaddedTime.strstart}
-                   AND s.stop > #{PaddedTime.strstop}"
+                   WHERE start <= '#{PaddedTime.strstart}'
+                   AND s.stop > '#{PaddedTime.strstop}'"
  
     databasequery("SELECT * FROM (#{now_showing}) as sub1
                    WHERE priority = (SELECT max(priority) FROM (#{now_showing}) as sub2 )").each_hash { |show_hash| 

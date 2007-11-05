@@ -35,7 +35,10 @@ CREATE TABLE `Programme` (
   KEY `title_index` (`title`),
   KEY `start_index` (`start`),
   KEY `stop_index` (`stop`),
-  PRIMARY KEY  (`channelID`,`start`)
+  PRIMARY KEY  (`channelID`,`start`),
+  FOREIGN KEY (`channelID`)
+    REFERENCES `Channel` (`channelID`) 
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -48,7 +51,10 @@ CREATE TABLE `Recorded` (
   `channelID` char(60) NOT NULL,
   `start` datetime NOT NULL,
   `filename` varchar(2000) NOT NULL,
-  PRIMARY KEY  (`channelID`,`start`)
+  PRIMARY KEY  (`channelID`,`start`),
+  FOREIGN KEY (`channelID`, `start`)
+    REFERENCES `Programme` (`channelID`, `start`) 
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -64,7 +70,10 @@ CREATE TABLE `Scheduled` (
   `filename` varchar(2000) NOT NULL,
   `pid` integer,
   `priority` integer NOT NULL,
-  PRIMARY KEY  (`channelID`,`start`)
+  PRIMARY KEY  (`channelID`,`start`),
+  FOREIGN KEY (`channelID`, `start`) 
+    REFERENCES `Programme` (`channelID`, `start`) 
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -82,6 +91,7 @@ CREATE TABLE `Listing` (
   FOREIGN KEY (`channelID`, `start`) 
     REFERENCES `Programme` (`channelID`, `start`) 
     ON DELETE CASCADE
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 -- --------------------------------------------------------
 

@@ -39,21 +39,11 @@ f.close
 #replace the default zap2it timezone with the local timezone
 zone = Time.now.strftime("%z")
 conf = conf.gsub(/timezone: \+[0-9]*/,'timezone: ' + zone)
+#conf = conf.gsub(/timezone: \+[0-9]*/,'timezone: +0000')
 
 f = File.open(XMLTV_CONFIG,'w')
 f.write(conf)
 f.close
-
-#this is a hack to make the nil? test work on tvbox, like it does on the Feisty image
-#this appears to work on the Feisty image
-class XML::Node::Set
-    def nil?
-        if self.length == 0
-            return true
-        end
-        false
-    end
-end
 
 # Class for channel sql entry formatting
 class Chan
@@ -77,71 +67,6 @@ class Chan
         "'" + Mysql.escape_string(node.to_s).gsub("\\n","\n") + "'"
     end
 end
- 
-# Class for programme sql entry formatting
-class Prog
-    def initialize(xmlNode)
-        @xmlNode = xmlNode
-    end
-    def chanID
-        Prog.sqlify @xmlNode["channel"]
-    end
-    def start
-        Prog.sqlify @xmlNode["start"][0..13]
-    end
-    def start_s
-        @xmlNode["start"][0..13]
-    end
-    def stop
-        Prog.sqlify @xmlNode["stop"][0..13]
-    end
-    def stop_s
-        @xmlNode["stop"][0..13]
-    end
-    def title
-        Prog.sqlify @xmlNode.find('title').first.content
-    end
-    def sub_title
-        node = @xmlNode.find('sub-title')
-        if node.first.nil?
-            return "NULL"
-        else
-            return Prog.sqlify(node.first.content)
-        end
-    end
-    def desc
-        node = @xmlNode.find('desc')
-        if node.first.nil?
-            return "NULL"
-        else
-            return Prog.sqlify(node.first.child)
-        end
-    end
-    def episode
-        @xmlNode.find('episode-num').each {|ep| return Prog.sqlify(ep.content) if ep['system'] == 'onscreen'}
-        return "NULL"
-    end
-    def credits
-        node = @xmlNode.find('credits')
-        if node.first.nil?
-            return "NULL"
-        else
-            return Prog.sqlify(node.first)
-        end
-    end
-    def category
-        cats = String.new
-        @xmlNode.find('category').each {|cat| cats += cat.child.to_s + ","}
-        Prog.sqlify(cats[0...cats.length-1])
-    end
-    def xmlNode
-        Prog.sqlify @xmlNode
-    end
-    private
-    def Prog.sqlify(node)
-        "'" + Mysql.escape_string(node.to_s).gsub("\\n","\n") + "'"
-    end
-end
 
 system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME + " --days 14 ")
 
@@ -160,7 +85,7 @@ xmldoc.find('channel').each { |e|
     end
 }
 xmldoc.find('programme').each { |programme|
-    prog = Prog.new(programme)
+    prog = Prog.new(programme, nil)
     # check for specific time
     time_check = dbh.query("SELECT xmlNode, title FROM Programme WHERE start = #{prog.start} and channelID = #{prog.chanID}").fetch_row
     # still need to update is xml data not the same
@@ -177,8 +102,8 @@ xmldoc.find('programme').each { |programme|
         }
         query = ("INSERT INTO Programme (channelID, start, stop, title, `sub-title`, description, episode, credits, category, xmlNode) VALUES(#{prog.chanID},#{prog.start},#{prog.stop},#{prog.title},#{prog.sub_title},#{prog.desc},#{prog.episode},#{prog.credits},#{prog.category},#{prog.xmlNode})")
         dbh.query query
-        hours_in(prog.start_s, prog.stop_s).each { |hour|
-            query = ("INSERT INTO Listing (channelID, start, showing) VALUES(#{prog.chanID},#{prog.start},'#{hour}')")
+        hours_in(prog.start_time, prog.stop_time).each { |hour|
+            query = "INSERT INTO Listing (channelID, start, showing) VALUES(#{prog.chanID},#{prog.start},'#{hour}')"
             begin
                 dbh.query query
             rescue MysqlError => e
@@ -188,4 +113,29 @@ xmldoc.find('programme').each { |programme|
         }
     end
 }
+
+# update filenames if needed
+query = "SELECT channelID, start, xmlNode"
+databasequery("SELECT channelID, title, `sub-title`, episode, number, Programme.xmlNode,
+               DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
+               DATE_FORMAT(stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
+               DATE_FORMAT(start, '#{DATE_TIME_FORMAT_STRING}') as start_string, 
+               DATE_FORMAT(stop, '#{DATE_TIME_FORMAT_STRING}') as stop_string,
+               filename
+               FROM Programme JOIN Channel USING(channelID)
+               JOIN Scheduled USING(channelID, start, stop)").each_hash {|show_row|
+
+    filename = [show_row['title'],show_row['episode'],show_row['sub-title'],show_row['start_string'],show_row['number']].delete_if{|val| val.nil?}.join("_-_")
+
+    filename = format_filename(filename)
+
+    unless filename == show_row['filename']
+        LOG.debug("filename: #{filename} \nreplacing: #{show_row['filename']}")
+        filename = Mysql.escape_string(filename)
+        setpart = "SET filename = '#{filename}' WHERE channelID = '#{show_row['channelID']}' and start = '#{show_row['start']}'"
+        dbh.query("UPDATE Scheduled " + setpart)
+        dbh.query("UPDATE Recorded " + setpart)
+    end
+}
+
 dbh.close()

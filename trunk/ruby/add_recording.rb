@@ -25,12 +25,16 @@ require 'util'
 
 puts "Content-Type: text/xml\n\n<tv>\n"
 cgi = CGI.new
+json = cgi.params['json'][0]
 prog_id = cgi.params['prog_id'][0]
 priority = cgi.params['priority'][0].to_i
 
 error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 
 start = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
+puts start
+start = formatToRuby(start+Time.now.strftime(" %z")).strftime(DATE_TIME_FORMAT_RUBY_XML) unless json == "true"
+puts start
 chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   
 start_date = start[0..7]
@@ -48,7 +52,7 @@ error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31
 
 # Not enough free space if we have less than 100 megs (avail is in kbytes)
 # -- Handle this differently.  Perhaps provide a warning to the user? 
-error_if_not_equal(freespace['available'].to_i > 102400, true, "not enough room on server")
+#error_if_not_equal(freespace['available'].to_i > 102400, true, "not enough room on server")
 
 show_row = databasequery("SELECT channelID, title, `sub-title`, episode, number, Programme.xmlNode,
                          DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
