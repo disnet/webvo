@@ -71,8 +71,8 @@ CREATE TABLE `Scheduled` (
   `pid` integer,
   `priority` integer NOT NULL,
   PRIMARY KEY  (`channelID`,`start`),
-  FOREIGN KEY (`channelID`, `start`) 
-    REFERENCES `Programme` (`channelID`, `start`) 
+  FOREIGN KEY (`channelID`, `start`, `stop`) 
+    REFERENCES `Programme` (`channelID`, `start`, `stop`) 
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
