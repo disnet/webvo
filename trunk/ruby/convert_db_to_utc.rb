@@ -9,7 +9,7 @@ queries << "ALTER TABLE Recorded DROP FOREIGN KEY Recorded_ibfk_1"
 queries << "ALTER TABLE Recorded ADD FOREIGN KEY(channelID, start) REFERENCES Programme(channelID, start) ON UPDATE CASCADE"
 
 queries << "ALTER TABLE Scheduled DROP FOREIGN KEY Scheduled_ibfk_1"
-queries << "ALTER TABLE Scheduled ADD FOREIGN KEY(channelID, start, stop) REFERENCES Programme(channelID, start, stop) ON UPDATE CASCADE"
+queries << "ALTER TABLE Scheduled ADD FOREIGN KEY(channelID, start) REFERENCES Programme(channelID, start) ON UPDATE CASCADE"
 
 queries << "ALTER TABLE Listing DROP FOREIGN KEY Listing_ibfk_1"
 queries << "ALTER TABLE Listing ADD FOREIGN KEY(channelID, start) REFERENCES Programme(channelID, start) ON DELETE CASCADE ON UPDATE CASCADE"

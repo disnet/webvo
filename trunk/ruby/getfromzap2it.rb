@@ -38,7 +38,7 @@ f.close
 
 #replace the default zap2it timezone with the local timezone
 zone = Time.now.strftime("%z")
-conf = conf.gsub(/timezone: \+[0-9]*/,'timezone: ' + zone)
+conf = conf.gsub(/timezone: [\+|\-][0-9]*/,'timezone: ' + zone)
 #conf = conf.gsub(/timezone: \+[0-9]*/,'timezone: +0000')
 
 f = File.open(XMLTV_CONFIG,'w')
