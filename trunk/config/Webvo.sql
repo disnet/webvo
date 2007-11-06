@@ -51,10 +51,7 @@ CREATE TABLE `Recorded` (
   `channelID` char(60) NOT NULL,
   `start` datetime NOT NULL,
   `filename` varchar(2000) NOT NULL,
-  PRIMARY KEY  (`channelID`,`start`),
-  FOREIGN KEY (`channelID`, `start`)
-    REFERENCES `Programme` (`channelID`, `start`) 
-    ON UPDATE CASCADE
+  PRIMARY KEY  (`channelID`,`start`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -70,10 +67,7 @@ CREATE TABLE `Scheduled` (
   `filename` varchar(2000) NOT NULL,
   `pid` integer,
   `priority` integer NOT NULL,
-  PRIMARY KEY  (`channelID`,`start`),
-  FOREIGN KEY (`channelID`, `start`) 
-    REFERENCES `Programme` (`channelID`, `start`) 
-    ON UPDATE CASCADE
+  PRIMARY KEY  (`channelID`,`start`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

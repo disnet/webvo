@@ -32,9 +32,7 @@ priority = cgi.params['priority'][0].to_i
 error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 
 start = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
-puts start
 start = formatToRuby(start+Time.now.strftime(" %z")).strftime(DATE_TIME_FORMAT_RUBY_XML) unless json == "true"
-puts start
 chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   
 start_date = start[0..7]

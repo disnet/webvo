@@ -18,6 +18,7 @@ queries << "ALTER TABLE Programme DROP FOREIGN KEY Programme_ibfk_1"
 queries << "ALTER TABLE Programme ADD FOREIGN KEY(channelID) REFERENCES Channel(channelID) ON DELETE CASCADE ON UPDATE CASCADE"
 
 dbh = databaseconnect
+
 queries.each {|query|
     puts "Executing:", query
     begin
@@ -64,5 +65,26 @@ unless dbIsUtc
         }
         GC.start
     }
-    puts "convert db"
+
+    puts "converted db"
 end
+
+# delete foreign keys because they cause problems with getfromzap2it deleting a 
+# programme that is scheduled
+
+queries = Array.new
+
+queries << "ALTER TABLE Recorded DROP FOREIGN KEY Recorded_ibfk_1"
+queries << "ALTER TABLE Scheduled DROP FOREIGN KEY Scheduled_ibfk_1"
+
+queries.each {|query|
+    puts "Executing:", query
+    begin
+        dbh.query query
+        puts dbh.query("show warnings").each{|warn| puts warn} if dbh.warning_count > 0
+    rescue MysqlError => e
+        puts "Error in database query. Error code: #{e.errno} Message: #{e.error}"
+    end
+}
+
+dbh.close

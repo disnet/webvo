@@ -107,8 +107,8 @@ xmldoc.find('programme').each { |programme|
             begin
                 dbh.query query
             rescue MysqlError => e
-                LOG.debug "Error in database query. Error code: #{e.errno} Message: #{e.error}"
-                LOG.debug "Problem with Listing insert for programme #{prog.title} (already in db?): \n#{query}" 
+                LOG.error "Error in database query. Error code: #{e.errno} Message: #{e.error}"
+                LOG.error "Problem with Listing insert for programme #{prog.title} (already in db?): \n#{query}" 
             end
         }
     end
