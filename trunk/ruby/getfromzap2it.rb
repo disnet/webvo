@@ -68,7 +68,18 @@ class Chan
     end
 end
 
-system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME + " --days 14 ")
+# this is to get rid of the dd episode number in the filename if there is no onscreen
+class Prog
+    def episode
+        onscreen_ep = nil
+        @xmlNode.find('episode-num').each {|ep| 
+            onscreen_ep = ep.content if ep['system'] == 'onscreen'
+        }
+        format onscreen_ep
+    end
+end
+
+system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME + " --days 14  --dropbadchar")
 
 xmldoc = XML::Document.file(XML_FILE_NAME)
 
