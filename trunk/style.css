@@ -137,6 +137,10 @@ table.tblRecord  {
     border-top-width: 2px;
 }
 
+.filesize{
+    white-space: nowrap;
+}
+
 #boxSpace {
     text-align:right;
     width:100%;

@@ -194,6 +194,16 @@ class Prog
             return false
         end
     end
+    def size_readable
+        units = ["B", "KB", "MB", "GB"]
+        size = @size
+        index = 0
+        while size > 1024 and index < units.length
+            size /= 1024
+            index += 1
+        end
+        format (size.to_s + " " + units[index])
+    end
     def start
         #format @xmlNode["start"][0..13]
         format @start_time.strftime(DATE_TIME_FORMAT_RUBY_XML) #.xmlschema[0..18]
@@ -460,7 +470,7 @@ class JSON_Output
                 retstr += "<td>#{prog.start_readable}</td>"
                 retstr += "<td>#{prog.stop_readable}</td>"
                 retstr += "<td>#{prog.channel}</td>"
-                retstr += "<td>#{prog.size}</td>" if @type == RECORDED
+                retstr += "<td class=\"filesize\">#{prog.size_readable}</td>" if @type == RECORDED
                 retstr += "<td><input name=\"#{@type}Check\" type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
             }
         end
