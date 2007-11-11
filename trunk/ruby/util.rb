@@ -344,10 +344,16 @@ end
 
 class JSON_Output
     SEARCH = "search"
-    #have to deal with date range to fully implement listing
     LISTING = "listing"
     SCHEDULED = "scheduled"
     RECORDED = "recorded"
+    ADD = "add"
+    DELETE = "delete"
+    UNSCHEDULE = "unschedule"
+
+    TABLES = [SEARCH, SCHEDULED, RECORDED]
+    CELLS = [LISTING]
+    ACTION = [ADD, DELETE, UNSCHEDULE]
 
     def initialize(type, start = Time.now, stop = Time.new)
         @start = formatToRuby start
@@ -398,11 +404,13 @@ class JSON_Output
         retstr += "'programmes': [\n"
         retstr += progStr + " ]"
 
-        retstr += ",\n'lists': {\n"
-        retstr += chan_list.to_s
-        retstr += ",\n" + name_list.to_s
-        retstr += ",\n" + datetime_list.to_s
-        retstr +=  " \n}\n"
+        unless ACTION.include? @type
+            retstr += ",\n'lists': {\n"
+            retstr += chan_list.to_s
+            retstr += ",\n" + name_list.to_s
+            retstr += ",\n" + datetime_list.to_s
+            retstr +=  " \n}\n"
+        end
 
         retstr += "}"
     end
@@ -423,7 +431,7 @@ class JSON_Output
     end
     def type_changed
         @header_html = "'header': '"
-        if @type == LISTING
+        if CELLS.include? @type
             minutes_in_range = (@stop - @start).to_i/60
             @header_html += "<table id=\"schedule_table\" class=\"schedule_table\"><tr class=\"empty\">"
             (minutes_in_range + 1).times { @header_html += "<td/>" }
@@ -444,7 +452,7 @@ class JSON_Output
                 retstr += "'episode': '#{prog.episode}',"
                 retstr += "'desc': '#{prog.desc}' }"
             }
-        else
+        elsif TABLES.include? @type
             @header_html += "<tr>"
             @header_html += "<th>Title</th>"
             @header_html += "<th>Episode Title</th>"
@@ -473,6 +481,12 @@ class JSON_Output
                 retstr += "<td class=\"filesize\">#{prog.size_readable}</td>" if @type == RECORDED
                 retstr += "<td><input name=\"#{@type}Check\" type=\"checkbox\" value=\"#{prog.id}\"/></td></tr>' }"
             }
+        elsif ACTION.include? @type
+            @header_html = "'status': 'success',\n"
+            @progblock = lambda {|prog|
+                retstr = "{ 'id':'#{prog.id}' }"
+            }
+            nil
         end
     end
 end

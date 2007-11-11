@@ -23,19 +23,19 @@
 require "cgi"
 require "util"
 
-puts "Content-Type:text/xml\n\n"
-puts "<?xml version='1.0' encoding='ISO-8859-1'?>"
-puts "<tv>"
 cgi = CGI.new
-json = cgi.params['json'][0]
+json = cgi.params['json'][0].to_s.downcase == "true"
 prog_id = cgi.params['prog_id'][0]
+
+puts "Content-Type:text/xml\n\n<?xml version='1.0' encoding='ISO-8859-1'?>\n<tv>" unless json
+puts JSON_HEADER if json
 
 error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 
 date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
-date_time = formatToRuby(date_time+Time.now.strftime(" %z")).strftime(DATE_TIME_FORMAT_RUBY_XML) unless json == "true"
+date_time = formatToRuby(date_time+Time.now.strftime(" %z")).strftime(DATE_TIME_FORMAT_RUBY_XML) unless json
 chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
-  
+ 
 start_date = date_time[0..7]
 start_time = date_time[8..13]
 
@@ -48,9 +48,19 @@ error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than
 error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
 error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31")
 
+progxml = databasequery("SELECT xmlNode FROM Scheduled JOIN Programme USING(channelID, start) WHERE (channelID='#{chan_id}'AND start = '#{date_time}')").fetch_row
+error_if_not_equal( progxml.nil?, false, "Show not scheduled")
 databasequery("DELETE FROM Scheduled WHERE (channelID = '#{chan_id}'AND start = '#{date_time}')")
 
-puts "<success>"
-puts "<prog_id>#{prog_id}</prog_id>"
-puts "</success>"
-puts XML_FOOTER
+if json
+    json_out = JSON_Output.new(JSON_Output::UNSCHEDULE)
+    prog = Prog.new(XML::Parser.string(progxml[0].to_s).parse, 0)
+    prog.set_json_output
+    json_out.add_programme(prog)
+    puts json_out
+else
+    puts "<success>"
+    puts "<prog_id>#{prog_id}</prog_id>"
+    puts "</success>"
+    puts XML_FOOTER
+end

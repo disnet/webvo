@@ -23,22 +23,26 @@
 require 'cgi'
 require 'util'
 
-puts "Content-Type: text/xml\n\n<tv>\n"
 cgi = CGI.new
-json = cgi.params['json'][0]
+json = cgi.params['json'][0].to_s.downcase == "true"
 prog_id = cgi.params['prog_id'][0]
 priority = cgi.params['priority'][0].to_i
+
+puts "Content-Type:text/xml\n\n<?xml version='1.0' encoding='ISO-8859-1'?>\n<tv>" unless json
+puts JSON_HEADER if json
 
 error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
 
 start = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
-start = formatToRuby(start+Time.now.strftime(" %z")).strftime(DATE_TIME_FORMAT_RUBY_XML) unless json == "true"
+start = formatToRuby(start+Time.now.strftime(" %z")).strftime(DATE_TIME_FORMAT_RUBY_XML) unless json
 chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
   
 start_date = start[0..7]
 start_time = start[8..13]
 
 #error checking
+#todo: either delete this error checking or deal with it so that it
+# returns json when needed
 #Check if times are valid
 error_if_not_equal(start_date.to_i.to_s == start_date, true, "the date time needs to have only numbers in it")
 error_if_not_equal(start_time.to_i < 240000, true, "Time must be millitary time")
@@ -82,9 +86,16 @@ databasequery("SELECT filename from Scheduled WHERE
 error_if_not_equal(overlapping_shows.length, 0, "Requested show occurs during: #{overlapping_shows.join(' and ')}")
 databasequery("INSERT INTO Scheduled (channelID, start, stop, filename, priority) VALUES 
                ('#{chan_id}','#{start}','#{show_row['stop']}','#{filename}',#{priority})")
-puts "<success>"
-puts "<prog_id>#{prog_id}</prog_id>"
-puts "#{show_row['xmlNode']}"
-puts "</success>"
-
-puts XML_FOOTER
+if json
+    json_out = JSON_Output.new(JSON_Output::ADD)
+    prog = Prog.new(XML::Parser.string(show_row['xmlNode'].to_s).parse, 0)
+    prog.set_json_output
+    json_out.add_programme(prog)
+    puts json_out
+else
+    puts "<success>"
+    puts "<prog_id>#{prog_id}</prog_id>"
+    puts "#{show_row['xmlNode']}"
+    puts "</success>"
+    puts XML_FOOTER
+end

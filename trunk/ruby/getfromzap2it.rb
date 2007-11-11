@@ -79,9 +79,17 @@ class Prog
     end
 end
 
-system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME + " --days 14 --dropbadchar")
+#system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME + " --days 14 --dropbadchar")
 
-xmldoc = XML::Document.file(XML_FILE_NAME)
+class Thing
+    def initialize
+    end
+    def find thing
+        Array.new
+    end
+end
+
+xmldoc = Thing.new #XML::Document.file(XML_FILE_NAME)
 
 dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
 
@@ -127,16 +135,18 @@ xmldoc.find('programme').each { |programme|
 
 # update filenames if needed
 query = "SELECT channelID, start, xmlNode"
-databasequery("SELECT channelID, title, `sub-title`, episode, number, Programme.xmlNode,
+databasequery("SELECT channelID, title, `sub-title`, episode, number, p.xmlNode as xmlNode,
                DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
-               DATE_FORMAT(stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
+               DATE_FORMAT(p.stop, '#{DATE_TIME_FORMAT_XML}') as stop, 
                DATE_FORMAT(start, '#{DATE_TIME_FORMAT_STRING}') as start_string, 
-               DATE_FORMAT(stop, '#{DATE_TIME_FORMAT_STRING}') as stop_string,
+               DATE_FORMAT(p.stop, '#{DATE_TIME_FORMAT_STRING}') as stop_string,
                filename
-               FROM Programme JOIN Channel USING(channelID)
-               JOIN Scheduled USING(channelID, start, stop)").each_hash {|show_row|
+               FROM Programme p JOIN Channel USING(channelID)
+               JOIN Scheduled USING(channelID, start)").each_hash {|show_row|
 
-    start_string = formatToRuby(show_row['start']).localtime.strftime(DATE_TIME_FORMAT_STRING_RUBY)
+    prog = Prog.new(XML::Parser.string(show_row['xmlNode'].to_s).parse, show_row['number'])
+    start_string = prog.start_time.localtime.strftime(DATE_TIME_FORMAT_STRING_RUBY)
+    #start_string = formatToRuby(show_row['start']).localtime.strftime(DATE_TIME_FORMAT_STRING_RUBY)
 
     filename = [show_row['title'],show_row['episode'],show_row['sub-title'],start_string,show_row['number']].delete_if{|val| val.nil?}.join("_-_")
 
