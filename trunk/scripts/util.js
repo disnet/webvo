@@ -9,6 +9,25 @@ var Util = {
     },
     toggleCheck: function(el) {
         el.checked = !el.checked
+    },
+
+    // Converts military time to standard
+    // TODO: make this fcn more robust...fails unless `:00` is passed in
+    mil2std: function(mil) {
+        var hour = parseInt(mil.slice(0,2));
+        if (hour < 12) {
+            if(hour == 0) {
+                return "12:" + mil.slice(2) + "AM";
+            }
+            return mil + "AM";
+        }
+        if(hour == 12) {
+            return mil + "PM";
+        }
+        else {
+            hour -= 12;
+            return (hour.toString()) + mil.slice(2) + "PM";
+        }
     }
 }
 

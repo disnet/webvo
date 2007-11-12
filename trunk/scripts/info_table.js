@@ -49,7 +49,7 @@ InfoTable.prototype = {
             previousEnd = this.data.programmes[i].stop;
         }
     },
-
+    
     _gotRequest: function(req){
         this.data = req;
         var oldTable = this._container;

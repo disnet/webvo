@@ -80,53 +80,6 @@ App.prototype = {
     }
 };
 
-function Stats() {
-    bindMethods(this);
-}
-
-Stats.prototype = {
-    update: function() {
-        var d = loadJSONDoc('ruby/form_stats.rb?json=true');
-        d.addCallbacks(this._gotReqeust,this._fetchFailed);
-    },
-    
-    _gotRequest: function(req) {
-        //pass
-    },
-
-    _fetchFailed: function(req) {
-        //pass
-    }
-};
-
-function Adder() {
-   bindMethods(this); 
-}
-
-Adder.prototype = {
-    add: function(id) {
-        var d = loadJSONDoc('ruby/add_recording.rb?json=true&prog_id=' + id);
-        d.addCallbacks(this._gotAddRequest,this._fetchFailed);
-    },
-    removeRecording: function(id) {
-        var d = loadJSONDoc('ruby/delete_recording.rb?json=true&prog_id=' + id);
-        d.addCallbacks(this._gotDelRequest,this._fetchFailed);
-    },
-
-    deleteRecorded: function(id) {
-        var d = loadJSONDoc('ruby/delete_recorded.rb?json=true?prog_id=' + id);
-        d.addCallbacks(this._gotDelRequest,this._fetchFailed);
-    },
-    _gotAddRequest: function(req) {
-//        console.log(req);
-    },
-    _gotDelRequest: function(req) {
-        //pass
-    },
-    _fetchFailed: function(req) {
-        console.log(req);
-    }
-};
 var app;
 window.onload = function() {
     app = new App(true);
