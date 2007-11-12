@@ -19,7 +19,6 @@ retstr += ",\n'space': {" +
     "'used': '#{space['used']}', " +
     "'total': '#{space['total']}' }"
 
-
 recording = getNextShow
 
 unless recording.nil?
@@ -29,7 +28,7 @@ unless recording.nil?
         "'filename': '#{recording.filename.to_s.gsub(/'/,"&#39;")}' }"
 end
 
-retstr += ",\n'datetime': '#{Time.new.strftime(DATE_TIME_FORMAT_RUBY_XML)}'"
+retstr += ",\n'datetime': '#{Time.new.xmlschema}'"
 
 retstr += "\n}"
 
