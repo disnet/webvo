@@ -79,17 +79,9 @@ class Prog
     end
 end
 
-#system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME + " --days 14 --dropbadchar")
+system( "tv_grab_na_dd --config-file " + XMLTV_CONFIG + " --output " + XML_FILE_NAME + " --days 14 --dropbadchar")
 
-class Thing
-    def initialize
-    end
-    def find thing
-        Array.new
-    end
-end
-
-xmldoc = Thing.new #XML::Document.file(XML_FILE_NAME)
+xmldoc = XML::Document.file(XML_FILE_NAME)
 
 dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
 

@@ -33,10 +33,13 @@ LOG.level = Logger::DEBUG
 cgi = CGI.new                      # The CGI object is how we get the arguments 
   
 format = cgi.params['format'][0]
-json = cgi.params['json'][0]
+json = cgi.params['json'][0].to_s.downcase == "true"
 hours = cgi.params['hours'][0]
 hours = DEFAULT_LISTING_HOURS if hours.nil?
 start_date_time = cgi.params[START][0]
+
+puts XML_HEADER unless json
+puts JSON_HEADER if json
 
 if cgi.has_key?(START) and cgi.has_key?(STOP)
     end_date_time = cgi.params[STOP][0]
@@ -74,7 +77,7 @@ error_if_not_equal(end_date[6..7].to_i <= 31, true, "Ending day must be less tha
 before_query = Time.now
 retstr = ""
 zone = ""
-zone = Time.now.strftime(" %z") unless json == "true"
+zone = Time.now.strftime(" %z") unless json
 range = hours_in(start_date_time+zone, end_date_time+zone).join(",")
 # Is there a faster, better way to do this?
 # This should not be needed in the JSON output formatting
@@ -83,8 +86,7 @@ channels = databasequery(query) #.each { |chan| puts chan[0]}
 query = "SELECT DISTINCT p.xmlNode, number from Programme p JOIN Listing USING(channelID, start) JOIN Channel USING(channelID) WHERE showing in (#{range}) ORDER BY number, start"
 programmes = databasequery(query) #.each { |prog| puts prog[0] }
 
-if format == "new" or json == "true"
-    puts JSON_HEADER
+if json
     json_out = JSON_Output.new(JSON_Output::LISTING, start_date_time, end_date_time)
     programmes.each_hash {|hash|
         prog = Prog.new(XML::Parser.string(hash['xmlNode'].to_s).parse, hash['number'])
@@ -93,7 +95,6 @@ if format == "new" or json == "true"
     }
     puts json_out
 else
-    puts XML_HEADER
     channels.each { |chan| puts chan[0] }
     programmes.each { |prog| puts prog[0] }
     puts XML_FOOTER

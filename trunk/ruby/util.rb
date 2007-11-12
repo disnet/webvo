@@ -438,6 +438,7 @@ class JSON_Output
             @header_html += "</tr><tr>"
             @header_html += "<th>Ch.</th>"
             hours_in(@start, @stop, true).each {|hour| 
+                hour.localtime
                 @header_html += "<th colspan=\"30\">#{hour.strftime("%I:00%p")}</th>"
                 @header_html += "<th colspan=\"30\">#{hour.strftime("%I:30%p")}</th>"
             }
