@@ -31,7 +31,7 @@ LENGTH_OF_DATE_TIME = 14
 
 DEFAULT_LISTING_HOURS = 3
 
-BYTES_PER_SECOND = 1091392.6267866596082583377448385
+KBYTES_PER_SECOND = 1065.8131120963472736897829539434
 
 SUPPORTED_ENCODING_SCHEMES= [".mpg", ".avi"]
 SUPPORTED_FILE_TYPES = [".mpg", ".avi"]
@@ -95,7 +95,7 @@ def estimateTimeSpaceGone
         stop = Time.xmlschema(show[1])
         start = Time.xmlschema(show[0])
         length = stop - start + padding
-        space_available -= length * BYTES_PER_SECOND
+        space_available -= length * KBYTES_PER_SECOND
         if space_available <= 0
             return start
         end
