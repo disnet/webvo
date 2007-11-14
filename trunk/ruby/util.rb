@@ -405,7 +405,7 @@ class JSON_Output
         @scheduled[key] = @scheduled[key] << prog.start_time
     end
     def to_s
-        @time_space_gone = estimateTimeSpaceGone
+        @time_space_gone = estimateTimeSpaceGone if @type == SCHEDULED
         programme_node = Array.new
         programme_html = List_Output.new(List_Output::LISTING, @start, @stop) 
         chan_list = List_Output.new(List_Output::CHANNEL)

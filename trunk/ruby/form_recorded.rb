@@ -28,8 +28,10 @@ require 'xml/libxml'
 #this is only need for the trnasition to json
 require 'cgi'
 cgi = CGI.new
-format = cgi.params['format'][0]
-json = cgi.params['json'][0]
+json = cgi.params['json'][0].to_s.downcase == "true"
+
+puts XML_HEADER unless json
+puts JSON_HEADER if json
 
 #todo: make this work when the movies dir is not visible from the web?
 SHOW_RELATIVE_ADDRESS = "movies/"
@@ -67,7 +69,7 @@ databasequery("SELECT filename, p.xmlNode, number
     files_with_name.each { |file|
         file_size += File.size(file)
     }
-    if format == "new" or json == "true"
+    if json
         prog = Prog.new(XML::Parser.string(recorded['xmlNode'].to_s).parse, recorded['number'], file_size)
         prog.set_json_output
         json_out.add_programme(prog)
@@ -79,11 +81,9 @@ databasequery("SELECT filename, p.xmlNode, number
     end
 }
 
-if format == "new" or json == "true"
-    puts JSON_HEADER
+if json
     puts json_out
 else
-    puts XML_HEADER
     puts retstr
     puts XML_FOOTER
 end
