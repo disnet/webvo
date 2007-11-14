@@ -18,7 +18,8 @@ FILE_PADDING="120"
 
 
 #dependancy variables
-packages=("apache2" "mysql-server" "ruby" "libxml-ruby" "libmysql-ruby" "xmltv")
+packages=("apache2" 		"mysql-server" 		"ruby" 		"libxml-ruby" 	"libmysql-ruby" "xmltv")
+versions=("2.2.3-3.2ubuntu0.1"	"5.0.38-0ubuntu1.1"	"1.8.2-1"	"0.3.8.4-1"	"2.7.1-1"	"0.5.44-1.1")
 
 #SERVERNAME="localhost"
 #USERNAME="root"
@@ -257,35 +258,48 @@ fi
 
 for package in ${packages[@]}
 do
-	if [ "$( dpkg --get-selections | awk 'BEGIN { FS = " "; OFS = "\t" } { $1 = $1; gsub(/\t+/, "\t"); print}' | cut -f1 | grep -x $package )" = "$NULL" ]
+	#if [ "$( dpkg --get-selections | awk 'BEGIN { FS = " "; OFS = "\t" } { $1 = $1; gsub(/\t+/, "\t"); print}' | cut -f1 | grep -x $package )" = "$NULL" ]
+	#then
+	if [ "$( aptitude show $package | sed '/State: installed/!d' )" = "$NULL" ]
 	then
-
-		echo "Installing $package"
-		if [ "$simulate" = "false" ]
-		then
-			apt-get -y install $package
-		fi
-
-		if [ $? -eq 0 ]
-		then
-			echo "Did not install $package"
-
-		else
-			echo "Installed $package"
-			case $package in
-				apache2)
-					configure_apache="true"
-				;;
-				mysql-server)
-					configure_sql="true"
-				;;
-			esac
-		fi
+		pktodo="install"
 	else
-		echo $package already installed
+#		if [ "$( aptitude show $package | sed '/Version: /!d' | sed 's/Version: //' )" >=  "$versions[]"
+		pktodo="nothing"
 	fi
-done
 
+	case $pktodo in
+		install)
+			echo "Installing $package"
+			if [ "$simulate" = "false" ]
+			then
+				apt-get -y install $package
+			fi
+
+			if [ $? -eq 0 ]
+			then
+				echo "Did not install $package"
+
+			else
+				echo "Installed $package"
+				case $package in
+					apache2)
+						configure_apache="true"
+					;;
+					mysql-server)
+						configure_sql="true"
+					;;
+				esac
+			fi
+		;;
+		update)
+		;;
+		nothing)
+			echo $package already installed and does not need to be updated
+		;;
+	esac
+done
+exit
 #install xmltv for new grabber --Not added to Repository as of 9-20-2007
 if [ $config_xmltv = "true" ]
 then
@@ -368,15 +382,15 @@ then
 					wget http://webvo.googlecode.com/files/webvo.tar.gz
 					gzip -d webvo.tar.gz
 					tar -xf webvo.tar
-					if [ ! -d $INSTALL_PATH ]
+					if [ ! -d $INSTALL_PATH/webvo ]
 					then
-						mkdir -p $INSTALL_PATH
+						mkdir -p $INSTALL_PATH/webvo
 					else
-						echo "Removing old install at: $INSTALL_PATH"
-						rm -r $INSTALL_PATH/*
+						echo "Removing old install at: $INSTALL_PATH/webvo"
+						rm -r $INSTALL_PATH/webvo/*
 					fi
 					echo "Moving Webvo to $INSTALL_PATH"
-					mv /tmp/webvo/* $INSTALL_PATH/
+					mv /tmp/webvo/* $INSTALL_PATH/webvo/
 					#chown $(USER).$(USER) $INSTALL_PATH
 					rm /tmp/webvo.tar
 					rm -r /tmp/webvo
