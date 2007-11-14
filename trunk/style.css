@@ -83,6 +83,9 @@ td.listHead{
 .recordingProgrammeOver {
 	background-color:#FF5C5C;
 }
+.noHardDriveSpace {
+	background-color: #BBBBBB;
+}
 .programmeSelected {
 	background-color: #658570;
 }

@@ -31,6 +31,8 @@ LENGTH_OF_DATE_TIME = 14
 
 DEFAULT_LISTING_HOURS = 3
 
+BYTES_PER_SECOND = 1091392.6267866596082583377448385
+
 SUPPORTED_ENCODING_SCHEMES= [".mpg", ".avi"]
 SUPPORTED_FILE_TYPES = [".mpg", ".avi"]
 
@@ -43,6 +45,7 @@ JSON_HEADER = "Content-Type:text\n\n"
 DATE_FORMAT_STRING = "%Y%m%d"
 DATE_TIME_FORMAT_STRING = "%Y-%m-%d_[%H.%i.%S]"
 DATE_TIME_FORMAT_STRING_RUBY = "%Y-%m-%d_[%H.%M.%S]"
+DATE_TIME_FORMAT_XMLSCHEMA = "%Y-%m-%dT%H:%i:%SZ"
 DATE_TIME_FORMAT_XML= "%Y%m%d%H%i%S"
 DATE_TIME_FORMAT_RUBY_XML= "%Y%m%d%H%M%S"
 
@@ -80,6 +83,25 @@ def databasequery(query_str)
         dbh.close if dbh
     end
     return result
+end
+
+def estimateTimeSpaceGone
+    space_available = freespace['available'].to_i
+    padding = load_config["FILE_PADDING"].to_i
+    databasequery("SELECT 
+                   DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XMLSCHEMA}') as start, 
+                   DATE_FORMAT(stop, '#{DATE_TIME_FORMAT_XMLSCHEMA}') as stop 
+                   from Scheduled ORDER BY start ASC").each {|show|
+        stop = Time.xmlschema(show[1])
+        start = Time.xmlschema(show[0])
+        length = stop - start + padding
+        space_available -= length * BYTES_PER_SECOND
+        if space_available <= 0
+            return start
+        end
+    }
+    Time.now + 500 * 60 * 60
+
 end
 
 def hours_in (start, stop, return_time = false)
@@ -383,6 +405,7 @@ class JSON_Output
         @scheduled[key] = @scheduled[key] << prog.start_time
     end
     def to_s
+        @time_space_gone = estimateTimeSpaceGone
         programme_node = Array.new
         programme_html = List_Output.new(List_Output::LISTING, @start, @stop) 
         chan_list = List_Output.new(List_Output::CHANNEL)
@@ -426,6 +449,9 @@ class JSON_Output
             end
         elsif @recorded.has_key? key
             return "programme recordedSearched"
+        end
+        if @type == SCHEDULED and @time_space_gone < prog.stop_time
+            return "programme noHardDriveSpace"
         end
         return "programme"
     end
