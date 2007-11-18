@@ -32,7 +32,6 @@ LOG.level = Logger::DEBUG
 # changing the order will break error xml formatting
 cgi = CGI.new                      # The CGI object is how we get the arguments 
   
-format = cgi.params['format'][0]
 json = cgi.params['json'][0].to_s.downcase == "true"
 hours = cgi.params['hours'][0]
 hours = DEFAULT_LISTING_HOURS if hours.nil?
@@ -47,7 +46,7 @@ else
     temp_time = Time.new.utc
     temp_time = temp_time - temp_time.min * 60 - temp_time.sec
     start_date_time = temp_time.strftime(DATE_TIME_FORMAT_RUBY_XML) if start_date_time.nil?
-    end_date_time = (temp_time + hours.to_i * 60 * 60).strftime(DATE_TIME_FORMAT_RUBY_XML)
+    end_date_time = (formatToRuby(start_date_time)+ hours.to_i * 60 * 60).strftime(DATE_TIME_FORMAT_RUBY_XML)
 end
 
 #checks lengths of arguments to make sure the have the length of YYYYMMDDHHMMSS
