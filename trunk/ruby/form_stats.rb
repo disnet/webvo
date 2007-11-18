@@ -2,16 +2,18 @@
 
 require 'util'
 
-DATE_FORMAT_STRING = "%Y-%m-%d"
+#DATE_FORMAT_STRING = "%Y-%m-%d"
 
 puts JSON_HEADER
 
 retstr = "{ 'type': 'stats'"
 
-stop_day = databasequery("SELECT DATE_FORMAT(stop,'#{DATE_FORMAT_STRING}') FROM Programme ORDER BY stop DESC LIMIT 1").fetch_row
-#start_day = Time.now.strftime(DATE_FORMAT_STRING)
-start_day = databasequery("SELECT DATE_FORMAT(start,'#{DATE_FORMAT_STRING}') FROM Programme ORDER BY start ASC LIMIT 1").fetch_row
-retstr += ",\n'programme_date_range': {'start': '"+ start_day.to_s + "', 'stop': '" + stop_day.to_s + "'}"
+stop_day = databasequery("SELECT DATE_FORMAT(stop,'#{DATE_TIME_FORMAT_XMLSCHEMA}') FROM Programme ORDER BY stop DESC LIMIT 1").fetch_row
+#start_day = Time.now.strftime(DATE_TIME_FORMAT_XMLSCHEMA)
+start_day = databasequery("SELECT DATE_FORMAT(start,'#{DATE_TIME_FORMAT_XMLSCHEMA}') FROM Programme ORDER BY start ASC LIMIT 1").fetch_row
+stop_day = Time.xmlschema(stop_day.to_s).localtime
+start_day = Time.xmlschema(start_day.to_s).localtime
+retstr += ",\n'programme_date_range': {'start': '"+ start_day.xmlschema + "', 'stop': '" + stop_day.xmlschema + "'}"
 space = freespace
 
 retstr += ",\n'space': {" +

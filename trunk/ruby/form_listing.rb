@@ -76,8 +76,10 @@ error_if_not_equal(end_date[6..7].to_i <= 31, true, "Ending day must be less tha
 before_query = Time.now
 retstr = ""
 zone = ""
-zone = Time.now.strftime(" %z") unless json
-range = hours_in(start_date_time+zone, end_date_time+zone).join(",")
+zone = Time.now.strftime(" %z") #unless json
+start_date_time += zone
+end_date_time += zone
+range = hours_in(start_date_time, end_date_time).join(",")
 # Is there a faster, better way to do this?
 # This should not be needed in the JSON output formatting
 query = "SELECT DISTINCT xmlNode from Channel JOIN Listing USING(channelID) WHERE showing in (#{range})"
