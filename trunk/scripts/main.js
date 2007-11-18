@@ -56,7 +56,6 @@ App.prototype = {
     showListing: function() {
         this._displayPage($('listingContent')); 
         this.listing_data.update();
-        this.stats.update();
     },
     showScheduled: function() {
         this._displayPage($('scheduledContent')); 

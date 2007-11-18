@@ -28,6 +28,24 @@ var Util = {
             hour -= 12;
             return (hour.toString()) + mil.slice(2) + "PM";
         }
+    },
+    dateToZapTime: function(date) {
+        isoTime = toISOTimestamp(date);
+        
+        zapTime = isoTime.slice(0,4);	//year
+        zapTime += isoTime.slice(5,7);	//month
+        zapTime += isoTime.slice(8,10);	//day
+
+        if(date.getHours() < 10) {	// need to pad an extra zero for the hour
+            zapTime += "0" + isoTime.slice(11,12);
+            zapTime += isoTime.slice(13,15);
+            zapTime += isoTime.slice(16,18);
+        } else {
+            zapTime += isoTime.slice(11,13);	//hour
+            zapTime += isoTime.slice(14,16);	//miniute
+            zapTime += isoTime.slice(17,19);	//second
+        }
+        return zapTime;
     }
 }
 
