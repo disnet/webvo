@@ -89,8 +89,8 @@ ListingData.prototype = {
 
     _fillSelDate: function(start,stop) {
         var dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-        var dStart= isoDate(start);
-        var dStop= isoDate(stop);
+        var dStart= isoTimestamp(start);
+        var dStop= isoTimestamp(stop);
         //return;
         while(dStart <= dStop) { 
             var opDate = OPTION({'value':dStart}, 

@@ -43,7 +43,7 @@ puts JSON_HEADER if json
 if cgi.has_key?(START) and cgi.has_key?(STOP)
     end_date_time = cgi.params[STOP][0]
 else
-    temp_time = Time.new.utc
+    temp_time = Time.new
     temp_time = temp_time - temp_time.min * 60 - temp_time.sec
     start_date_time = temp_time.strftime(DATE_TIME_FORMAT_RUBY_XML) if start_date_time.nil?
     end_date_time = (formatToRuby(start_date_time)+ hours.to_i * 60 * 60).strftime(DATE_TIME_FORMAT_RUBY_XML)

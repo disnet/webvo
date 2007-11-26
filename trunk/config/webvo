@@ -5,7 +5,7 @@ set -e
 
 REC_PATH="/var/www/webvo/ruby/"
 REC_NAME="new-record.rb"
-USER="www-data"
+USER="root"
 pidfile="record.pid"
 
 test -x $REC_PATH$REC_NAME || exit 0
