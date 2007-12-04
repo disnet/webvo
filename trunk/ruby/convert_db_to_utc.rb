@@ -46,8 +46,15 @@ unless dbIsUtc
             dbh.query query
             puts dbh.query("show warnings").each{|warn| puts warn} if dbh.warning_count > 0
         rescue MysqlError => e
-            puts "Error in database query:\n#{query}\n Error code: #{e.errno} Message: #{e.error}"
-            exit
+            if e.errno == 1062
+                # this assumes that if the updated row would be a duplicate that it has no references in Scheduled and Recorded
+                query = "DELETE FROM Programme WHERE channelID = #{prog.chanID} and start = '#{start}'"
+                retry
+            else
+                puts "Error in database query:\n#{query}\n Error code: #{e.errno} Message: #{e.error}"
+                puts "Conversion incomplete"
+                exit
+            end
         end
 
         query = "DELETE FROM Listing WHERE channelID = #{prog.chanID} and start = #{prog.start}"
