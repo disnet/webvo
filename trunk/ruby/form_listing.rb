@@ -94,6 +94,10 @@ if json
         prog.set_json_output
         json_out.add_programme(prog)
     }
+    databasequery("SELECT xmlNode from Scheduled 
+                  JOIN Programme USING (channelID, start)").each {|xml| 
+        json_out.add_scheduled(Prog.new(XML::Parser.string(xml[0].to_s).parse, "0"))
+    }
     puts json_out
 else
     channels.each { |chan| puts chan[0] }

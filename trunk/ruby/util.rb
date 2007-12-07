@@ -192,12 +192,14 @@ end
 
 # Class for programme sql entry formatting
 class Prog
+    attr_accessor :css_class
     attr_reader :channel, :size, :start_time, :stop_time
     TIME_FORMAT = "%A %m/%d/%Y %I:%M %p"
     def initialize(xmlNode, channel, size = "0")
         @xmlNode = xmlNode
         @channel = channel
         @size = size
+        @css_class = "programme"
 
         @start_time = formatToRuby(@xmlNode["start"][0..19])
         @stop_time = formatToRuby(@xmlNode["stop"][0..19])
@@ -218,13 +220,13 @@ class Prog
     end
     def size_readable
         units = ["B", "KB", "MB", "GB"]
-        size = @size
+        size = @size.to_f
         index = 0
         while size > 1024 and index < units.length
             size /= 1024
             index += 1
         end
-        format (size.to_s + " " + units[index])
+        format (((size*100).round/100.0).to_s + " " + units[index])
     end
     def start
         #format @xmlNode["start"][0..13]
@@ -328,7 +330,7 @@ class List_Output
         @start = start
         @stop = stop
         @prog_html = lambda {|prog|
-            progclass = prog.past? ? '"programmePast"' : '"programme"'
+            progclass = prog.past? ? '"programmePast"' : '"'+prog.css_class+'"'
             progcolspan = '"' + minutes_overlap(prog.start_time, prog.stop_time, @start, @stop).to_s + '"'
             "<td id=\"#{@type}#{prog.id}\" class=#{progclass} colspan=#{progcolspan}>#{prog.title}</td>"
         }
@@ -396,7 +398,7 @@ class JSON_Output
         @recorded[prog.episode + prog.title] = true
     end
     def add_scheduled(prog)
-        return nil unless @type == SEARCH
+        return nil unless @type == SEARCH or @type == LISTING
         prog.set_json_output
         key = prog.episode + prog.title
         unless @scheduled.has_key? key
@@ -416,7 +418,10 @@ class JSON_Output
             chan_list.add(aprog.chanID, aprog.id)
             name_list.add(aprog.title, aprog.id)
             datetime_list.add(aprog.start, aprog.id)
-            programme_html.add(aprog.channel, aprog) if @type == LISTING
+            if @type == LISTING
+                aprog.css_class = get_class(aprog)
+                programme_html.add(aprog.channel, aprog)
+            end
             #programme_html += @prog_html.call(aprog) if @type == LISTING
         }
         progStr = programme_node.join(",\n")

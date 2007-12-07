@@ -45,6 +45,7 @@ td.listHead{
     color:black;
 	background-color:#999999 ;
     margin-left: 0px;
+    cursor: default;
 }
 .programme:hover, .programme:hover td {
 	background-color: #75B075;
@@ -54,6 +55,7 @@ td.listHead{
 }
 .programmePast {
 	background-color: #AAAAAA;
+    cursor: default;
 }
 .recordingProgramme {
 	background-color:#FF4242;	

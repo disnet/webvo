@@ -30,7 +30,7 @@ require 'util'
 require 'logger'
 
 LOG = Logger.new(STDOUT)
-LOG.level = Logger::DEBUG
+LOG.level = Logger::INFO
 
 f = File.open(XMLTV_CONFIG,'r')
 conf = f.read
@@ -85,7 +85,12 @@ xmldoc = XML::Document.file(XML_FILE_NAME)
 
 dbh = Mysql.real_connect("#{SERVERNAME}","#{USERNAME}","#{USERPASS}","#{DBNAME}")
 
+replacements = 0
+overlaps = 0
+earliest_conflict = Time.new.utc + (14 * 60 * 60 * 24)
+
 # Populate database (channels and programmes)
+LOG.info("Populating database")
 chan_array = Array.new
 dbh.query("SELECT channelID FROM Channel").each { |cid| chan_array << cid[0] }
 
@@ -101,7 +106,11 @@ xmldoc.find('programme').each { |programme|
     time_check = dbh.query("SELECT xmlNode, title FROM Programme WHERE start = #{prog.start} and channelID = #{prog.chanID}").fetch_row
     # still need to update is xml data not the same
     if time_check.nil? || time_check[0] != programme.to_s
-        LOG.debug("#{prog.title} replacing #{time_check[1]}") unless time_check.nil?
+        unless time_check.nil?
+            LOG.debug("#{prog.title} replacing #{time_check[1]}")
+            replacements += 1
+            earliest_conflict = prog.start_time if prog.start_time < earliest_conflict
+        end
         dbh.query("DELETE FROM Programme WHERE start = #{prog.start} and channelID = #{prog.chanID}")
         # now need to find any overlapping old shows
         dbh.query("SELECT channelID, start FROM Programme WHERE 
@@ -109,6 +118,7 @@ xmldoc.find('programme').each { |programme|
             start < #{prog.stop} and
             #{prog.start} < stop").each { |dead_prog|
             LOG.debug("#{dead_prog[0]} starting at #{dead_prog[1]} overlaps #{prog.title}")
+            overlaps += 1
             dbh.query("DELETE FROM Programme WHERE channelID = '#{dead_prog[0]}' and start = '#{dead_prog[1]}'")
         }
         query = ("INSERT INTO Programme (channelID, start, stop, title, `sub-title`, description, episode, credits, category, xmlNode) VALUES(#{prog.chanID},#{prog.start},#{prog.stop},#{prog.title},#{prog.sub_title},#{prog.desc},#{prog.episode},#{prog.credits},#{prog.category},#{prog.xmlNode})")
@@ -124,6 +134,10 @@ xmldoc.find('programme').each { |programme|
         }
     end
 }
+
+days_to_replacement = (earliest_conflict - Time.new)/60/60/24
+LOG.info("Replacements: #{replacements}; Overlaps: #{overlaps}")
+LOG.info("Time to first replacement: #{days_to_replacement} days")
 
 # update filenames if needed
 query = "SELECT channelID, start, xmlNode"
@@ -145,7 +159,7 @@ databasequery("SELECT channelID, title, `sub-title`, episode, number, p.xmlNode 
     filename = format_filename(filename)
 
     unless filename == show_row['filename']
-        LOG.debug("filename: #{filename} \nreplacing: #{show_row['filename']}")
+        LOG.info("filename: #{filename} \nreplacing: #{show_row['filename']}")
         filename = Mysql.escape_string(filename)
         setpart = "SET filename = '#{filename}' WHERE channelID = '#{show_row['channelID']}' and start = '#{show_row['start']}'"
         dbh.query("UPDATE Scheduled " + setpart)
