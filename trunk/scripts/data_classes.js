@@ -68,11 +68,111 @@ ListingData.prototype = {
         */
     },
 
+    showClick: function(e) {
+        makeInvisible('mnuAddStatus');
+        
+        var mousePos = e.mouse().page;
+        var mousePosClient = e.mouse().client;
+        
+        // Create the close and record buttons
+        var btnClose = INPUT({'id':'btnClose','class':'button', 'type':'button','value':'x'},null);
+        var btnRecord = INPUT({'id':'btnRecord','class':'button', 'type':'submit','value':'Record'}, null);
+        
+        var elProgramme = e.src(); // Clicked programme TD
+        
+        connect(btnClose,'onclick',function(e) { makeInvisible($('mnuRecord')); });
+
+        connect(btnRecord,'onclick',function(e) {
+            makeVisible('boxLoading');
+
+            // Setup loading box
+            var prog_id = $('prog_id').firstChild.nodeValue;
+            
+            setElementPosition('mnuRecord',elementPosition('mnuRecord'));
+            setElementDimensions('mnuRecord',elementDimensions('mnuRecord'));
+            $('boxContent').innerHTML = "Adding Show...";
+            
+            // Initiate request
+            var d = loadJSONDoc('ruby/add_recording.rb',{'json':'true','prog_id':prog_id});
+            d.addCallbacks(gotAdd,fetchFailed);
+
+            function gotAdd(doc) {
+                if (doc.status == "success") {
+                    updateNodeAttributes("listing" + doc.programmes[0].id,{'class':'recordingProgramme'});
+                    makeInvisible('mnuRecord');
+                }
+                else {
+                    $('boxContent').innerHTML = "An error has occured";
+                    console.log("error");
+                }
+            }
+            function fetchFailed(doc) {
+                $('boxContent').innerHTML = "An error has occured";
+                console.log("an error occured");
+            }
+        });
+        
+        var prog_id = elProgramme.getAttribute('id'); 
+        var pdetail = filter(function(el) {return ("listing" + el.id) == prog_id;}, this.data.programmes)[0];
+
+        var progID = SPAN({'id':'prog_id','class':'invisible'},pdetail.id);
+        var boxTitle = (pdetail.sub_title != "&nbsp;") ?  // Add subtitle if it exists
+            ("Show: " + pdetail.title + " -- " + pdetail.sub_title) : ("Show: " + pdetail.title); 
+        
+
+        var offset = Util.getOffset(this._stats.data.datetime);
+
+        var boxStart = "Start: " + isoTimestamp(Util.utcToLocal(pdetail.start,offset));
+        var boxStop = "Stop: " + isoTimestamp(Util.utcToLocal(pdetail.stop,offset));
+        
+        var boxMessage = (pdetail.desc != "&nbsp;") ? ("Description: " + pdetail.desc) : ("");
+
+        //todo: deal with removal of programmes
+        var boxContent = DIV({'id':'boxContent'},
+            [[boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID],btnRecord]);
+
+        var box = DIV({'id':'mnuRecord'},
+            [btnClose, boxContent]);
+        
+        // Positon box box width to the right if at edge of screen and box height up if at bottom of screen
+        // This will also display as much of the box on screen if the sceen is very small
+        swapDOM('mnuRecord',box);
+        var boxWidth = elementDimensions('mnuRecord').w;
+        var boxHeight = elementDimensions('mnuRecord').h;
+        var viewport = getViewportDimensions();
+        if ( boxWidth + mousePosClient.x > elementDimensions('schedule').w + elementPosition('schedule').x ) {
+            if (mousePosClient.x - boxWidth < 0){
+                mousePos.x -= mousePosClient.x;
+                }
+            else {
+                mousePos.x -= boxWidth;
+            }
+        }
+        if ( (boxHeight + mousePosClient.y) > viewport.h ) {
+            if (mousePosClient.y - boxHeight < 0){
+                mousePos.y -= mousePosClient.y;
+                }
+            else {
+                mousePos.y -= boxHeight;
+            }
+        }
+        setElementPosition(box,mousePos);
+        //swapDOM('mnuRecord',box);
+    },
+
     _gotRequest : function(req) {
         this.data = req;
         var boxDate = $('boxDate');
         $('schedule').innerHTML = this.data.header;
-        
+        this._connectClickBox();    
+    },
+
+    _connectClickBox: function(){
+        var programmes = getElementsByTagAndClassName("td","programme");
+
+        for (var i = 0; i < programmes.length; i++) {
+            connect(programmes[i],"onclick",this,"showClick");
+        }
     },
 
     _statsReady : function() {

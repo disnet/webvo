@@ -29,6 +29,16 @@ var Util = {
             return (hour.toString()) + mil.slice(2) + "PM";
         }
     },
+
+    getOffset: function(isoString) {
+        return isoTimestamp(isoString).getTimezoneOffset() / 60;
+    },
+
+    // todo: need to deal with this sometime
+    utcToLocal: function(utcString,offset) {
+        return utcString;
+    },
+
     dateToZapTime: function(date) {
         isoTime = toISOTimestamp(date);
         
