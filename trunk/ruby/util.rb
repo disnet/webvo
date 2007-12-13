@@ -477,8 +477,8 @@ class JSON_Output
             @progblock = lambda {|prog|
                 retstr = "{ 'id':'#{prog.id}',"
                 retstr += "'html_id': '#{@type}#{prog.id}',"
-                retstr += "'start': '#{prog.start}',"
-                retstr += "'stop': '#{prog.stop}',"
+                retstr += "'start': '#{prog.start_time.xmlschema}',"
+                retstr += "'stop': '#{prog.stop_time.xmlschema}',"
                 retstr += "'title': '#{prog.title}',"
                 retstr += "'sub_title': '#{prog.sub_title}',"
                 retstr += "'episode': '#{prog.episode}',"
@@ -500,8 +500,8 @@ class JSON_Output
             @progblock = lambda {|prog|
                 retstr = "{ 'id':'#{prog.id}',"
                 retstr += "'html_id': '#{@type}#{prog.id}',"
-                retstr += "'start': '#{prog.start}',"
-                retstr += "'stop': '#{prog.stop}',"
+                retstr += "'start': '#{prog.start_time.xmlschema}',"
+                retstr += "'stop': '#{prog.stop_time.xmlschema}',"
                 retstr += "'html': '<tr id=\"#{@type}#{prog.id}\" class=\"#{get_class(prog)}\">"
                 retstr += "<td>#{prog.title}</td>"
                 retstr += "<td>#{prog.sub_title}</td>"
