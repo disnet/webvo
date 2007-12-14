@@ -177,7 +177,7 @@ table.tblRecord  {
 }
 #mnuRecord{
     position: absolute;
-	background-color: #8CD749;
+	background-color: #80D070;
 	width: 250px;
     border: 3px solid black;
 }
@@ -232,7 +232,7 @@ text-decoration:none; background-color:#999999; color:#FFFFFF;}
 
 a.nav:hover {
 display:block; float:left; width:25%; padding:1.2em 0 1.2em 0; margin:0; 
-text-decoration:none; background-color:#8CD749; color:#FFFFFF;}
+text-decoration:none; background-color:#79C769; color:#FFFFFF;}
 
 a.nav:active {
 display:block; float:left; width:25%; padding:1.2em 0 1.2em 0; margin:0; 
