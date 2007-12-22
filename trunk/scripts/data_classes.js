@@ -69,6 +69,40 @@ ListingData.prototype = {
     },
 
     showClick: function(e) {
+        function createActionHandler(server_file,message) {
+            return function() {
+                makeVisible('boxLoading');
+
+                // Setup loading box
+                var prog_id = $('prog_id').firstChild.nodeValue;
+                
+                setElementPosition('mnuRecord',elementPosition('mnuRecord'));
+                setElementDimensions('mnuRecord',elementDimensions('mnuRecord'));
+                $('boxContent').innerHTML = message;
+                
+                // Initiate request
+                var d = loadJSONDoc(server_file,{'json':'true','prog_id':prog_id});
+                d.addCallbacks(gotAdd,fetchFailed);
+
+                function gotAdd(doc) {
+                    if (doc.status == "success") {
+                        updateNodeAttributes("listing" + doc.programmes[0].id,{'class':'recordingProgramme'});
+                        makeInvisible('mnuRecord');
+                    }
+                    else {
+                        $('boxContent').innerHTML = doc.error;
+                        console.log("Error response from the server");
+                        makeInvisible('boxLoading');
+                    }
+                }
+                function fetchFailed(doc) {
+                    $('boxContent').innerHTML = "Somthing happend when trying to contact the server";
+                    console.log("Problem contacting the server");
+                    makeInvisible('boxLoading');
+                }
+            }
+        }
+
         makeInvisible('mnuAddStatus');
         
         var mousePos = e.mouse().page;
@@ -76,43 +110,15 @@ ListingData.prototype = {
         
         // Create the close and record buttons
         var btnClose = INPUT({'id':'btnClose','class':'button', 'type':'button','value':'x'},null);
-        var btnRecord = INPUT({'id':'btnRecord','class':'button', 'type':'submit','value':'Record'}, null);
+        var btnAction = INPUT({'id':'btnAction','class':'button', 'type':'submit'}, null);
         
         var elProgramme = e.src(); // Clicked programme TD
         
         connect(btnClose,'onclick',function(e) { makeInvisible($('mnuRecord')); });
-
-        connect(btnRecord,'onclick',function(e) {
-            makeVisible('boxLoading');
-
-            // Setup loading box
-            var prog_id = $('prog_id').firstChild.nodeValue;
-            
-            setElementPosition('mnuRecord',elementPosition('mnuRecord'));
-            setElementDimensions('mnuRecord',elementDimensions('mnuRecord'));
-            $('boxContent').innerHTML = "Adding Show...";
-            
-            // Initiate request
-            var d = loadJSONDoc('ruby/add_recording.rb',{'json':'true','prog_id':prog_id});
-            d.addCallbacks(gotAdd,fetchFailed);
-
-            function gotAdd(doc) {
-                if (doc.status == "success") {
-                    updateNodeAttributes("listing" + doc.programmes[0].id,{'class':'recordingProgramme'});
-                    makeInvisible('mnuRecord');
-                }
-                else {
-                    $('boxContent').innerHTML = "An error has occured";
-                    console.log("error");
-                }
-            }
-            function fetchFailed(doc) {
-                $('boxContent').innerHTML = "An error has occured";
-                console.log("an error occured");
-            }
-        });
+        connect(btnAction,'onclick',createActionHandler('ruby/add_recording.rb','Adding Show...'));
         
         var prog_id = elProgramme.getAttribute('id'); 
+        console.log(app.scheduled_table.findProgramme(prog_id));
         var pdetail = filter(function(el) {return ("listing" + el.id) == prog_id;}, this.data.programmes)[0];
 
         var progID = SPAN({'id':'prog_id','class':'invisible'},pdetail.id);
@@ -129,7 +135,7 @@ ListingData.prototype = {
 
         //todo: deal with removal of programmes
         var boxContent = DIV({'id':'boxContent'},
-            [[boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID],btnRecord]);
+            [[boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID],btnAction]);
 
         var box = DIV({'id':'mnuRecord'},
             [btnClose, boxContent]);

@@ -36,6 +36,17 @@ InfoTable.prototype = {
         this._markAdjacent = val;
     },
 
+    getData: function() {
+        return this.data;
+    },
+
+    findProgramme: function(id) {
+        for(var i = 0; i < this.data.programmes.length; i++) {
+            if (this.data.programmes[i].id = id) {return true;}
+        }
+        return false;
+    },
+
     // this function is no longer specific to scheduled data and should be renamed - dmh
     _markScheduledAdjacent: function() {
         var previousEnd = "";

@@ -25,6 +25,7 @@ App.prototype = {
         connect('btnScheduled','onclick',this,'showScheduled');
         connect('btnRecorded','onclick',this,'showRecorded');
         connect('btnSearch','onclick',this,'showSearch');
+        this.scheduled_table.update('json=true');
     },
     
     searchSubmit: function(e) {
