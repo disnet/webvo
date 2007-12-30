@@ -49,12 +49,16 @@ DATE_TIME_FORMAT_XMLSCHEMA = "%Y-%m-%dT%H:%i:%SZ"
 DATE_TIME_FORMAT_XML= "%Y%m%d%H%i%S"
 DATE_TIME_FORMAT_RUBY_XML= "%Y%m%d%H%M%S"
 
-def error_if_not_equal(value, standard, error_string)
-  if value != standard:
-    puts "<error>Error: " + error_string +"</error>"
-    puts XML_FOOTER
+def error_if_not_equal(value, standard, error_string, json = false)
+    if value != standard:
+        if json
+            puts "{ 'type': 'error', \n'status': 'error', \n'error_desc': '#{error_string.gsub(/'/,"&#39;")}' }"
+        else
+            puts "<error>Error: #{error_string}</error>"
+            puts XML_FOOTER
+        end
     exit
-  end
+    end
 end
 
 def databaseconnect()
@@ -374,6 +378,7 @@ class JSON_Output
     ADD = "add"
     DELETE = "delete"
     UNSCHEDULE = "unschedule"
+    ERROR = "error"
 
     TABLES = [SEARCH, SCHEDULED, RECORDED]
     CELLS = [LISTING]

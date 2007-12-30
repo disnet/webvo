@@ -31,7 +31,7 @@ priority = cgi.params['priority'][0].to_i
 puts "Content-Type:text/xml\n\n<?xml version='1.0' encoding='ISO-8859-1'?>\n<tv>" unless json
 puts JSON_HEADER if json
 
-error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID")
+error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Needs a Channel ID", json)
 
 start = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
 start = formatToRuby(start+Time.now.strftime(" %z")).strftime(DATE_TIME_FORMAT_RUBY_XML) unless json
@@ -44,17 +44,17 @@ start_time = start[8..13]
 #todo: either delete this error checking or deal with it so that it
 # returns json when needed
 #Check if times are valid
-error_if_not_equal(start_date.to_i.to_s == start_date, true, "the date time needs to have only numbers in it")
-error_if_not_equal(start_time.to_i < 240000, true, "Time must be millitary time")
-error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than 60")
+error_if_not_equal(start_date.to_i.to_s == start_date, true, "the date time needs to have only numbers in it", json)
+error_if_not_equal(start_time.to_i < 240000, true, "Time must be millitary time", json)
+error_if_not_equal(start_time[2..3].to_i < 60 , true, "Minutes must be less than 60", json)
   
 #Check if dates are valid
-error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
-error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
+error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12", json)
+error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31", json) 
 
 # Not enough free space if we have less than 100 megs (avail is in kbytes)
 # -- Handle this differently.  Perhaps provide a warning to the user? 
-#error_if_not_equal(freespace['available'].to_i > 102400, true, "not enough room on server")
+#error_if_not_equal(freespace['available'].to_i > 102400, true, "not enough room on server", json)
 
 show_row = databasequery("SELECT channelID, title, `sub-title`, episode, number, Programme.xmlNode,
                          DATE_FORMAT(start, '#{DATE_TIME_FORMAT_XML}') as start, 
@@ -66,8 +66,8 @@ show_row = databasequery("SELECT channelID, title, `sub-title`, episode, number,
 now_time = Time.now
 now_xml = now_time.strftime(DATE_TIME_FORMAT_RUBY_XML)
 
-error_if_not_equal(show_row.nil?, false, "requested show not in source listings") 
-error_if_not_equal(now_xml.to_i < show_row['stop'].to_i, true, "Today is #{now_time} and your requested show ends in the past at #{show_row['stop_string']}.  Please record only shows that are airing currently or in the future.")
+error_if_not_equal(show_row.nil?, false, "requested show not in source listings", json) 
+error_if_not_equal(now_xml.to_i < show_row['stop'].to_i, true, "Today is #{now_time} and your requested show ends in the past at #{show_row['stop_string']}.  Please record only shows that are airing currently or in the future.", json)
 
 start_string = formatToRuby(show_row['start']).localtime.strftime(DATE_TIME_FORMAT_STRING_RUBY)
 
@@ -83,7 +83,7 @@ databasequery("SELECT filename from Scheduled WHERE
                (priority >= #{priority})").each { |show|
     overlapping_shows.push(show[0].to_s.gsub(/_/," "))
 }
-error_if_not_equal(overlapping_shows.length, 0, "Requested show occurs during: #{overlapping_shows.join(' and ')}")
+error_if_not_equal(overlapping_shows.length, 0, "Requested show occurs during: #{overlapping_shows.join(' and ')}", json)
 databasequery("INSERT INTO Scheduled (channelID, start, stop, filename, priority) VALUES 
                ('#{chan_id}','#{start}','#{show_row['stop']}','#{filename}',#{priority})")
 if json

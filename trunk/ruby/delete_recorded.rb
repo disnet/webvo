@@ -13,13 +13,13 @@ prog_id = cgi.params['prog_id'][0]
 puts "Content-Type:text/xml\n\n<?xml version='1.0' encoding='ISO-8859-1'?>\n<tv>" unless json
 puts JSON_HEADER if json
 
-error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Need a Channel ID")
+error_if_not_equal(prog_id.length > LENGTH_OF_DATE_TIME, true, "Need a Channel ID", json)
 date_time = prog_id[(prog_id.length-LENGTH_OF_DATE_TIME).to_i..(prog_id.length-1).to_i]
 date_time = formatToRuby(date_time+Time.now.strftime(" %z")).strftime(DATE_TIME_FORMAT_RUBY_XML) unless json
 chan_id = prog_id[0..(prog_id.length-LENGTH_OF_DATE_TIME-1).to_i]
 
 progxml = databasequery("SELECT filename, xmlNode FROM Recorded JOIN Programme USING(channelID, start) WHERE (channelID='#{chan_id}'AND start = '#{date_time}')").fetch_row
-error_if_not_equal( progxml.nil?, false, "Show does not exist")
+error_if_not_equal( progxml.nil?, false, "Show does not exist", json)
 showname = progxml[0]
 
 #remove from hard drive

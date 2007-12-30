@@ -50,8 +50,8 @@ else
 end
 
 #checks lengths of arguments to make sure the have the length of YYYYMMDDHHMMSS
-error_if_not_equal(start_date_time.length, LENGTH_OF_DATE_TIME, "incorrect len for start date")
-error_if_not_equal(end_date_time.length, LENGTH_OF_DATE_TIME, "incorrect len for end date")
+error_if_not_equal(start_date_time.length, LENGTH_OF_DATE_TIME, "incorrect len for start date", json)
+error_if_not_equal(end_date_time.length, LENGTH_OF_DATE_TIME, "incorrect len for end date", json)
   
 start_date = start_date_time[0..7]
 end_date = end_date_time[0..7]
@@ -59,19 +59,19 @@ start_time = start_date_time[8..13]
 end_time = end_date_time[8..13]
 
 #Check if date stamp valid
-error_if_not_equal(start_date_time.to_i < end_date_time.to_i, true, "Start time must be before end time")
+error_if_not_equal(start_date_time.to_i < end_date_time.to_i, true, "Start time must be before end time", json)
 
 #Check if times are valid
-error_if_not_equal(start_time.to_i < 240000, true, "Start time must be millitary time")
-error_if_not_equal(end_time.to_i < 240000, true, "End time must be millitary time") 
-error_if_not_equal(start_time[2..3].to_i < 60 , true, "Start minutes must be less than 60")
-error_if_not_equal(end_time[2..3].to_i < 60, true, "End minutes must be less than 60")
+error_if_not_equal(start_time.to_i < 240000, true, "Start time must be millitary time", json)
+error_if_not_equal(end_time.to_i < 240000, true, "End time must be millitary time", json)
+error_if_not_equal(start_time[2..3].to_i < 60 , true, "Start minutes must be less than 60", json)
+error_if_not_equal(end_time[2..3].to_i < 60, true, "End minutes must be less than 60", json)
 
 #Check if dates are valid
-error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12")
-error_if_not_equal(end_date[4..5].to_i <= 12 , true, "Ending month error < 12")
-error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31") 
-error_if_not_equal(end_date[6..7].to_i <= 31, true, "Ending day must be less than 31")
+error_if_not_equal(start_date[4..5].to_i <= 12 , true, "Starting month must be <= to 12", json)
+error_if_not_equal(end_date[4..5].to_i <= 12 , true, "Ending month error < 12", json)
+error_if_not_equal(start_date[6..7].to_i <= 31, true, "Starting month error < 31", json)
+error_if_not_equal(end_date[6..7].to_i <= 31, true, "Ending day must be less than 31", json)
 
 before_query = Time.now
 retstr = ""
@@ -109,5 +109,5 @@ after_query = Time.now
 LOG.debug("SQL query on start: #{start_date_time}  and stop: #{end_date_time}  took: " + (after_query - before_query).to_s)
 
 #checking to see if the user requested an unavailable timeframe
-#error_if_not_equal(start >= oldest_e, true, "Ran off begining of info.xml")
-#error_if_not_equal(stop <= newest_e, true, "Ran off end of info.xml")
+#error_if_not_equal(start >= oldest_e, true, "Ran off begining of info.xml", json)
+#error_if_not_equal(stop <= newest_e, true, "Ran off end of info.xml", json)
