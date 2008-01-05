@@ -1,3 +1,4 @@
+/* my test comment */
 body {
 margin:0; padding:0; font-family:verdana, arial, sans-serif; font-size:80%; color:#000000; text-align:center;
 background-color:#DDDDDD;}
@@ -15,14 +16,6 @@ font-style:italic; font-family:"Trebuchet MS", verdana, arial, sans-serif;}
 
 div {
 margin:0; padding:0; display:block;}
-
-/*
-a:link, a:visited {
-color:#8CD749; text-decoration:underline;}
-a:hover {
-color:#3B4471; text-decoration:none;}
-/*a:active {
-color:#8CD749; text-decoration:underline;}*/
 
 
 /* Added by tim -- rest of css from template */

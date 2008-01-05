@@ -24,7 +24,7 @@ require "mysql"
 require 'util'
 require 'xml/libxml'
 
-#this is only need for the trnasition to json
+#this is only need for the transition to json
 require 'cgi'
 cgi = CGI.new
 format = cgi.params['format'][0]

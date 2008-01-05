@@ -10,6 +10,7 @@ search_title = cgi.params['title'][0]
 sub_title = cgi.params['sub_title'][0]
 format = cgi.params['format'][0]
 json = cgi.params['json'][0]
+limit = cgi.params['limit'][0]
 
 query = "SELECT DISTINCT p.xmlNode, number
          FROM Programme p JOIN Channel USING(channelID)
@@ -19,7 +20,7 @@ query += " OR title LIKE 'the #{Mysql.escape_string(search_title)}%' )" unless s
 #query += " AND `sub-title` LIKE '%#{sub_title}%'" unless sub_title.nil?
 
 query += " ORDER BY episode"
-query += " LIMIT 400"
+query += " LIMIT #{limit}"
 
 # changing the order will break error xml formatting
 result = databasequery(query)
