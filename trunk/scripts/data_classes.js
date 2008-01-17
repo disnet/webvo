@@ -200,7 +200,7 @@ ListingData.prototype = {
         //return;
         while(dStart <= dStop) { 
             var opDate = OPTION({'value':dStart}, 
-                [dayOfWeek[dStart.getDay()] + " " + dStart.getDate()]);
+                [dayOfWeek[dStart.getDay()] + " " + (dStart.getMonth() + 1) + "/" + dStart.getDate()]);
             $('selDate').appendChild(opDate);
             dStart.setDate(dStart.getDate() + 1);
         }

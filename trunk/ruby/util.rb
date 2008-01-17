@@ -198,7 +198,7 @@ end
 class Prog
     attr_accessor :css_class
     attr_reader :channel, :size, :start_time, :stop_time
-    TIME_FORMAT = "%A %m/%d/%Y %I:%M %p"
+    TIME_FORMAT = "%m/%d/%Y %I:%M %p - %A"
     def initialize(xmlNode, channel, size = "0")
         @xmlNode = xmlNode
         @channel = channel
@@ -494,7 +494,7 @@ class JSON_Output
             @header_html += "<th>Title</th>"
             @header_html += "<th>Episode Title</th>"
             @header_html += "<th>Episode</th>"
-            @header_html += "<th>Description</th>"
+            @header_html += "<th>Description</th>" if 1 == 2
             @header_html += "<th>Start</th>"
             @header_html += "<th>End</th>"
             @header_html += "<th>Channel</th>"
@@ -511,7 +511,7 @@ class JSON_Output
                 retstr += "<td>#{prog.title}</td>"
                 retstr += "<td>#{prog.sub_title}</td>"
                 retstr += "<td>#{prog.episode}</td>"
-                retstr += "<td>#{prog.desc}</td>"
+                retstr += "<td>#{prog.desc}</td>" if 1==2
                 retstr += "<td>#{prog.start_readable}</td>"
                 retstr += "<td>#{prog.stop_readable}</td>"
                 retstr += "<td>#{prog.channel}</td>"
