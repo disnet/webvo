@@ -11,6 +11,7 @@ sub_title = cgi.params['sub_title'][0]
 format = cgi.params['format'][0]
 json = cgi.params['json'][0]
 limit = cgi.params['limit'][0]
+limit = "400" if limit.nil?
 
 query = "SELECT DISTINCT p.xmlNode, number
          FROM Programme p JOIN Channel USING(channelID)
