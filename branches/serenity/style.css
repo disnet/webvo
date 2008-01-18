@@ -1,0 +1,270 @@
+body {
+margin:0; padding:0; font-family:verdana, arial, sans-serif; font-size:80%; color:#000000; text-align:center;
+background-color:#DDDDDD;}
+
+p {
+margin:0.2em 0 1.2em 0; padding:0.3em;}
+
+h1 {
+padding:0; margin:0;font-size:250%; font-weight:normal; font-style:italic; 
+color:white; font-family:"Trebuchet MS", verdana, arial, sans-serif;}
+
+h2 {
+background-color:#DDDDDD; color:#3B4471; font-size:100%; font-weight:normal; margin:0.2em; padding:0; 
+font-style:italic; font-family:"Trebuchet MS", verdana, arial, sans-serif;}
+
+div {
+margin:0; padding:0; display:block;}
+
+
+/* Added by tim -- rest of css from template */
+.invisible { display:none;}
+.head {
+	text-align:center;
+	background-color: gray;
+}
+td.listHead{
+    text-align:center;
+    width: 16%;
+    white-space:nowrap;
+    background-color:#c2c2c2;
+    color:black;
+}
+.channelName {
+	background-color: gray;
+}
+.programme {
+    color:black;
+	background-color:#999999 ;
+    margin-left: 0px;
+    cursor: default;
+}
+.programme:hover, .programme:hover td {
+	background-color: #75B075;
+}
+.programmeOver {
+	background-color: #8CD749;
+}
+.programmePast {
+	background-color: #AAAAAA;
+    cursor: default;
+}
+.recordingProgramme {
+	background-color:#FF4242;	
+}
+.recordingSearched,
+.scheduledSearched {
+	background-color:#A07070;	
+}
+.recordingOtherSearched,
+.scheduledOtherSearched {
+	background-color:#8A7575;	
+}
+.recordedSearched {
+	background-color:#707590;	
+}
+.recordingSearched:hover, .recordingSearched:hover td,
+.scheduledSearched:hover, .scheduledSearched:hover td {
+	background-color: #C07070;
+}
+.recordingOtherSearched:hover, .recordingOtherSearched:hover td,
+.scheduledOhterSearched:hover, .scheduledOtherSearched:hover td {
+	background-color: #908080;
+}
+.recordedSearched:hover, .recordedSearched:hover td {
+	background-color: #7080B0;
+}
+.recordingProgrammeOver {
+	background-color:#FF5C5C;
+}
+.noHardDriveSpace {
+	background-color: #BBBBBB;
+}
+.programmeSelected {
+	background-color: #658570;
+}
+.programmeSelected:hover, .programmeSelected:hover td{
+	background-color: #65A070;
+}
+
+.recorded_table,
+.schedule_table,
+.scheduled_table,
+.searched_table,
+table.schedule {
+	clear:right;
+    width: 100%;
+    border: 0px;
+}
+
+.recorded_table td, .recorded_table th,
+.schedule_table td, .schedule_table th,
+.scheduled_table td, .scheduled_table th,
+.searched_table td, .searched_table th,
+table.schedule td, table.schedule th{
+	border: 1px solid black;
+}
+
+.recorded_table th,
+.schedule_table th,
+.scheduled_table th,
+.searched_table th {
+	text-align:center;
+	background-color: gray;
+}
+
+.tblRecord td {
+	background-color: #999999;
+	border: 1px solid black;
+}
+
+.tblRecordHead td{
+    background-color: gray;
+	border: 1px solid black;
+	text-align:center;
+}
+
+table.tblRecord  {
+	width: 100%;
+	text-align:left;
+}
+
+.adjacentBefore td{
+    border-top-color: #3333AA;
+    border-top-width: 2px;
+}
+
+.filesize{
+    white-space: nowrap;
+}
+
+#boxSpace {
+    text-align:right;
+    width:100%;
+}
+#recordingContent {
+	width:100%;
+}
+#listingContentTop {
+	height:100%;
+	width:100%;
+}
+#listingContentMain {
+	height:100%;
+	width:100%;
+}
+#boxTime {
+	background-color:#c2c2c2;
+	border: 2px solid black;
+    white-space:nowrap;
+}
+#mnuAddStatus {
+    position: absolute;
+	background-color: #8CD749;
+	width: 250px;
+    border: 3px solid black;
+}
+#mnuQuicknav{
+    position: absolute;
+}
+#mnuRecord{
+    position: absolute;
+	background-color: #80D070;
+	width: 250px;
+    border: 3px solid black;
+}
+#boxLoading {
+	margin-right:2px;
+	color:black;
+	background-color: #DDDDDD;
+	border: 2px solid black;
+}
+#tdInfo {
+    width:100%;
+}
+#btnClose {
+	padding:0; 
+	float:right; 
+	width:1em; 
+	height:1.5em;
+}
+#btnRecord {
+	float: right;
+}
+#btnRemove {
+    float: right;
+    margin-right:2px;
+}
+.button {
+	border:1px solid black;
+}
+
+.container {
+background-color:#FFFFFF; margin:0 auto 0 auto; padding:0; width:100%;}
+
+.titleblock {
+padding:2em; margin:0; text-align:left;
+background-image:url(bsg.jpg); background-repeat:no-repeat; background-position:right center;background-color:#000000}
+
+.titleblock p {
+text-indent:4em; color:white;}
+
+
+
+ul.navbar {
+list-style-type:none; float:left; display:block; width:100%; line-height:1.5em; 
+clear:both; margin:0; padding:0; background-color:#999999;}
+
+ul.navbar li {
+display:inline;}
+
+a.nav:link, a.nav:visited {
+display:block; float:left; width:25%; padding:1.2em 0 1.2em 0; margin:0; 
+text-decoration:none; background-color:#999999; color:#FFFFFF;}
+
+a.nav:hover {
+display:block; float:left; width:25%; padding:1.2em 0 1.2em 0; margin:0; 
+text-decoration:none; background-color:#79C769; color:#FFFFFF;}
+
+a.nav:active {
+display:block; float:left; width:25%; padding:1.2em 0 1.2em 0; margin:0; 
+text-decoration:none; background-color:#999999; color:#FFFFFF;}
+
+td.tvShow:hover {
+    background-color:#8CD749;}
+
+
+.rightcontainer {
+float:right; clear:both; width:13em; margin:1em 0 0 0; padding:0;}
+
+.rightbox {
+margin:0.5em; padding:0.3em; border:1px solid #999999; text-align:center;}
+
+.rightcontainer h2 {
+text-align:left; padding:0 0 0 1.5em;}
+
+.linkbox a {display:block;}
+
+.rjust{
+    width:100%;
+	text-align:right;}
+
+.content {
+clear:left; text-align:left; margin:1.2em 0 0 0; padding:1em 1ex 1em 1.5ex;}
+
+.content h2 {text-indent:3em;}
+
+
+
+.footer {
+color:#999999; font-size:75%; margin:2.5em 0.2em 0.5em 0.5em; padding:0.8em; 
+border-top:1px solid #999999; text-align:left; clear:both;}
+
+.footer .right {
+float:right; clear:right; text-align:right;}
+
+.footer p {margin:0;}
+
+tr.empty td{
+    border: 0px none ! important;
+}
