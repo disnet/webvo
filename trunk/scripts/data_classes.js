@@ -227,12 +227,15 @@ ListingData.prototype = {
         var dStop= isoTimestamp(stop);
         //return;
         while(dStart <= dStop) { 
+            dStart.setHours(0);
+            dStart.setMinutes(0);
+            dStart.setSeconds(0);
             var opDate = OPTION({'value':dStart}, 
                 [dayOfWeek[dStart.getDay()] + " " + (dStart.getMonth() + 1) + "/" + dStart.getDate()]);
             $('selDate').appendChild(opDate);
             dStart.setDate(dStart.getDate() + 1);
         }
-        today = time;
+        today = new Date();
         today.setHours(0);
         today.setMinutes(0);
         today.setSeconds(0);
