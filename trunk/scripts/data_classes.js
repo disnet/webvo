@@ -69,6 +69,7 @@ ListingData.prototype = {
     },
 
     showClick: function(e) {
+        /* funciton to handle clicking */
         function createActionHandler(server_file,message) {
             return function() {
                 makeVisible('boxLoading');
@@ -82,18 +83,24 @@ ListingData.prototype = {
                 
                 // Initiate request
                 var d = loadJSONDoc(server_file,{'json':'true','prog_id':prog_id});
-                d.addCallbacks(gotAdd,fetchFailed);
+                d.addCallbacks(gotResult,fetchFailed);
 
-                function gotAdd(doc) {
+                function gotResult(doc) {
                     if (doc.status == "success") {
-                        updateNodeAttributes("listing" + doc.programmes[0].id,{'class':'recordingProgramme'});
+                        if(doc.type == "add") {
+                            updateNodeAttributes("listing" + doc.programmes[0].id,{'class':'recordingProgramme'});
+                        }
+                        else {
+                            /* slight bug here, will over write any prvious classes */
+                            updateNodeAttributes("listing" + doc.programmes[0].id,{'class':'programme'});
+                        }
                         makeInvisible('mnuRecord');
                     }
                     else {
                         $('boxContent').innerHTML = doc.error;
                         console.log("Error response from the server");
-                        makeInvisible('boxLoading');
                     }
+                    makeInvisible('boxLoading');
                 }
                 function fetchFailed(doc) {
                     $('boxContent').innerHTML = "Somthing happend when trying to contact the server";
@@ -102,22 +109,43 @@ ListingData.prototype = {
                 }
             }
         }
+        var elProgramme = e.src(); // Clicked programme TD
+        var prog_id = elProgramme.getAttribute('id'); 
 
-        makeInvisible('mnuAddStatus');
-        
+        /* hide the detail box if it already is visible */
+        if($('mnuRecord').getAttribute('class') != 'invisible') {
+            /* hack alert */
+            var pid = $('prog_id').firstChild.nodeValue;
+            if (prog_id == "listing" + pid) {
+                makeInvisible($('mnuRecord'));
+                return;
+            }
+        }
+        /* create and show detail box */
         var mousePos = e.mouse().page;
         var mousePosClient = e.mouse().client;
         
+
+        /* is this show going to be scheduled...somewhat of a hack...better not change these classes */
+        var isScheduled = false;
+        if (elProgramme.getAttribute('class') == 'recordingProgramme' || elProgramme.getAttribute('class') == 'programme scheduledSearched') {
+            isScheduled = true;     
+        }
+
         // Create the close and record buttons
         var btnClose = INPUT({'id':'btnClose','class':'button', 'type':'button','value':'x'},null);
-        var btnAction = INPUT({'id':'btnAction','class':'button', 'type':'submit'}, null);
-        
-        var elProgramme = e.src(); // Clicked programme TD
-        
         connect(btnClose,'onclick',function(e) { makeInvisible($('mnuRecord')); });
-        connect(btnAction,'onclick',createActionHandler('ruby/add_recording.rb','Adding Show...'));
+        if(isScheduled) {
+            var btnAction = INPUT({'id':'btnAction','class':'button', 'type':'submit','value':'Del'}, null);
+            connect(btnAction,'onclick',createActionHandler('ruby/delete_recording.rb','Removing Show...'));
+        }
+        else {
+            var btnAction = INPUT({'id':'btnAction','class':'button', 'type':'submit', 'value':'Add'}, null);
+            connect(btnAction,'onclick',createActionHandler('ruby/add_recording.rb','Adding Show...'));
+        }
+
+
         
-        var prog_id = elProgramme.getAttribute('id'); 
         console.log(app.scheduled_table.findProgramme(prog_id));
         var pdetail = filter(function(el) {return ("listing" + el.id) == prog_id;}, this.data.programmes)[0];
 
@@ -135,10 +163,10 @@ ListingData.prototype = {
 
         //todo: deal with removal of programmes
         var boxContent = DIV({'id':'boxContent'},
-            [[boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID],btnAction]);
+            [[boxTitle,BR(null,null),boxStart,BR(null,null),boxStop,BR(null,null),BR(null,null),boxMessage,progID]]);
 
         var box = DIV({'id':'mnuRecord'},
-            [btnClose, boxContent]);
+            [btnClose, boxContent, btnAction]);
         
         // Positon box box width to the right if at edge of screen and box height up if at bottom of screen
         // This will also display as much of the box on screen if the sceen is very small
