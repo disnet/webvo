@@ -292,18 +292,31 @@ Adder.prototype = {
     },
     removeRecording: function(id) {
         var d = loadJSONDoc('ruby/delete_recording.rb?json=true&prog_id=' + id);
-        d.addCallbacks(this._gotDelRequest,this._fetchFailed);
+        d.addCallbacks(this._gotSchedDelRequest,this._fetchFailed);
     },
 
     deleteRecorded: function(id) {
-        var d = loadJSONDoc('ruby/delete_recorded.rb?json=true?prog_id=' + id);
-        d.addCallbacks(this._gotDelRequest,this._fetchFailed);
+        if(confirm("Really delete show from disk?"))
+        {
+            var d = loadJSONDoc('ruby/delete_recorded.rb?json=true?prog_id=' + id);
+            d.addCallbacks(this._gotDelRequest,this._fetchFailed);
+        }
     },
     _gotAddRequest: function(req) {
 //        console.log(req);
     },
+    /* bad design here...sorry */
+    _gotSchedDelRequest: function(req) {
+        var progs = req.programmes;
+        for (var i = 0; i < progs.length; i++) {
+            removeElement('scheduled' + progs[i].id);
+        }
+    },
     _gotDelRequest: function(req) {
-        //pass
+        var progs = req.programmes;
+        for (var i = 0; i < progs.length; i++) {
+            removeElement('recorded' + progs[i].id);
+        }
     },
     _fetchFailed: function(req) {
         console.log(req);
