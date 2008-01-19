@@ -296,11 +296,8 @@ Adder.prototype = {
     },
 
     deleteRecorded: function(id) {
-        if(confirm("Really delete show from disk?"))
-        {
-            var d = loadJSONDoc('ruby/delete_recorded.rb?json=true?prog_id=' + id);
-            d.addCallbacks(this._gotDelRequest,this._fetchFailed);
-        }
+        var d = loadJSONDoc('ruby/delete_recorded.rb?json=true&prog_id=' + id);
+        d.addCallbacks(this._gotDelRequest,this._fetchFailed);
     },
     _gotAddRequest: function(req) {
 //        console.log(req);

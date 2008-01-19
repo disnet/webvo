@@ -48,8 +48,11 @@ App.prototype = {
 
     recordedRemoveRecorded: function(e) {
         var sel = filter(function(el) {return el.checked; }, document.getElementsByName('recordedCheck'));
-        for(var i = 0; i < sel.length; i++) {
-            this.adder.deleteRecorded(sel[i].value);
+        if(confirm("Are you sure you want to delete these " + sel.length + " shows?"))
+        {
+            for(var i = 0; i < sel.length; i++) {
+                this.adder.deleteRecorded(sel[i].value);
+            }
         }
     },
 
