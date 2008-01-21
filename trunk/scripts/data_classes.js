@@ -255,6 +255,8 @@ ListingData.prototype = {
             selTime.appendChild( OPTION({'value':time.getHours()},tmpTime) );
             time.setHours(time.getHours() + 1);
         }
+        var currTime = new Date();
+        $('selTime').value = currTime.getHours();
     }
 };
 
