@@ -1,4 +1,10 @@
 #!/usr/bin/env ruby
+#
+# This script:
+#  1) creates the database if it does not exist (but does not update if changed)
+#  2) sets up the system to start the record process on system boot (rc2)
+#  3) starts the record process
+#
 
 Dir.chdir($0.match(/(.*\/)/)[0])
 
