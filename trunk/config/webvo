@@ -4,7 +4,7 @@ set -e
 # /etc/init.d/webvo: start and stop the WebVo record/maintenance daemon
 
 REC_PATH="/var/www/webvo/ruby/"
-REC_NAME="new-record.rb"
+REC_NAME="record.rb"
 USER="root"
 pidfile="record.pid"
 
