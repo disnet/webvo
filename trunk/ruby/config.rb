@@ -34,8 +34,8 @@ dbh.close
 
 # setup record to autorun at computer boot
 start_script = File.open(SCRIPT_LOCATION, File::WRONLY|File::TRUNC|File::CREAT, 0755)
-start_script << File.read(CONFIG_PATH+STARTUP_FILE).gsub(/REC_PATH=.*$/,"REC_PATH=\"#{Dir.pwd}\"")
+start_script << File.read(CONFIG_PATH+STARTUP_FILE).gsub(/REC_PATH=.*$/,"REC_PATH=\"#{Dir.pwd}#{File::SEPARATOR}\"")
 start_script.close
 File.symlink(SCRIPT_LOCATION, SCRIPT_START) unless Dir[SCRIPT_START].length > 0
 File.symlink(SCRIPT_LOCATION, SCRIPT_STOP) unless Dir[SCRIPT_STOP].length > 0
-system(SCRIPT_LOCATION + " start")
+system(SCRIPT_LOCATION, "start")
