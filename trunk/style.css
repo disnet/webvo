@@ -200,11 +200,21 @@ table.tblRecord  {
 }
 
 .container {
-background-color:#FFFFFF; margin:0 auto 0 auto; padding:0; width:100%;}
+    background-color:#FFFFFF;
+    margin:0 auto 0 auto;
+    padding:0;
+    width:100%;
+}
 
 .titleblock {
-padding:2em; margin:0; text-align:left;
-background-image:url(bsg.jpg); background-repeat:no-repeat; background-position:right center;background-color:#000000}
+    padding:5em 0 2em 0;
+    margin:0;
+    text-align:left;
+    background-image:url(bsg.jpg);
+    background-repeat:no-repeat;
+    background-position:right
+    center;background-color:#000000
+}
 
 .titleblock p {
 text-indent:4em; color:white;}
@@ -212,26 +222,67 @@ text-indent:4em; color:white;}
 
 
 ul.navbar {
-list-style-type:none; float:left; display:block; width:100%; line-height:1.5em; 
-clear:both; margin:0; padding:0; background-color:#999999;}
+    list-style-type:none;
+    float:left;
+    display:block;
+    width:100%;
+    line-height:1.5em; 
+    clear:both;
+    margin:0;
+    padding:0;
+    background-color:#999999;
+}
 
 ul.navbar li {
-display:inline;}
+    display:inline;
+}
 
 a.nav:link, a.nav:visited {
-display:block; float:left; width:25%; padding:1.2em 0 1.2em 0; margin:0; 
-text-decoration:none; background-color:#999999; color:#FFFFFF;}
+    display:block;
+    float:left;
+    width:25%;
+    padding:1em 0 1em 0;
+    margin:0;
+    text-decoration:none;
+    background-color:#999999;
+    color:#FFFFFF;
+}
 
 a.nav:hover {
-display:block; float:left; width:25%; padding:1.2em 0 1.2em 0; margin:0; 
-text-decoration:none; background-color:#79C769; color:#FFFFFF;}
+    display:block;
+    float:left;
+    width:25%;
+    padding:1em 0 1em 0;
+    margin:0; 
+    text-decoration:none;
+    background-color:#79C769;
+    color:#FFFFFF;
+}
 
 a.nav:active {
-display:block; float:left; width:25%; padding:1.2em 0 1.2em 0; margin:0; 
-text-decoration:none; background-color:#999999; color:#FFFFFF;}
+    display:block;
+    float:left;
+    width:25%;
+    padding:1em 0 1em 0;
+    margin:0;
+    text-decoration:none;
+    background-color:#999999;
+    color:#FFFFFF;
+}
+
+.navigation {
+    background: #999;
+    top: 0px;
+    border-bottom: 2px solid #444;
+    position: fixed;
+    width: 100%;
+    z-index: 10000;
+    opacity: 0.9;
+}
 
 td.tvShow:hover {
-    background-color:#8CD749;}
+    background-color:#8CD749;
+}
 
 
 .rightcontainer {
