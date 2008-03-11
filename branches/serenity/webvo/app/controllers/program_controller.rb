@@ -1,2 +1,0 @@
-class ProgramController < ApplicationController
-end
