@@ -1,0 +1,416 @@
+#summary Set by step guide to set up webvo on Ubuntu 7.04
+*WARNING! This document is in flux as it is in the process of being updated for Webvo 2.0. ~Molly Jo August 14, 2007*
+
+= Installation for Webvo 2.0 =
+
+This is a step by step guide to install webvo on a fully updated fresh install of Ubuntu 7.04. If you're using a different distro then concepts in this guide should be transferable, if not the exact commands. Some familiarity with Linux is assumed and will be useful if you run into any errors not foreseen in the document. If you run into any problems please post them in the discussion forum.
+
+= Prerequisites =
+
+=== 1. IVTV Drivers ===
+IVTV comes installed with Ubuntu 7.04 Fiesty.  If you are using a different distro or an older version of Ubuntu check-out the IVTV installation instructions for WebVo 1.0.  For more information check-out the [http://ivtvdriver.org/index.php/Howto ivtv how to]
+
+=== 2. Apache ===
+Install apache2
+{{{
+~$ sudo apt-get install apache2
+}}}
+Add python and ruby cgi handling to /etc/apache2/apache2.conf
+
+Uncomment the line
+{{{
+#AddHandler cgi-script .cgi
+}}}
+and change to 
+{{{
+AddHandler cgi-script .cgi .rb
+}}}
+Restart apache
+{{{
+~$ sudo /etc/init.d/apache2 restart
+}}}
+=== 3. MySQL ===
+Install MySQL
+{{{
+~$ sudo apt-get install mysql-server
+}}}
+Add password for root. The default is `csc4150` but this can be changed by changing the "USERPASS" field in webvo/ruby/webvo.conf.
+{{{
+~$ mysqladmin -u root password csc4150
+~$ sudo /etc/init.d/mysql restart
+}}}
+
+=== 4. Ruby ===
+Install Ruby
+{{{
+~$ sudo apt-get install ruby1.8
+}}}
+Install libxml-ruby
+{{{
+~$ sudo apt-get install libmysql-ruby 
+}}}
+Install ruby-mysql
+{{{
+~$ sudo apt-get install libxml-ruby
+}}}
+
+=== 5. XMLTV ===
+Download the new XMLTV
+http://easynews.dl.sourceforge.net/sourceforge/xmltv/xmltv-0.5.48.tar.bz2 after you
+get it you will have to re-set it up.
+
+{{{
+wget http://easynews.dl.sourceforge.net/sourceforge/xmltv/xmltv-0.5.48.tar.bz2
+tar xvff xmltv-0.5.48.tar.bz2
+cd xmltv-0.5.48/
+perl Makefile.PL
+make
+sudo make install
+}}} 
+
+Configure xmltv. This is for North America. Currently webvo only grabs North American listings.  You will need your zap2it username and password you just got. Leave the timezone as default (+0000).
+{{{
+~$ cd /home/public_html/webvo/config/
+~$ tv_grab_na_dd --configure --config-file tv_grab_na_dd.conf
+}}}
+
+== Webvo Files ==
+
+=== 1.1 Location (default - home directory) ===
+Configure apache to look for the webvo directory. We recommend that you put them in your home directory but if you want to put them in `/var/www` skip ahead to _Location (alternate - apache default)_
+
+Create the public_html directory where `<username>` is your local user account
+{{{
+~$ sudo mkdir /home/public_html
+~$ sudo chown <username>.<username>
+}}}
+
+Create the new file `/etc/apache2/conf.d/alias` and insert
+{{{
+Alias /webvo /home/public_html/webvo/
+
+<Directory /home/public_html/webvo/>
+  Options Indexes FollowSymLinks ExecCGI
+  AllowOverride All
+  Order allow,deny
+  Allow from all
+</Directory>
+}}}
+
+Restart apache
+{{{
+~$ sudo /etc/init.d/apache2 restart
+}}}
+
+=== 1.2 Location (alternative - apache default) ===
+Create webvo directory
+{{{
+~$ sudo mkdir /var/www/webvo
+~$ sudo chown <username>.<username> /var/www/webvo
+}}}
+where `<username>` is your local user account
+
+=== 2.1 Getting webvo (default - subversion) ===
+To get webvo you can either download a zip package or get the latest subversion release. We recommend using subversion since it will have the most recent bug fixes. If you want to download the zip package, skip to _2.2 (alternative zip package)_
+
+Install subversion
+{{{
+~$ sudo apt-get install subversion
+}}}
+Checkout webvo code. 
+{{{
+~$ cd /home/public_html/  [or /var/www]
+~$ svn checkout http://webvo.googlecode.com/svn/trunk/ webvo
+}}}
+
+=== 2.2 Getting webvo (alternative - zip package) ===
+Go to the download section of webvo google code and get the tar ball.
+
+Extract to the appropriate directory
+{{{
+~$ tar xvzf webvo.tar.gz /home/public_html/webvo/ [or /var/www]
+}}}
+
+=== 3 Configure database ===
+Create database and tables
+{{{
+~$ cd /home/public_html/webvo/
+~$ mysql -u root -p [will prompt for password, use csc4150]
+mysql> create database WebVo
+mysql> use WebVo
+mysql> source WebVo.sql
+}}}
+As you can see we are using the mysql root user. This is generally regarded as a *bad* idea and will be fixed soon. Until then don't install webvo on any production machines.
+
+You can use a different name for the WebVo database as long as you change the corresponding "DBNAME" name in webvo/ruby/webvo.conf
+
+=== 4. Setup ===
+You will need give the apache user write permission on the `movies` and `logs` directory
+{{{
+~$ cd /home/public_html/webvo/
+~$ chgrp www-data movies/
+~$ chgrp www-data logs/
+~$ chmod g+w movies/
+~$ chmod g+w logs/
+}}}
+
+Initialize the tv listings
+{{{
+~$ cd /home/public_html/webvo/ruby/
+~$ ruby getfromzap2it.rb &
+}}}
+
+You're done! Point your browser to `http://localhost/webvo/default.rb` and sign in as `admin` with password `csc4150`. You can also us `http://localhost/webvo/listing.html` which has no login and thus no security. Not that a hard coded username and password is much security...but hey, this is a work in progress.
+
+== Misc ==
+Add task to grab the tv listing to your cron
+{{{
+~$ crontab -e
+[add this to your crontab]
+19 3 * * * /home/public_html/webvo/ruby/getfromzap2it.rb
+}}}
+Will run every day at 3:19AM. Change as you see fit.
+
+
+= Installation for Webvo 1.0 =
+
+This is a step by step guide to install webvo on a fully updated fresh install of Ubuntu 6.10. If you're using a different distro then concepts in this guide should be transferable, if not the exact commands. Some familiarity with Linux is assumed and will be useful if you run into any errors not foreseen in the document. If you run into any problems please post them in the discussion forum.
+
+= Prerequisites =
+
+=== 1. IVTV Drivers ===
+Adapted from https://help.ubuntu.com/community/Install_IVTV_Edgy
+
+Make sure you have all the universe/metaverse repositories
+{{{
+~$ sudo gedit /etc/apt/sources.list
+}}}
+And add the following
+{{{
+deb http://archive.ubuntu.com/ubuntu/ edgy main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ edgy-updates main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu/ edgy-security main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ edgy-backports main restricted universe multiverse
+}}}
+Install the necessary packages
+{{{
+~$ sudo apt-get update
+~$ sudo apt-get install ivtv-source devscripts ivtv-utils module-assistant mplayer
+~$ sudo apt-get install build-essential
+}}}
+Add the following to /etc/apt/sources.list
+{{{
+deb http://dl.ivtvdriver.org/ubuntu edgy firmware
+}}}
+Add the key to this repository
+{{{
+~$ wget http://dl.ivtvdriver.org/ubuntu/80DF6D58.gpg -O- | sudo apt-key add -
+}}}
+Update your packages
+{{{
+~$ sudo apt-get update
+}}}
+Install the IVTV firmware
+{{{
+DEBIAN_FRONTEND=gnome sudo apt-get install ivtv-firmware
+}}}
+Install the IVTV module. Note that these commands will need to be re-run if you install a new kernel.
+{{{
+~$ sudo m-a update,prepare
+~$ sudo m-a a-i ivtv
+~$ sudo depmod -a 
+~$ sudo modprobe ivtv
+}}}
+Add IVTV module to boot order
+{{{
+sudo sh -c 'echo ivtv >>/etc/modules'
+}}}
+=== 2. Apache ===
+Install apache2
+{{{
+~$ sudo apt-get install apache2
+}}}
+Add python and ruby cgi handling to /etc/apache2/apache2.conf
+
+Uncomment the line
+{{{
+#AddHandler cgi-script .cgi
+}}}
+and change to 
+{{{
+AddHandler cgi-script .cgi .py .rb
+}}}
+Restart apache
+{{{
+~$ sudo /etc/init.d/apache2 restart
+}}}
+=== 3. MySQL ===
+Install MySQL
+{{{
+~$ sudo apt-get install mysql-server
+}}}
+Add password for root. For now it *must* be `csc4150`.
+{{{
+~$ mysqladmin -u root password csc4150
+~$ sudo /etc/init.d/mysql restart
+}}}
+=== 4. Ruby ===
+Due to various issues with versions in the Ubuntu repository, we recommend that you don't use the repositories to install ruby. The problem will probably go away with Ubuntu 7.04 which should have up to date versions of ruby-libxml (our problem child). So, if you're felling lucky and have a later version of Ubuntu (or another recent distro) try the repos, otherwise...
+
+Install ruby rereqs
+{{{
+~$ sudo apt-get install zlibc zlib1g zlib1g-dev libmysqlclient15-dev
+}}}
+Download and untar ruby
+{{{
+~$ wget ftp://ftp.ruby-lang.org/pub/ruby/ruby-1.8.6.tar.gz
+~$ tar xvzf ruby-1.8.6.tar.gz
+}}}
+Configure and compile ruby
+{{{
+~$ cd ruby-1.8.6/
+~$ ./configure
+~$ make
+~$ sudo make install
+}}}
+Download and install ruby gems
+{{{
+~$ wget http://rubyforge.org/frs/download.php/17190/rubygems-0.9.2.tgz
+~$ tar xvzf rubygems-0.9.2.tgz
+~$ cd rubygems-0.9.2/
+~$ sudo ruby setup.rb
+}}}
+Install libxml-ruby prereqs
+{{{
+~$ sudo apt-get install libxml2-dev
+~$ gem install -r rake
+}}}
+Install libxml-ruby
+{{{
+~$ wget http://rubyforge.org/frs/download.php/15237/libxml-ruby-0.3.8.4.tar.gz
+~$ tar xvzf libxml-ruby-0.3.8.4.tar.gz
+~$ cd libxml-ruby-0.3.8.3/
+~$ cd ext/xml
+~$ ruby extconf.rb 
+~$ make
+~$ make install
+}}}
+Install ruby-mysql
+{{{
+~$ wget http://tmtm.org/downloads/mysql/ruby/mysql-ruby-2.7.3.tar.gz
+~$ tar xvzf ruby-mysql-2.7.3.tar.gz
+~$ cd ruby-mysql-2.7.3/
+~$ ruby extconf.rb
+~$ make
+~$ make install
+}}}
+=== 5. XMLTV ===
+Install xmltv
+{{{
+~$ sudo apt-get install xmltv
+}}}
+You will need to sign up for xml listings at http://labs.zap2it.com. Use certificate code: 'ZYZM-TE5O-SBUT'. 
+
+Configure xmltv. This is for North America. Currently webvo only grabs North American listings.  You will need your zap2it username and password you just got. Leave the timezone as default (+0000).
+{{{
+~$ cd /home/public_html/webvo/config/
+~$ tv_grab_na_dd --configure --config-file tv_grab_na_dd.conf
+}}}
+
+= Webvo Files =
+
+=== 1.1 Location (default - home directory) ===
+Configure apache to look for the webvo directory. We recommend that you put them in your home directory but if you want to put them in `/var/www` skip ahead to _Location (alternate - apache default)_
+
+Create the public_html directory where `<username>` is your local user account
+{{{
+~$ sudo mkdir /home/public_html
+~$ sudo chown <username>.<username>
+}}}
+
+Create the new file `/etc/apache2/conf.d/alias` and insert
+{{{
+Alias /webvo /home/public_html/webvo/
+
+<Directory /home/public_html/webvo/>
+  Options Indexes FollowSymLinks ExecCGI
+  AllowOverride All
+  Order allow,deny
+  Allow from all
+</Directory>
+}}}
+
+Restart apache
+{{{
+~$ sudo /etc/init.d/apache2 restart
+}}}
+
+=== 1.2 Location (alternative - apache default) ===
+Create webvo directory
+{{{
+~$ sudo mkdir /var/www/webvo
+~$ sudo chown <username>.<username> /var/www/webvo
+}}}
+where `<username>` is your local user account
+
+=== 2.1 Getting webvo (default - subversion) ===
+To get webvo you can either download a zip package or get the latest subversion release. We recommend using subversion since it will have the most recent bug fixes. If you want to download the zip package, skip to _2.2 (alternative zip package)_
+
+Install subversion
+{{{
+~$ sudo apt-get install subversion
+}}}
+Checkout webvo code. 
+{{{
+~$ cd /home/public_html/  [or /var/www]
+~$ svn checkout http://webvo.googlecode.com/svn/trunk/ webvo
+}}}
+
+=== 2.2 Getting webvo (alternative - zip package) ===
+Go to the download section of webvo google code and get the tar ball.
+
+Extract to the appropriate directory
+{{{
+~$ tar xvzf webvo.tar.gz /home/public_html/webvo/ [or /var/www]
+}}}
+
+=== 3 Configure database ===
+Create database and tables
+{{{
+~$ cd /home/public_html/webvo/
+~$ mysql -u root -p [will prompt for password, use csc4150]
+mysql> create database WebVoFast
+mysql> use WebVoFast
+mysql> source WebVo.sql
+}}}
+As you can see we are using the mysql root user. This is generally regarded as a *bad* idea and will be fixed soon. Until then don't install webvo on any production machines.
+
+=== 4. Setup ===
+You will need give the apache user write permission on the `movies` and `logs` directory
+{{{
+~$ cd /home/public_html/webvo/
+~$ chgrp www-data movies/
+~$ chgrp www-data logs/
+~$ chmod g+w movies/
+~$ chmod g+w logs/
+}}}
+
+Initialize the tv listings
+{{{
+~$ cd /home/public_html/webvo/ruby/
+~$ ruby getfromzap2it.rb
+}}}
+
+You're done! Point your browser to `http://localhost/webvo/default.rb` and sign in as `admin` with password `csc4150`. You can also us `http://localhost/webvo/listing.html` which has no login and thus no security. Not that a hard coded username and password is much security...but hey, this is a work in progress.
+
+= Misc =
+Add task to grab the tv listing to your cron
+{{{
+~$ crontab -e
+[add this to your crontab]
+19 3 * * * /home/public_html/webvo/ruby/getfromzap2it.rb
+}}}
+Will run every day at 3:19AM. Change as you see fit.
+ 
+ 
+ 
