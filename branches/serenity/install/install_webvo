@@ -1,0 +1,577 @@
+#!/bin/bash
+
+#This is a script to  install webvo
+
+#configuration variables
+INSTALL_PATH="/var/www/"
+SERVERNAME="localhost"
+USERNAME="root"
+USERPASS="csc4150"
+DBNAME="Webvo"
+XML_FILE_NAME="$INSTALL_PATH/webvo/data/info.xml"
+VIDEO_PATH="/media/movies/webvo/"
+CONFIG_PATH="$INSTALL_PATH/webvo/config/"
+LOG_PATH="$INSTALL_PATH/webvo/logs/"
+XMLTV_CONFIG="$INSTALL_PATH/webvo/config/tv_grab_na_dd.conf"
+ENCODER_BIN="$INSTALL_PATH/webvo/ruby/dummy_record.rb"
+FILE_PADDING="120"
+
+
+#dependancy variables
+packages=("apache2" 		"mysql-server" 		"ruby" 		"libxml-ruby" 	"libmysql-ruby" "xmltv")
+versions=("2.2.3-3.2ubuntu0.1"	"5.0.38-0ubuntu1.1"	"1.8.2-1"	"0.3.8.4-1"	"2.7.1-1"	"0.5.44-1.1")
+
+#SERVERNAME="localhost"
+#USERNAME="root"
+#USERPASS="csc4150"
+#DBNAME="Webvo"
+config_xml_file_name="true"
+config_xmltv="true"
+config_video_path="true"
+config_config_path="true"
+config_log_path="true"
+config_xmltv_config="true"
+config_encoder_bin="true"
+config_sql="false"
+config_download_webvo="true"
+config_apache="true"
+config_cron="true"
+simulate="false"
+
+installed_packages=""
+
+#get configuration flags----------------------------------------------------------
+
+#not sure how to do this elegantly . . .
+
+while (( $# > 0 ))
+do
+	case $1 in
+	"SERVERNAME:")
+		SERVERNAME=$2
+		shift
+	;;
+	"USERNAME:")
+		USERNAME=$2
+		shift
+	;;
+	"USERPASS:")
+		USERPASS=$2
+		shift
+	;;
+	"DBNAME:")
+		DBNAME=$2
+		shift
+	;;
+	"XML_FILE_NAME:")
+		XML_FILE_NAME=$2
+		shift
+	;;
+	"VIDEO_PATH:")
+		VIDEO_PATH=$2
+		shift
+	;;
+	"CONFIG_PATH:")
+		CONFIG_PATH=$2
+		shift
+	;;
+	"LOG_PATH:")
+		LOG_PATH=$2
+		shift
+	;;
+	"XMLTV_CONFIG:")
+		XMLTV_CONFIG=$2
+		shift
+	;;
+	"ENCODER_BIN:")
+		ENCODER_BIN=$2
+		shift
+	;;
+	"FILE_PADDING:")
+		FILE_PADDING=$2
+		shift
+	;;
+	"INSTALL_PATH:")
+		INSTALL_PATH=$2
+		shift
+	;;
+	"-NOCRON")
+		config_cron="false"
+	;;
+	"-SIMULATE")
+		simulate="true"
+	;;
+	"-NOXMLTV")
+		config_xmltv="false"
+	;;
+	? | help | --help | -help | -? | help:)
+	cat << EOF
+simulate
+install_webvo [flag] [option]: [value] [option]: [value] ....
+
+Options:
+INSTALL_PATH:  -- where webvo should be installed default "/var/www/"
+SERVERNAME:    -- the server name default "localhost"
+USERNAME:      -- the mysql user name default "root"
+USERPASS:      -- the mysql password default "csc4150"
+DBNAME:        -- the mysql database name default "Webvo"
+XML_FILE_NAME: -- the xml file name default "var/www/webvo/data/info.xml"
+VIDEO_PATH:    -- the path where the recordings are saved 
+                  default "/media/movies/webvo/"
+CONFIG_PATH:   -- the configuration path default 
+                  "$INSTALL_PATH/webvo/config/"
+LOG_PATH:      -- the log path default "$INSTALL_PATH/webvo/logs/"
+XMLTV_CONFIG:  -- where the xmltv settings are stored default 
+                  "$INSTALL_PATH/webvo/config/tv_grab_na_dd.conf"
+ENCODER_BIN:   -- where the encoder is installed default 
+                  "$INSTALL_PATH/webvo/ruby/dummy_record.rb"
+FILE_PADDING:  -- the file padding setting default "120"
+
+Flag:
+-NOCRON        -- the getfromzap2it will not be scheduled.
+
+Installs and configures WebVo the web based PVR.
+For more information see http://webvo.googlecode.com.
+
+EOF
+exit
+	;;
+	*)
+		echo install_webvo [option]: [value] [option] [value] ....
+		echo install_webvo help
+	;;
+	esac
+	shift
+done
+
+
+#check what distribution in --------------------------------------------------------------------
+
+if [ "$(grep 'DISTRIB_ID=Ubuntu' /etc/lsb-release )" = "$NULL" ] || [ "$( grep 'DISTRIB_RELEASE=7.04' /etc/lsb-release )" = "$NULL" ]
+then
+	echo 'Not a recommended webvo system, proceed anyway?'
+	echo "Enter [y]es to continue, [n]o to abort"
+	read -p "Enter [y]es or [n]o " answer
+	case "$answer" in
+		[yY1])
+			echo "Choose to brave the wild unknown."
+		;;
+		[nN])
+			echo "Aborted"
+			exit 1
+		;;
+	esac
+else
+	echo "Running Fiesty"
+
+fi
+
+#simulate reporting -----------------------------------------------------------------------------
+if [ "$simulate" = "true" ]
+then 
+	echo "Simulating an install, nothing will be changed on your system"
+fi
+
+#check the user input ---------------------------------------------------------------------------
+#SERVERNAME="localhost"
+#USERNAME="root"
+#USERPASS="csc4150"
+#DBNAME="Webvo"
+
+#INSTALL_PATH="/var/www/"
+if [ ! -d $INSTALL_PATH ]
+then
+	echo "$INSTALL_PATH is not a valid directory, please use an existing directory"
+	exit 1
+fi
+
+if [ -d $INSTALL_PATH/webvo ]
+then
+	echo "Webvo directory already exists at $INSTALL_PATH"	
+	echo "This could mean that Webvo is already installed"
+	echo "at the install path, would you like to continue anyway?"
+	echo "Enter [y]es to over-write, [n]o to install everything else,"
+	echo "or [A]bort to quit installation."
+	read -p "Enter [y]es, [n]o, or [a]bort: " answer
+	case "$answer" in
+		[yY1])
+			config_download_webvo="true"			
+		;;
+		[nN])
+			config_download_webvo="false"
+		;;
+		[aA0])
+			exit 1
+		;;
+	esac
+ 			
+fi
+
+#VIDEO_PATH="/media/movies/webvo/"
+if [ ! -d $VIDEO_PATH ]
+then
+	config_video_path="true"
+	echo "$VIDEO_PATH either invalid or hasn't been set up yet"
+fi
+
+#CONFIG_PATH="/var/www/webvo/config/"
+if [ ! -d $CONFIG_PATH ]
+then
+	config_config_path="true"
+	echo "$CONFIG_PATH either invalid or hasn't been set up yet"
+fi
+
+#LOG_PATH="/var/www/webvo/logs/"
+if [ ! -d $LOG_PATH ]
+then
+	config_log_path="true"
+	echo "$LOG_PATH either invalid or hasn't been set up yet"
+fi
+
+#XMLTV_CONFIG="/var/www/webvo/config/tv_grab_na_dd.conf"
+if [ ! -f $XMLTV_CONFIG ]
+then
+	config_xmltv_config="true"
+	echo "$CONFIG_PATH either invalid or hasn't been set up yet"
+fi
+
+#ENCODER_BIN="/var/www/webvo/ruby/dummy_record.rb"
+if [ ! -f $ENCODER_BIN ]
+then
+	config_encoder_bin="true"
+	echo "$CONFIG_ENCODER_BIN either invalid or hasn't been set up yet"
+fi
+
+#FILE_PADDING="120"
+
+
+
+#install required packages-------------------------------------------------------------------------
+echo 'Updating apt-get'
+apt-get -y -q=2 update
+
+if [ ! "$?" = "0" ]
+then
+	echo 'Updating apt-get failed, trying aptitude'
+	aptitude -y -q=2 update
+fi
+
+for package in ${packages[@]}
+do
+	#if [ "$( dpkg --get-selections | awk 'BEGIN { FS = " "; OFS = "\t" } { $1 = $1; gsub(/\t+/, "\t"); print}' | cut -f1 | grep -x $package )" = "$NULL" ]
+	#then
+	if [ "$( aptitude show $package | sed '/State: installed/!d' )" = "$NULL" ]
+	then
+		pktodo="install"
+	else
+#		if [ "$( aptitude show $package | sed '/Version: /!d' | sed 's/Version: //' )" >=  "$versions[]"
+		pktodo="nothing"
+	fi
+
+	case $pktodo in
+		install)
+			echo "Installing $package"
+			if [ "$simulate" = "false" ]
+			then
+				apt-get -y install $package
+			fi
+
+			if [ $? -eq 0 ]
+			then
+				echo "Did not install $package"
+
+			else
+				echo "Installed $package"
+				case $package in
+					apache2)
+						configure_apache="true"
+					;;
+					mysql-server)
+						configure_sql="true"
+					;;
+				esac
+			fi
+		;;
+		update)
+		;;
+		nothing)
+			echo $package already installed and does not need to be updated
+		;;
+	esac
+done
+exit
+#install xmltv for new grabber --Not added to Repository as of 9-20-2007
+if [ $config_xmltv = "true" ]
+then
+	echo "Downloading and installing XMLTV"
+	cd /tmp
+	wget 'http://internap.dl.sourceforge.net/sourceforge/xmltv/xmltv-0.5.50.tar.bz2' -o install_log
+	if [ -f xmltv-0.5.50.tar.bz2 ]
+	then
+		bzip2 -d xmltv-0.5.50.tar.bz2
+		tar -xf xmltv-0.5.50.tar
+		cd xmltv-0.5.50
+
+		perl Makefile.PL --default
+		make
+		make test
+
+		if [ "$simulate" = "false" ]
+		then
+			make install
+		fi
+		cd /tmp
+		rm -r xmltv-0.5.50*
+		echo "Did this look like it worked?"
+		echo "Enter [y]es to continue, [n]o to abort"
+		read -p "Enter [y]es or [n]o " answer
+		case "$answer" in
+			[yY1])
+				echo "installation of XMLTV Succeeded"
+			;;
+			[nN])
+				echo "installation of XMLTV FAILED"
+				exit 1
+			;;
+		esac
+	else
+		echo "File didn't download correctly."
+	fi
+fi
+
+
+#Downloading webvo-----------------------------------------------------------------------------
+if [ "$config_download_webvo" = "true" ]
+then
+	if [ -d $INSTALL_PATH ]
+	then					if [ ! -d $INSTALL_PATH ]
+					then
+						mkdir -p $INSTALL_PATH
+					else
+						echo "Removing old install at: $INSTALL_PATH"
+						rm -r $INSTALL_PATH/*
+					fi
+		echo "Install from svn (most current) or Download from last release:"
+		echo "Enter [S]vn for SVN, [R]elease from previous release, s[K]ip, or [A]bort"
+		read -p "Enter [S] [R] [K] [A] " answer
+		case "$answer" in
+			[Ss])
+				echo "Install from SVN"
+				if [ "$simulate" = "false" ]
+				then
+					cd /tmp
+					svn checkout http://webvo.googlecode.com/svn/trunk/ /tmp/webvo
+					if [ ! -d $INSTALL_PATH/webvo ]
+					then
+						mkdir -p $INSTALL_PATH/webvo
+					else
+						echo "Removing old install at: $INSTALL_PATH/webvo"
+						rm -r $INSTALL_PATH/webvo/*
+					fi
+
+					mv /tmp/webvo/* $INSTALL_PATH/webvo/
+					#chown $(USER).$(USER) $INSTALL_PATH
+				fi
+			;;
+			[Rr])
+				echo "Installing Release"
+				echo "Downloading Webvo"
+				if [ "$simulate" = "false" ]
+				then
+					cd /tmp
+					wget http://webvo.googlecode.com/files/webvo.tar.gz
+					gzip -d webvo.tar.gz
+					tar -xf webvo.tar
+					if [ ! -d $INSTALL_PATH/webvo ]
+					then
+						mkdir -p $INSTALL_PATH/webvo
+					else
+						echo "Removing old install at: $INSTALL_PATH/webvo"
+						rm -r $INSTALL_PATH/webvo/*
+					fi
+					echo "Moving Webvo to $INSTALL_PATH"
+					mv /tmp/webvo/* $INSTALL_PATH/webvo/
+					#chown $(USER).$(USER) $INSTALL_PATH
+					rm /tmp/webvo.tar
+					rm -r /tmp/webvo
+				fi
+				
+			;;
+			[Kk])
+				echo "Skipping installation"
+				
+			;;
+			[Aa])
+				echo "Aborting"
+				exit
+
+			;;
+		esac
+	else
+		echo Install path $INSTALL_PATH invalid
+	fi
+fi
+
+#Write the config file---------------------------------------------------------------------------
+
+echo "writing out config file $INSTALL_PATH/webvo/ruby" 
+if [ -d "$INSTALL_PATH/webvo/ruby" ]
+then
+	if [ -f "webvo.config" ]
+	then
+		echo "Configuration file already exists!"
+	elif [ "$config_download_webvo" = "true" ]
+	then
+
+		echo Writing Configuration File
+		cd "$INSTALL_PATH/webvo/ruby"
+		if [ "$simulate" = "false" ]
+		then
+			echo "SERVERNAME = $SERVERNAME" > webvo.config
+			echo "USERNAME = $USERNAME" >> webvo.config
+			echo "USERPASS = $USERPASS" >> webvo.config
+			echo "DBNAME = $DBNAME" >> webvo.config
+			echo "XML_FILE_NAME = $XML_FILE_NAME" >> webvo.config
+			echo "VIDEO_PATH = $VIDEO_PATH" >> webvo.config
+			echo "CONFIG_PATH = $CONFIG_PATH" >> webvo.config
+			echo "LOG_PATH = $LOG_PATH" >> webvo.config
+			echo "XMLTV_CONFIG = $XMLTV_CONFIG" >> webvo.config
+			echo "ENCODER_BIN = $ENCODER_BIN" >> webvo.config
+			echo "FILE_PADDING = $FILE_PADDING" >> webvo.config
+		fi
+	fi
+fi
+
+#configuring log_path to make it writable------------------------------------------
+echo "configuring log_path $config_log_path"
+if [ "$config_log_path" = "true" ]
+then
+
+	#make log path writable
+	if [ "$simulate" = "false" ]
+	then
+		
+		if [ ! -d $LOG_PATH ]
+		then
+			mkdir -p $LOG_PATH
+		fi
+
+		sudo chmod a+w $LOG_PATH
+			
+	fi
+fi
+
+#configue sql----------------------------------------------------------------------
+if [ "$config_sql" = "true" ]
+then
+	#set sql root password
+#	mysql -u root mysql >>EOF
+#SET PASSWORD FOR 'root'@'$SERVERNAME' = PASSWORD('$USERPASS')
+#quit
+#EOF
+	if [ "$simulate" = "false" ]
+	then
+		$INSTALL_PATH/webvo/ruby/config.rb
+	fi
+
+fi
+
+
+
+#configure apache-------------------------------------------------------------------
+echo configuring apache $config_apache
+if [ "$config_apache" = "true" ]
+then
+	echo "Will set up apache"
+	#parse some of the configuration files to set up apache
+	#set up ruby and python as executable
+	if [ -f /etc/apache2/apache2.conf ]
+	then
+		echo "Setting up ruby and python as executables"
+		if [ "$simulate" = "false" ]
+		then
+			cd /etc/apache2
+			cat apache2.conf | sed -e 's/#AddHandler cgi-script .cgi/AddHandler cgi-script .cgi .rb .py/' > apache2.conf~		
+			if [ "$( diff apache2.conf~ apache2.conf | grep '>')" = "$NULL" ]
+			then
+				echo "Ruby and python are already executables"
+			else
+				echo "Apache2 executables configured"
+				/etc/init.d/apache2 stop
+				rm apache2.conf
+				mv apache2.conf~ apache2.conf
+				/etc/init.d/apache2 restart
+			fi
+			rm apache2.conf~
+		fi
+	fi
+	
+	#set up the install path with apache2
+	if [ ! -f '/etc/apache2/conf.d/alias' ]
+	then
+		echo "alias doesn't exist"
+	
+		#checks if install in a non-default path.  If it is, alias needs to be added.
+		if [ "$( echo "${INSTALL_PATH#'/var/www'}" )" = "$NULL" ] || [ "$(echo "${INSTALL_PATH#'/var/www'}")" = "/" ]
+		then
+			echo "No need to alias"
+		else
+			echo "requested installation to a non-default path need to alias"
+			if [ "$simulate" = "false" ]
+			then
+				cat "Alias /webvo $INSTALL_PATH/webvo" > /etc/apache2/conf.d/alias
+				cat "<Directory /home/public_html/webvo/>" >> /etc/apache2/conf.d/alias
+		  		cat "Options Indexes FollowSymLinks ExecCGI" >> /etc/apache2/conf.d/alias
+		  		cat "AllowOverride All" >> /etc/apache2/conf.d/alias
+		  		cat "Order allow,deny" >> /etc/apache2/conf.d/alias
+		  		cat "Allow from all" >> /etc/apache2/conf.d/alias
+				cat "</Directory>" >> /etc/apache2/conf.d/alias
+				/etc/init.d/apache2 restart
+			fi
+		fi
+	fi
+	
+fi
+
+#modify cron--------------------------------------------------------------------------------
+if [ config_cron = "true" ]
+then
+	if [ -d /etc/cron.daily ]
+	then
+		echo "Scheduling cron in /etc/cron.daily"
+		if [ "$simulate" = "false" ]
+		then
+			cp $INSTALL_PATH/webvo/ruby/getfromzap2it.rb /etc/cron.daily/
+		fi
+	else
+		cd /tmp
+		crontab -l > curcrontab
+		echo "19 3 * * * $INSTALL_PATH/webvo/ruby/getfromzap2it.rb" | sed -e 's/\//./g' | sed -e 's/*/./g' > searchstr
+		searchstr="$( cat searchstr )"
+
+		echo "$searchstr"
+		if [ "$simulate" = "false" ]
+		then
+			grep -G  "$searchstr" curcrontab
+			#if it isn't already scheduled, schedule it!
+			if [ "$?" = "1" ]
+			then
+				echo "Scheduling Cron"
+				echo "19 3 * * * $INSTALL_PATH/webvo/ruby/getfromzap2it.rb" >> curcrontab
+				crontab -u $(logname) curcrontab
+			else
+				echo "Webvo already scheduled with Cron"
+			fi
+			rm searchstr
+			rm curcrontab
+		fi
+		rm curcrontab
+	fi
+fi
+
+
+echo "Done with installation"
+
+exit 0
+
+
