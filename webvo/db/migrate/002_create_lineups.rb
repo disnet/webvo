@@ -4,11 +4,11 @@ class CreateLineups < ActiveRecord::Migration
       t.string :name, :limit => 42, :null => false
       t.string :location, :limit => 28, :null => false
       t.string :device, :limit => 30
-      t.string :type, :limit => 20, :null => false
+      t.string :media_type, :limit => 20, :null => false
       t.integer :postal_code
       t.string :id, :limit => 12, :null => false
     end
-    add_index :lineups, [:id]
+    add_index :lineups, [:id], { :unique => true }
   end
 
   def self.down

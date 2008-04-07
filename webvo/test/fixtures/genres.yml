@@ -1,7 +1,161 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-# one:
-#   column: value
-#
-# two:
-#   column: value
+--- 
+genre_00009: 
+  program_id: EP009309810003
+  id: 9
+  classification: Paranormal
+  relevance: "1"
+genre_00031: 
+  program_id: EP000031382805
+  id: 31
+  classification: Interview
+  relevance: "1"
+genre_00020: 
+  program_id: SH009253280000
+  id: 20
+  classification: News
+  relevance: "0"
+genre_00010: 
+  program_id: EP000023481504
+  id: 10
+  classification: Game show
+  relevance: "0"
+genre_00032: 
+  program_id: EP000031382805
+  id: 32
+  classification: News
+  relevance: "2"
+genre_00021: 
+  program_id: EP002253952649
+  id: 21
+  classification: Talk
+  relevance: "0"
+genre_00022: 
+  program_id: EP004264321739
+  id: 22
+  classification: Talk
+  relevance: "0"
+genre_00011: 
+  program_id: EP000047621241
+  id: 11
+  classification: Game show
+  relevance: "0"
+genre_00012: 
+  program_id: SH004528130000
+  id: 12
+  classification: News
+  relevance: "0"
+genre_00023: 
+  program_id: EP000018934442
+  id: 23
+  classification: Talk
+  relevance: "0"
+genre_00001: 
+  program_id: SH000031380000
+  id: 1
+  classification: Talk
+  relevance: "0"
+genre_00013: 
+  program_id: SH000191150000
+  id: 13
+  classification: News
+  relevance: "0"
+genre_00024: 
+  program_id: EP000018934442
+  id: 24
+  classification: News
+  relevance: "1"
+genre_00002: 
+  program_id: SH000031380000
+  id: 2
+  classification: Interview
+  relevance: "1"
+genre_00014: 
+  program_id: SH009104920000
+  id: 14
+  classification: News
+  relevance: "0"
+genre_00003: 
+  program_id: SH000031380000
+  id: 3
+  classification: News
+  relevance: "2"
+genre_00025: 
+  program_id: SH009104900000
+  id: 25
+  classification: News
+  relevance: "0"
+genre_00015: 
+  program_id: SH009574190000
+  id: 15
+  classification: News
+  relevance: "0"
+genre_00004: 
+  program_id: EP009309790004
+  id: 4
+  classification: Drama
+  relevance: "0"
+genre_00026: 
+  program_id: SH008776990000
+  id: 26
+  classification: News
+  relevance: "0"
+genre_00016: 
+  program_id: SH009104890000
+  id: 16
+  classification: Talk
+  relevance: "0"
+genre_00005: 
+  program_id: EP009309790004
+  id: 5
+  classification: Law
+  relevance: "1"
+genre_00027: 
+  program_id: SH000191160000
+  id: 27
+  classification: News
+  relevance: "0"
+genre_00028: 
+  program_id: EP005455791021
+  id: 28
+  classification: Talk
+  relevance: "0"
+genre_00017: 
+  program_id: EP000018071257
+  id: 17
+  classification: Soap
+  relevance: "0"
+genre_00006: 
+  program_id: EP009309710004
+  id: 6
+  classification: Drama
+  relevance: "0"
+genre_00007: 
+  program_id: EP009309710004
+  id: 7
+  classification: Medical
+  relevance: "1"
+genre_00018: 
+  program_id: EP000032241245
+  id: 18
+  classification: Soap
+  relevance: "0"
+genre_00029: 
+  program_id: EP005455791021
+  id: 29
+  classification: Comedy
+  relevance: "1"
+genre_00030: 
+  program_id: EP000031382805
+  id: 30
+  classification: Talk
+  relevance: "0"
+genre_00019: 
+  program_id: EP000002061242
+  id: 19
+  classification: Soap
+  relevance: "0"
+genre_00008: 
+  program_id: EP009309810003
+  id: 8
+  classification: Drama
+  relevance: "0"

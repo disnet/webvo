@@ -1,7 +1,871 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-one:
-  programe: MyString
-
-two:
-  programe: MyString
+--- 
+schedule_00058: 
+  program_id: SH000031380000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 06:35:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 07:06:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 58
+  part_total: 
+  hdtv: 
+  duration: PT00H31M
+  station_id: 19629
+  part_number: 
+schedule_00036: 
+  program_id: SH000191160000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 10:05:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 11:30:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 36
+  part_total: 
+  hdtv: 
+  duration: PT01H25M
+  station_id: 19629
+  part_number: 
+schedule_00014: 
+  program_id: SH009253280000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 18:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 19:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 14
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00003: 
+  program_id: SH000000010000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 08:06:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 08:35:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 3
+  part_total: 
+  hdtv: 
+  duration: PT00H29M
+  station_id: 10626
+  part_number: 
+schedule_00025: 
+  program_id: EP009309810003
+  new: true
+  close_captioned: true
+  time: 2007-10-18 03:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-18 04:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 25
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00047: 
+  program_id: SH009104890000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 22:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 23:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 47
+  part_total: 
+  hdtv: true
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00048: 
+  program_id: SH009574190000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 23:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 00:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 48
+  part_total: 
+  hdtv: true
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00026: 
+  program_id: EP009309710004
+  new: true
+  close_captioned: true
+  time: 2007-10-18 04:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-18 05:02:00 -06:00
+  tv_rating: TV-14
+  subtitled: 
+  id: 26
+  part_total: 
+  hdtv: 
+  duration: PT01H02M
+  station_id: 10626
+  part_number: 
+schedule_00004: 
+  program_id: SH000000010000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 08:35:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 09:05:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 4
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 10626
+  part_number: 
+schedule_00015: 
+  program_id: EP000002061242
+  new: true
+  close_captioned: true
+  time: 2007-10-17 19:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 20:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 15
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00037: 
+  program_id: SH008776990000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 11:30:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 12:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 37
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 19629
+  part_number: 
+schedule_00038: 
+  program_id: SH009104900000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 12:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 13:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 38
+  part_total: 
+  hdtv: true
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00016: 
+  program_id: EP000032241245
+  new: true
+  close_captioned: true
+  time: 2007-10-17 20:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 21:00:00 -06:00
+  tv_rating: TV-14
+  subtitled: 
+  id: 16
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00005: 
+  program_id: SH000000010000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 09:05:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 09:35:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 5
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 10626
+  part_number: 
+schedule_00027: 
+  program_id: EP009309790004
+  new: true
+  close_captioned: true
+  time: 2007-10-18 05:02:00 -06:00
+  stereo: true
+  stop_time: 2007-10-18 06:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 27
+  part_total: 
+  hdtv: 
+  duration: PT00H58M
+  station_id: 10626
+  part_number: 
+schedule_00049: 
+  program_id: SH009104920000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 00:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 00:30:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 49
+  part_total: 
+  hdtv: true
+  duration: PT00H30M
+  station_id: 19629
+  part_number: 
+schedule_00050: 
+  program_id: SH000191150000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 00:30:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 01:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 50
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 19629
+  part_number: 
+schedule_00028: 
+  program_id: SH004528130000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 06:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 06:35:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 28
+  part_total: 
+  hdtv: 
+  duration: PT00H35M
+  station_id: 10626
+  part_number: 
+schedule_00006: 
+  program_id: SH000000010000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 09:35:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 10:05:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 6
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 10626
+  part_number: 
+schedule_00017: 
+  program_id: EP000018071257
+  new: true
+  close_captioned: true
+  time: 2007-10-17 21:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 22:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 17
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00039: 
+  program_id: SH009104900000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 13:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 14:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 39
+  part_total: 
+  hdtv: true
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00040: 
+  program_id: EP000018934442
+  new: true
+  close_captioned: true
+  time: 2007-10-17 14:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 16:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 40
+  part_total: 
+  hdtv: true
+  duration: PT02H00M
+  station_id: 19629
+  part_number: 
+schedule_00018: 
+  program_id: SH009104890000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 22:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 23:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 18
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00007: 
+  program_id: SH000191160000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 10:05:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 11:30:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 7
+  part_total: 
+  hdtv: 
+  duration: PT01H25M
+  station_id: 10626
+  part_number: 
+schedule_00029: 
+  program_id: SH000031380000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 06:35:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 07:06:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 29
+  part_total: 
+  hdtv: 
+  duration: PT00H31M
+  station_id: 10626
+  part_number: 
+schedule_00051: 
+  program_id: SH004528130000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 01:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 02:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 51
+  part_total: 
+  hdtv: true
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00052: 
+  program_id: EP000047621241
+  new: true
+  close_captioned: true
+  time: 2007-10-18 02:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 02:30:00 -06:00
+  tv_rating: TV-G
+  subtitled: 
+  id: 52
+  part_total: 
+  hdtv: true
+  duration: PT00H30M
+  station_id: 19629
+  part_number: 
+schedule_00030: 
+  program_id: EP000031382805
+  new: true
+  close_captioned: true
+  time: 2007-10-17 06:35:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 07:06:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 30
+  part_total: 
+  hdtv: 
+  duration: PT00H31M
+  station_id: 19629
+  part_number: 
+schedule_00008: 
+  program_id: SH008776990000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 11:30:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 12:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 8
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 10626
+  part_number: 
+schedule_00019: 
+  program_id: SH009574190000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 23:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 00:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 19
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00041: 
+  program_id: EP004264321739
+  new: true
+  close_captioned: true
+  time: 2007-10-17 16:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 17:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 41
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00042: 
+  program_id: EP002253952649
+  new: true
+  close_captioned: true
+  time: 2007-10-17 17:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 18:00:00 -06:00
+  tv_rating: TV-14
+  subtitled: 
+  id: 42
+  part_total: 
+  hdtv: true
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00020: 
+  program_id: SH009104920000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 00:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 00:30:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 20
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 10626
+  part_number: 
+schedule_00009: 
+  program_id: SH009104900000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 12:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 13:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 9
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00031: 
+  program_id: EP005455791021
+  new: true
+  close_captioned: true
+  time: 2007-10-17 07:06:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 08:06:00 -06:00
+  tv_rating: TV-14
+  subtitled: 
+  id: 31
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00053: 
+  program_id: EP000023481504
+  new: true
+  close_captioned: true
+  time: 2007-10-18 02:30:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 03:00:00 -06:00
+  tv_rating: TV-G
+  subtitled: 
+  id: 53
+  part_total: 
+  hdtv: true
+  duration: PT00H30M
+  station_id: 19629
+  part_number: 
+schedule_00054: 
+  program_id: EP009309810003
+  new: true
+  close_captioned: true
+  time: 2007-10-18 03:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-18 04:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 54
+  part_total: 
+  hdtv: true
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00032: 
+  program_id: SH000000010000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 08:06:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 08:35:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 32
+  part_total: 
+  hdtv: 
+  duration: PT00H29M
+  station_id: 19629
+  part_number: 
+schedule_00010: 
+  program_id: SH009104900000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 13:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 14:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 10
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00021: 
+  program_id: SH000191150000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 00:30:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 01:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 21
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 10626
+  part_number: 
+schedule_00043: 
+  program_id: SH009253280000
+  new: true
+  close_captioned: true
+  time: 2007-10-17 18:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 19:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 43
+  part_total: 
+  hdtv: true
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00044: 
+  program_id: EP000002061242
+  new: true
+  close_captioned: true
+  time: 2007-10-17 19:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 20:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 44
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00022: 
+  program_id: SH004528130000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 01:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 02:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 22
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00011: 
+  program_id: EP000018934442
+  new: true
+  close_captioned: true
+  time: 2007-10-17 14:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 16:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 11
+  part_total: 
+  hdtv: 
+  duration: PT02H00M
+  station_id: 10626
+  part_number: 
+schedule_00033: 
+  program_id: SH000000010000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 08:35:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 09:05:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 33
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 19629
+  part_number: 
+schedule_00055: 
+  program_id: EP009309710004
+  new: true
+  close_captioned: true
+  time: 2007-10-18 04:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-18 05:02:00 -06:00
+  tv_rating: TV-14
+  subtitled: 
+  id: 55
+  part_total: 
+  hdtv: true
+  duration: PT01H02M
+  station_id: 19629
+  part_number: 
+schedule_00056: 
+  program_id: EP009309790004
+  new: true
+  close_captioned: true
+  time: 2007-10-18 05:02:00 -06:00
+  stereo: true
+  stop_time: 2007-10-18 06:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 56
+  part_total: 
+  hdtv: true
+  duration: PT00H58M
+  station_id: 19629
+  part_number: 
+schedule_00034: 
+  program_id: SH000000010000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 09:05:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 09:35:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 34
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 19629
+  part_number: 
+schedule_00012: 
+  program_id: EP004264321739
+  new: true
+  close_captioned: true
+  time: 2007-10-17 16:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 17:00:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 12
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00001: 
+  program_id: EP000031382805
+  new: true
+  close_captioned: true
+  time: 2007-10-17 06:35:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 07:06:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 1
+  part_total: 
+  hdtv: 
+  duration: PT00H31M
+  station_id: 10626
+  part_number: 
+schedule_00023: 
+  program_id: EP000047621241
+  new: true
+  close_captioned: true
+  time: 2007-10-18 02:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 02:30:00 -06:00
+  tv_rating: TV-G
+  subtitled: 
+  id: 23
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 10626
+  part_number: 
+schedule_00045: 
+  program_id: EP000032241245
+  new: true
+  close_captioned: true
+  time: 2007-10-17 20:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 21:00:00 -06:00
+  tv_rating: TV-14
+  subtitled: 
+  id: 45
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00046: 
+  program_id: EP000018071257
+  new: true
+  close_captioned: true
+  time: 2007-10-17 21:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 22:00:00 -06:00
+  tv_rating: TV-PG
+  subtitled: 
+  id: 46
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 19629
+  part_number: 
+schedule_00024: 
+  program_id: EP000023481504
+  new: true
+  close_captioned: true
+  time: 2007-10-18 02:30:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 03:00:00 -06:00
+  tv_rating: TV-G
+  subtitled: 
+  id: 24
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 10626
+  part_number: 
+schedule_00002: 
+  program_id: EP005455791021
+  new: true
+  close_captioned: true
+  time: 2007-10-17 07:06:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 08:06:00 -06:00
+  tv_rating: TV-14
+  subtitled: 
+  id: 2
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00013: 
+  program_id: EP002253952649
+  new: true
+  close_captioned: true
+  time: 2007-10-17 17:00:00 -06:00
+  stereo: true
+  stop_time: 2007-10-17 18:00:00 -06:00
+  tv_rating: TV-14
+  subtitled: 
+  id: 13
+  part_total: 
+  hdtv: 
+  duration: PT01H00M
+  station_id: 10626
+  part_number: 
+schedule_00035: 
+  program_id: SH000000010000
+  new: 
+  close_captioned: 
+  time: 2007-10-17 09:35:00 -06:00
+  stereo: 
+  stop_time: 2007-10-17 10:05:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 35
+  part_total: 
+  hdtv: 
+  duration: PT00H30M
+  station_id: 19629
+  part_number: 
+schedule_00057: 
+  program_id: SH004528130000
+  new: true
+  close_captioned: true
+  time: 2007-10-18 06:00:00 -06:00
+  stereo: 
+  stop_time: 2007-10-18 06:35:00 -06:00
+  tv_rating: 
+  subtitled: 
+  id: 57
+  part_total: 
+  hdtv: true
+  duration: PT00H35M
+  station_id: 19629
+  part_number: 

@@ -1,6 +1,62 @@
 ActionController::Routing::Routes.draw do |map|
   # The priority is based upon order of creation: first created -> highest priority.
 
+  map.connect 'ruby/form_scheduled.rb', 
+    :controller => 'scheduled_program',
+    :action => 'list'
+
+  map.connect 'ruby/form_scheduled.rb.:format', 
+    :controller => 'scheduled_program',
+    :action => 'list'
+
+  map.connect 'ruby/add_recording.rb', 
+    :controller => 'scheduled_program',
+    :action => 'add'
+
+  map.connect 'ruby/add_recording.rb.:format', 
+    :controller => 'scheduled_program',
+    :action => 'add'
+
+  map.connect 'ruby/delete_recording.rb', 
+    :controller => 'scheduled_program',
+    :action => 'remove'
+
+  map.connect 'ruby/delete_recording.rb.:format', 
+    :controller => 'scheduled_program',
+    :action => 'remove'
+
+  map.connect 'ruby/form_listing.rb', 
+    :controller => 'schedule',
+    :action => 'list'
+
+  map.connect 'ruby/form_listing.rb.:format', 
+    :controller => 'schedule',
+    :action => 'list'
+
+  map.connect 'ruby/form_stats.rb', 
+    :controller => 'schedule',
+    :action => 'stats'
+
+  map.connect 'ruby/form_stats.rb.:format', 
+    :controller => 'schedule',
+    :action => 'stats'
+
+  map.connect 'ruby/form_search.rb', 
+    :controller => 'schedule',
+    :action => 'search'
+
+  map.connect 'ruby/form_search.rb.:format', 
+    :controller => 'schedule',
+    :action => 'search'
+
+  map.connect 'ruby/form_recorded.rb', 
+    :controller => 'recorded_program',
+    :action => 'list'
+
+  map.connect 'ruby/form_recorded.rb.:format', 
+    :controller => 'recorded_program',
+    :action => 'list'
+
   # Sample of regular route:
   #   map.connect 'products/:id', :controller => 'catalog', :action => 'view'
   # Keep in mind you can assign values other than :controller and :action

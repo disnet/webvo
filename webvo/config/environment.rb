@@ -4,6 +4,10 @@
 # you don't control web/app server and can't set it the proper way
 # ENV['RAILS_ENV'] ||= 'production'
 
+XMLTV_CONFIG = "#{File.dirname(__FILE__)}/../config/tv_grab_na_dd.conf"
+DATE_TIME_FORMAT_FILENAME = "%Y-%m-%d_[%H.%M.%S]"
+READABLE_TIME_FORMAT = "%m/%d/%Y %I:%M %p - %A"
+
 # Specifies gem version of Rails to use when vendor/rails is not present
 RAILS_GEM_VERSION = '2.0.2' unless defined? RAILS_GEM_VERSION
 

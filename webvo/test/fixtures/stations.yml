@@ -1,9 +1,13 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-one:
-  callSign: 
-  name: 
-
-two:
-  callSign: 
-  name: 
+--- 
+station_10626: 
+  name: KOMO
+  affiliate: ABC Affiliate
+  id: 10626
+  callsign: KOMO
+  fcc_channel_number: 4
+station_19629: 
+  name: KOMODT (KOMO-DT)
+  affiliate: ABC Affiliate
+  id: 19629
+  callsign: KOMODT
+  fcc_channel_number: 38

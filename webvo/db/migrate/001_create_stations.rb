@@ -7,7 +7,7 @@ class CreateStations < ActiveRecord::Migration
       t.string :affiliate, :limit => 25
       t.integer :fcc_channel_number
     end
-    add_index :stations, [:id]
+    add_index :stations, [:id], { :unique => true }
   end
 
   def self.down

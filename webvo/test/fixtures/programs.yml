@@ -1,7 +1,337 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-# one:
-#   column: value
-#
-# two:
-#   column: value
+--- 
+program_EP009309710004: 
+  title: Private Practice
+  mpaa_rating: 
+  series: 
+  id: EP009309710004
+  subtitle: In Which Addison Has a Very Casual Get-Together
+  runtime: 
+  original_air_date: 2007-10-17
+  description: Addison invites her co-workers to a gathering, but no one responds; the wife of Violet's former boyfriend visits the clinic for treatment; Cooper counsels a lovesick young patient; Sam appears on a morning show to promote his book.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP000018071257: 
+  title: General Hospital
+  mpaa_rating: 
+  series: 
+  id: EP000018071257
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-10-17
+  description: Lulu and Johnny contemplate their next move.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH000031380000: 
+  title: Nightline
+  mpaa_rating: 
+  series: 
+  id: SH000031380000
+  subtitle: 
+  runtime: 
+  original_air_date: 1980-03-24
+  description: In-depth reporting on news and events with Cynthia McFadden, Terry Moran and Martin Bashir.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP000002061242: 
+  title: All My Children
+  mpaa_rating: 
+  series: 
+  id: EP000002061242
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-10-17
+  description: Greenlee wonders whether J.R.'s incredible claim could possibly be true.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH000191150000: 
+  title: ABC's World News With Charles Gibson
+  mpaa_rating: 
+  series: 
+  id: SH000191150000
+  subtitle: 
+  runtime: 
+  original_air_date: 1953-10-12
+  description: The latest world and national news.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH009104890000: 
+  title: Northwest Afternoon
+  mpaa_rating: 
+  series: 
+  id: SH009104890000
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-03-02
+  description: Hosted by Kent Phillips, Natasha Curry and Cindi Rinehart.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP000032241245: 
+  title: One Life to Live
+  mpaa_rating: 
+  series: 
+  id: EP000032241245
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-10-17
+  description: Nora questions whether Lindsay is faking her breakdown.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP004264321739: 
+  title: Live With Regis and Kelly
+  mpaa_rating: 
+  series: 
+  id: EP004264321739
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-10-17
+  description: Actor Anthony Hopkins ("Slipstream"); actor Casey Affleck ("Gone Baby Gone"); performance by the Big Apple Circus.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP000047621241: 
+  title: Wheel of Fortune
+  mpaa_rating: 
+  series: 
+  id: EP000047621241
+  subtitle: College Road Trip
+  runtime: 
+  original_air_date: 2007-10-17
+  description: 
+  year: 
+  syndicated_episode_number: "4708"
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH004528130000: 
+  title: KOMO 4 News
+  mpaa_rating: 
+  series: 
+  id: SH004528130000
+  subtitle: 
+  runtime: 
+  original_air_date: 2001-07-29
+  description: Lewis, Goertzen.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP009309790004: 
+  title: Dirty Sexy Money
+  mpaa_rating: 
+  series: 
+  id: EP009309790004
+  subtitle: The Chiavennasca
+  runtime: 
+  original_air_date: 2007-10-17
+  description: Nick travels to an Italian vineyard to meet with a spy who may know about the death of Nick's father; Letitia confirms to Tripp that she had been unfaithful to him throughout their marriage; Jeremy struggles to keep his affair a secret.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP000018934442: 
+  title: Good Morning America
+  mpaa_rating: 
+  series: 
+  id: EP000018934442
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-10-17
+  description: Marc Cohn performs; actor Casey Affleck ("Gone Baby Gone").
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP009309810003: 
+  title: Pushing Daisies
+  mpaa_rating: 
+  series: 
+  id: EP009309810003
+  subtitle: The Fun in Funeral
+  runtime: 
+  original_air_date: 2007-10-17
+  description: Another strange death leads Ned back to the site of Chuck's resurrection; pies laced with antidepressants brighten the lives of Aunt Lily and Aunt Vivian.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH009104920000: 
+  title: KOMO 4 News
+  mpaa_rating: 
+  series: 
+  id: SH009104920000
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-03-02
+  description: Goertzen; Johnson.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP005455791021: 
+  title: Jimmy Kimmel Live
+  mpaa_rating: 
+  series: 
+  id: EP005455791021
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-10-16
+  description: Actress Kristin Chenoweth; actor Nick Cannon; the fourth celebrity eliminated from "Dancing With the Stars"; Angie Stone performs.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH009574190000: 
+  title: KOMO 4 News
+  mpaa_rating: 
+  series: 
+  id: SH009574190000
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-09-03
+  description: Nam.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH009253280000: 
+  title: KOMO 4 News
+  mpaa_rating: 
+  series: 
+  id: SH009253280000
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-04-24
+  description: Thompson and Dardis.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH008776990000: 
+  title: America This Morning
+  mpaa_rating: 
+  series: 
+  id: SH008776990000
+  subtitle: 
+  runtime: 
+  original_air_date: 2006-11-12
+  description: Breaking news.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH009104900000: 
+  title: KOMO 4 News
+  mpaa_rating: 
+  series: 
+  id: SH009104900000
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-03-01
+  description: Dardis; Curry.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH000191160000: 
+  title: ABC World News Now
+  mpaa_rating: 
+  series: 
+  id: SH000191160000
+  subtitle: 
+  runtime: 
+  original_air_date: 1992-01-05
+  description: Global news.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP000023481504: 
+  title: Jeopardy!
+  mpaa_rating: 
+  series: 
+  id: EP000023481504
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-10-17
+  description: 
+  year: 
+  syndicated_episode_number: "5313"
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP000031382805: 
+  title: Nightline
+  mpaa_rating: 
+  series: 
+  id: EP000031382805
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-10-16
+  description: A blogger warns people to stay away from real estate; a Chicago school uses dance to help keep students out of trouble.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_EP002253952649: 
+  title: The View
+  mpaa_rating: 
+  series: 
+  id: EP002253952649
+  subtitle: 
+  runtime: 
+  original_air_date: 2007-10-17
+  description: Awareness, early detection and prevention of breast cancer; breast cancer survivors.
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Series
+program_SH000000010000: 
+  title: Paid Programming
+  mpaa_rating: 
+  series: 
+  id: SH000000010000
+  subtitle: 
+  runtime: 
+  original_air_date: 
+  description: 
+  year: 
+  syndicated_episode_number: 
+  color_code: 
+  star_rating: 
+  show_type: Paid Programming

@@ -1,15 +1,15 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-one:
-  name: 
-  location: 
+--- 
+lineup_WA46429:X: 
+  name: Comcast Seattle
+  device: Digital
+  postal_code: 98199
+  id: WA46429:X
+  media_type: CableDigital
+  location: Seattle
+lineup_WA46429:-: 
+  name: Comcast Seattle
   device: 
-  type: 
-  postal_code: MyString
-
-two:
-  name: 
-  location: 
-  device: 
-  type: 
-  postal_code: MyString
+  postal_code: 98199
+  id: WA46429:-
+  media_type: Cable
+  location: Seattle
