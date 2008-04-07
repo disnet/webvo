@@ -14,10 +14,6 @@ class ScheduleController < ApplicationController
     end
     @stop = @start + 3 * 60 * 60
     
-    # params for searching are:
-    #  start before section end
-    #  end after section start
-
     @schedules = Schedule.find :all, 
       :conditions => ["time < ? and stop_time > ?", @stop, @start]
     @schedules_by_station = Hash.new

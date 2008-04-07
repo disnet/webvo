@@ -25,7 +25,10 @@ class ScheduledProgramController < ApplicationController
   end
 
   def list
-    @scheduled_programs = ScheduledProgram.find:all
+    #TODO: add join in find to order properly, or reorder
+    # is the current sort fast enough?, it still has to query the db
+    @scheduled_programs = ScheduledProgram.find:all #, :order => 'time desc'
+    @scheduled_programs.sort! {|a,b| a.time <=> b.time}
 
     respond_to do |format|
       format.html
