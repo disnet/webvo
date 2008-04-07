@@ -1,0 +1,5 @@
+{'type': 'listing',
+'header': '<%= prog_table_listing @schedules_by_station, @start, @stop %>',
+'programmes': 
+<%= prog_json_programs( @schedules, {:type => 'listing'} ) %>
+}

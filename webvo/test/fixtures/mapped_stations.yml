@@ -1,0 +1,25 @@
+--- 
+mapped_station_00001: 
+  lineup_id: WA46429:-
+  from: 
+  channel_minor: 
+  to: 
+  id: 1
+  channel: "4"
+  station_id: 10626
+mapped_station_00002: 
+  lineup_id: WA46429:X
+  from: 
+  channel_minor: 
+  to: 
+  id: 2
+  channel: "4"
+  station_id: 10626
+mapped_station_00003: 
+  lineup_id: WA46429:X
+  from: 2004-10-25
+  channel_minor: 
+  to: 
+  id: 3
+  channel: "104"
+  station_id: 19629

@@ -1,0 +1,18 @@
+<tr>
+
+<td><%= row.schedule.program.title %></td>
+<td><%= row.schedule.program.subtitle%></td>
+<td><%= row.schedule.program.syndicated_episode_number%></td>
+
+<%= '<td>Description</td>' if false %>
+
+<td><%= row.schedule.time %></td>
+<td><%= row.schedule.stop_time %></td>
+<td><%= row.schedule.station.fcc_channel_number%></td>
+
+<%= '<td>Size</td>' if size == true %>
+
+<td>
+  <input name="Check" type="checkbox" value="<%= row.id%>"/></td>
+
+</tr>

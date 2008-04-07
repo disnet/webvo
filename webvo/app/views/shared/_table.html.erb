@@ -1,0 +1,9 @@
+<table>
+
+<%= prog_table_header %>
+
+<%= render :partial => 'shared/row',
+  :collection => items,
+  :locals => {:size => size} %>
+
+</table>
