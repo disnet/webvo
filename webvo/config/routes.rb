@@ -57,6 +57,14 @@ ActionController::Routing::Routes.draw do |map|
     :controller => 'recorded_program',
     :action => 'list'
 
+  map.connect 'ruby/delete_recorded.rb', 
+    :controller => 'recorded_program',
+    :action => 'remove'
+
+  map.connect 'ruby/delete_recorded.rb.:format', 
+    :controller => 'recorded_program',
+    :action => 'remove'
+
   # Sample of regular route:
   #   map.connect 'products/:id', :controller => 'catalog', :action => 'view'
   # Keep in mind you can assign values other than :controller and :action
